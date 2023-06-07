@@ -1,0 +1,6 @@
+before_script:
+  - export JAVA_HOME="/usr/local/java/jdk-11.0.2/"
+
+maven build:
+  script:
+    - "mvn test"
