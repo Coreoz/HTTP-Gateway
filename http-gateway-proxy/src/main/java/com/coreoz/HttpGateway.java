@@ -14,7 +14,6 @@ public class HttpGateway {
     }
 
     public static HttpGateway start(HttpGatewayConfiguration configuration) {
-        System.setProperty("play.http.secret.key", "dummy_2cTp64P^W2Sv4yM2^PC8P#XnSZipHq^cMU!4#WW6jS5iDgI&nh");
         return new HttpGateway(Server
             .forRouter(
                 Mode.PROD,

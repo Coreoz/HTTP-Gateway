@@ -16,7 +16,7 @@ public class HttpGatewayTest {
 
     @Test
     public void integration_test__verify_that_server_starts_and_is_working() throws IOException, InterruptedException {
-        int httpPort = 8080;
+        int httpPort = 9876;
         HttpGateway httpGateway = HttpGateway.start(new HttpGatewayConfiguration(
             httpPort,
             (router) -> router.GET("/test").routingTo((request) -> Results.ok("Hello world !")).build()
