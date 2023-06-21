@@ -1,5 +1,7 @@
 package com.coreoz;
 
+import com.coreoz.client.HttpGatewayClient;
+import com.coreoz.client.HttpGatewayRemoteRequest;
 import com.coreoz.conf.HttpGatewayConfiguration;
 import com.coreoz.conf.HttpGatewayRouterConfiguration;
 import io.netty.handler.codec.http.HttpResponseStatus;
@@ -37,6 +39,28 @@ public class HttpGatewayTest {
         HttpGateway httpGateway = HttpGateway.start(new HttpGatewayConfiguration(
             HTTP_PORT,
             HttpGatewayRouterConfiguration.asyncRouter(request -> CompletableFuture.completedFuture(Results.ok("Hello world !")))
+        ));
+
+        HttpResponse<String> httpResponse = makeHttpRequest();
+
+        Assertions.assertThat(httpResponse.statusCode()).isEqualTo(HttpResponseStatus.OK.code());
+        Assertions.assertThat(httpResponse.body()).isEqualTo("Hello world !");
+
+        httpGateway.stop();
+    }
+
+    @Test
+    public void integration_test__verify_that_server_and_gateway_client_is_working() throws IOException, InterruptedException {
+        HttpGatewayClient httpGatewayClient = new HttpGatewayClient();
+        HttpGateway httpGateway = HttpGateway.start(new HttpGatewayConfiguration(
+            HTTP_PORT,
+            HttpGatewayRouterConfiguration.asyncRouter(request -> {
+                HttpGatewayRemoteRequest remoteRequest = httpGatewayClient.prepareRequest(request);
+                // TODO mettre en place le routing générique qui permet de résoudre un chemin de manière indexée
+                // remoteRequest.getBaseRemoteRequest().
+                // TODO ajouter du code pour convertir la réponse
+                return httpGatewayClient.executeRemoteRequest(remoteRequest);
+            })
         ));
 
         HttpResponse<String> httpResponse = makeHttpRequest();
