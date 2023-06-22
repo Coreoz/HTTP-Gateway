@@ -1,4 +1,4 @@
-package com.coreoz.router;
+package com.coreoz.play;
 
 import com.coreoz.conf.HttpGatewayRequestHandler;
 import com.coreoz.conf.HttpGatewayRouterConfiguration;
@@ -9,10 +9,10 @@ import play.routing.RoutingDsl;
 
 import java.util.concurrent.CompletionStage;
 
-public class HttpGatewayAsyncRouter implements HttpGatewayRouterConfiguration {
+public class HttpGatewayAsyncRoutesConfigurator implements HttpGatewayRouterConfiguration {
     private final HttpGatewayRequestHandler requestHandler;
 
-    public HttpGatewayAsyncRouter(HttpGatewayRequestHandler requestHandler) {
+    public HttpGatewayAsyncRoutesConfigurator(HttpGatewayRequestHandler requestHandler) {
         this.requestHandler = requestHandler;
     }
 

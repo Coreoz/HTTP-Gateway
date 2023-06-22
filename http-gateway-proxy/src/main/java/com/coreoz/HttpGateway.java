@@ -1,6 +1,7 @@
 package com.coreoz;
 
 import com.coreoz.conf.HttpGatewayConfiguration;
+import com.coreoz.play.StreamingBodyParser;
 import play.Mode;
 import play.routing.RoutingDsl;
 import play.server.Server;

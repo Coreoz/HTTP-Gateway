@@ -38,7 +38,7 @@ public class HttpGatewayTest {
     public void integration_test__verify_that_server_and_async_router_is_working() throws IOException, InterruptedException {
         HttpGateway httpGateway = HttpGateway.start(new HttpGatewayConfiguration(
             HTTP_PORT,
-            HttpGatewayRouterConfiguration.asyncRouter(request -> CompletableFuture.completedFuture(Results.ok("Hello world !")))
+            HttpGatewayRouterConfiguration.asyncRouting(request -> CompletableFuture.completedFuture(Results.ok("Hello world !")))
         ));
 
         HttpResponse<String> httpResponse = makeHttpRequest();
@@ -54,7 +54,7 @@ public class HttpGatewayTest {
         HttpGatewayClient httpGatewayClient = new HttpGatewayClient();
         HttpGateway httpGateway = HttpGateway.start(new HttpGatewayConfiguration(
             HTTP_PORT,
-            HttpGatewayRouterConfiguration.asyncRouter(request -> {
+            HttpGatewayRouterConfiguration.asyncRouting(request -> {
                 HttpGatewayRemoteRequest remoteRequest = httpGatewayClient.prepareRequest(request);
                 // TODO mettre en place le routing générique qui permet de résoudre un chemin de manière indexée
                 // remoteRequest.getBaseRemoteRequest().

@@ -1,4 +1,4 @@
-package com.coreoz;
+package com.coreoz.play;
 
 import akka.stream.Materializer;
 import akka.stream.javadsl.AsPublisher;

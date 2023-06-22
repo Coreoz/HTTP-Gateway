@@ -1,6 +1,6 @@
 package com.coreoz.conf;
 
-import com.coreoz.router.HttpGatewayAsyncRouter;
+import com.coreoz.play.HttpGatewayAsyncRoutesConfigurator;
 import play.routing.Router;
 import play.routing.RoutingDsl;
 
@@ -8,7 +8,7 @@ import play.routing.RoutingDsl;
 public interface HttpGatewayRouterConfiguration {
     Router configureRoutes(RoutingDsl routingDsl);
 
-    static HttpGatewayRouterConfiguration asyncRouter(HttpGatewayRequestHandler requestHandler) {
-        return new HttpGatewayAsyncRouter(requestHandler);
+    static HttpGatewayRouterConfiguration asyncRouting(HttpGatewayRequestHandler requestHandler) {
+        return new HttpGatewayAsyncRoutesConfigurator(requestHandler);
     }
 }
