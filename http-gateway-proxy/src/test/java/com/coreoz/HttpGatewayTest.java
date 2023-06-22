@@ -52,11 +52,13 @@ public class HttpGatewayTest {
     @Test
     public void integration_test__verify_that_server_and_gateway_client_is_working() throws IOException, InterruptedException {
         HttpGatewayClient httpGatewayClient = new HttpGatewayClient();
+        // TODO new indexedRoutes
         HttpGateway httpGateway = HttpGateway.start(new HttpGatewayConfiguration(
             HTTP_PORT,
             HttpGatewayRouterConfiguration.asyncRouting(request -> {
                 HttpGatewayRemoteRequest remoteRequest = httpGatewayClient.prepareRequest(request);
                 // TODO mettre en place le routing générique qui permet de résoudre un chemin de manière indexée
+                // TODO HttpGatewayRouter.resolve
                 // remoteRequest.getBaseRemoteRequest().
                 // TODO ajouter du code pour convertir la réponse
                 return httpGatewayClient.executeRemoteRequest(remoteRequest);

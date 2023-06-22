@@ -47,7 +47,7 @@ public class HttpGatewayClient {
      */
     public HttpGatewayRemoteRequest prepareRequest(Http.Request playHttprequest) {
         // TODO
-        return new HttpGatewayRemoteRequest();
+        return new HttpGatewayRemoteRequest(null, null, 0);
     }
 
     public CompletableFuture<HttpGatewayRemoteResponse> executeRemoteRequest(HttpGatewayRemoteRequest remoteRequest) {
