@@ -61,7 +61,8 @@ public class HttpGatewayTest {
                 // TODO HttpGatewayRouter.resolve
                 // remoteRequest.getBaseRemoteRequest().
                 // TODO ajouter du code pour convertir la réponse
-                return httpGatewayClient.executeRemoteRequest(remoteRequest);
+                // return httpGatewayClient.executeRemoteRequest(remoteRequest);
+                return null;
             })
         ));
 
