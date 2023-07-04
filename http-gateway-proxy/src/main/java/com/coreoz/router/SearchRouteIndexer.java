@@ -1,6 +1,6 @@
 package com.coreoz.router;
 
-import com.coreoz.router.beans.ApiEndpoint;
+import com.coreoz.router.beans.HttpEndpoint;
 import com.coreoz.router.beans.EndpointParsedData;
 import com.coreoz.router.beans.IndexedEndpoints;
 import com.coreoz.router.beans.ParsedSegment;
@@ -56,7 +56,7 @@ public class SearchRouteIndexer {
      * Retourne la nouvelle route ajoutée à l'arbre
      * ou la route existante qui était déjà présente dans l'arbre.
      */
-    public static <T> EndpointParsedData<T> addEndpointToIndex(ApiEndpoint<T> endpoint, Map<String, IndexedEndpoints<T>> indexedEndpoints) {
+    public static <T> EndpointParsedData<T> addEndpointToIndex(HttpEndpoint<T> endpoint, Map<String, IndexedEndpoints<T>> indexedEndpoints) {
         IndexedEndpoints<T> rootIndex = indexedEndpoints.computeIfAbsent(endpoint.getMethod(), method -> IndexedEndpoints.of(
             null,
             1L << MAX_LONG_OFFSET_FOR_POSITIVE_NUMBERS,
@@ -83,7 +83,7 @@ public class SearchRouteIndexer {
             if (segmentIndex == segments.size()) {
                 if (currentIndex.getLastEndpoint() != null) {
                     // cas possible /test/{bidule}/truc et /test/{machin}/truc
-                    logger.warn("Deux routes sont en conflit (la dernière ne sera pas ajoutée) : {} et {}", currentIndex.getLastEndpoint().getApiEndpoint().getGatewayPath(), endpoint.getGatewayPath());
+                    logger.warn("Deux routes sont en conflit (la dernière ne sera pas ajoutée) : {} et {}", currentIndex.getLastEndpoint().getHttpEndpoint().getGatewayPath(), endpoint.getGatewayPath());
                     return currentIndex.getLastEndpoint();
                 }
                 EndpointParsedData<T> newEndpoint = EndpointParsedData.of(
@@ -129,11 +129,11 @@ public class SearchRouteIndexer {
     /**
      * Main indexation method
      */
-    public static <T> Map<String, IndexedEndpoints<T>> indexEndpoints(List<ApiEndpoint<T>> endpoints) {
+    public static <T> Map<String, IndexedEndpoints<T>> indexEndpoints(List<HttpEndpoint<T>> endpoints) {
         // 1. on construit le résultat final
         Map<String, IndexedEndpoints<T>> indexedEndpoints = new HashMap<>();
         // 2. on boucle sur les endpoints et on les ajoute
-        for (ApiEndpoint<T> endpoint : endpoints) {
+        for (HttpEndpoint<T> endpoint : endpoints) {
             addEndpointToIndex(endpoint, indexedEndpoints);
         }
         // 3. on retourne le résultat

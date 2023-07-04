@@ -15,5 +15,5 @@ import java.util.Map;
 public class EndpointParsedData<T> {
     private Map<String, Integer> patterns;
     private List<ParsedSegment> destinationRouteSegments;
-    private ApiEndpoint<T> apiEndpoint;
+    private HttpEndpoint<T> httpEndpoint;
 }

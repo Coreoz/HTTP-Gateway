@@ -16,7 +16,7 @@ import java.util.*;
 public class SearchRouteEngine {
     private static final String SEGMENT_SEPARATOR = "/";
 
-    static <T> Optional<MatchingRoute<T>> searchGatewayRoute(IndexedEndpoints<T> indexEndpoints, String requestPath) {
+    public static <T> Optional<MatchingRoute<T>> searchRoute(IndexedEndpoints<T> indexEndpoints, String requestPath) {
         // initialisation
         //substring(1) permet d'enlever le premier /
         ArrayDeque<String> requestElements = new ArrayDeque<>(Arrays.asList(requestPath.substring(1).split(SEGMENT_SEPARATOR)));
@@ -73,8 +73,8 @@ public class SearchRouteEngine {
             }
         }
         return TargetRoute.of(
-            matchingEndpoint.getApiEndpoint().getEndpointData(),
-            matchingEndpoint.getApiEndpoint().getProviderBaseUrl() + result.toString()
+            matchingEndpoint.getHttpEndpoint().getEndpointData(),
+            matchingEndpoint.getHttpEndpoint().getProviderBaseUrl() + result.toString()
         );
     }
 

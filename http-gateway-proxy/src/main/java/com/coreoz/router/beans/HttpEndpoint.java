@@ -7,7 +7,7 @@ import lombok.*;
 @NoArgsConstructor
 @EqualsAndHashCode
 @ToString
-public class ApiEndpoint<T> {
+public class HttpEndpoint<T> {
     private T endpointData;
 	private String method;
 	private String gatewayPath;
