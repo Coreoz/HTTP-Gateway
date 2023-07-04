@@ -1,9 +1,6 @@
 package com.coreoz.router;
 
-import com.coreoz.router.beans.EndpointParsedData;
-import com.coreoz.router.beans.HttpEndpoint;
-import com.coreoz.router.beans.IndexedEndpoints;
-import com.coreoz.router.beans.MatchingRoute;
+import com.coreoz.router.beans.*;
 
 import java.util.List;
 import java.util.Map;
@@ -22,7 +19,7 @@ public class HttpGatewayRouter<T> {
      * for the specified path, then the new endpoint is NOT added and the existing endpoint is returned.
      */
     public HttpEndpoint<T> addEndpoint(HttpEndpoint<T> endpoint) {
-        EndpointParsedData<T> addedEndpoint = SearchRouteIndexer.addEndpointToIndex(endpoint, routerIndex);
+        EndpointParsedData<T> addedEndpoint = SearchRouteIndexer.addEndpointToIndex(routerIndex, endpoint);
         return addedEndpoint == null ? null : addedEndpoint.getHttpEndpoint();
     }
 
@@ -34,5 +31,9 @@ public class HttpGatewayRouter<T> {
             return Optional.empty();
         }
         return SearchRouteEngine.searchRoute(methodIndex, requestPath);
+    }
+
+    public TargetRoute<T> computeTargetRoute(MatchingRoute<T> matchingRoute) {
+        return SearchRouteEngine.computeTargetRoute(matchingRoute);
     }
 }

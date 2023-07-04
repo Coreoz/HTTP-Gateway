@@ -56,7 +56,7 @@ public class SearchRouteIndexer {
      * Retourne la nouvelle route ajoutée à l'arbre
      * ou la route existante qui était déjà présente dans l'arbre.
      */
-    public static <T> EndpointParsedData<T> addEndpointToIndex(HttpEndpoint<T> endpoint, Map<String, IndexedEndpoints<T>> indexedEndpoints) {
+    public static <T> EndpointParsedData<T> addEndpointToIndex(Map<String, IndexedEndpoints<T>> indexedEndpoints, HttpEndpoint<T> endpoint) {
         IndexedEndpoints<T> rootIndex = indexedEndpoints.computeIfAbsent(endpoint.getMethod(), method -> IndexedEndpoints.of(
             null,
             1L << MAX_LONG_OFFSET_FOR_POSITIVE_NUMBERS,
@@ -134,7 +134,7 @@ public class SearchRouteIndexer {
         Map<String, IndexedEndpoints<T>> indexedEndpoints = new HashMap<>();
         // 2. on boucle sur les endpoints et on les ajoute
         for (HttpEndpoint<T> endpoint : endpoints) {
-            addEndpointToIndex(endpoint, indexedEndpoints);
+            addEndpointToIndex(indexedEndpoints, endpoint);
         }
         // 3. on retourne le résultat
         return indexedEndpoints;
