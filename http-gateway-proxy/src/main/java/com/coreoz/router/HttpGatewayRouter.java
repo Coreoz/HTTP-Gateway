@@ -1,6 +1,6 @@
 package com.coreoz.router;
 
-import com.coreoz.router.beans.*;
+import com.coreoz.router.data.*;
 
 import java.util.List;
 import java.util.Map;

@@ -1,8 +1,8 @@
 package com.coreoz.router;
 
-import com.coreoz.router.beans.IndexedEndpoints;
-import com.coreoz.router.beans.MatchingRoute;
-import com.coreoz.router.beans.TargetRoute;
+import com.coreoz.router.data.IndexedEndpoints;
+import com.coreoz.router.data.MatchingRoute;
+import com.coreoz.router.data.TargetRoute;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 

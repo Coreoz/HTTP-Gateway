@@ -1,9 +1,9 @@
 package com.coreoz.router;
 
-import com.coreoz.router.beans.HttpEndpoint;
-import com.coreoz.router.beans.EndpointParsedData;
-import com.coreoz.router.beans.IndexedEndpoints;
-import com.coreoz.router.beans.ParsedSegment;
+import com.coreoz.router.data.HttpEndpoint;
+import com.coreoz.router.data.EndpointParsedData;
+import com.coreoz.router.data.IndexedEndpoints;
+import com.coreoz.router.data.ParsedSegment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,7 +66,7 @@ public class SearchRouteIndexer {
         ));
 
         // parser la route
-        List<ParsedSegment> segments = parseEndpoint(endpoint.getGatewayPath());
+        List<ParsedSegment> segments = parseEndpoint(endpoint.getLocalPath());
         // initialise patterns map
         Map<String, Integer> patterns = new HashMap<>();
 
@@ -83,12 +83,12 @@ public class SearchRouteIndexer {
             if (segmentIndex == segments.size()) {
                 if (currentIndex.getLastEndpoint() != null) {
                     // cas possible /test/{bidule}/truc et /test/{machin}/truc
-                    logger.warn("Deux routes sont en conflit (la dernière ne sera pas ajoutée) : {} et {}", currentIndex.getLastEndpoint().getHttpEndpoint().getGatewayPath(), endpoint.getGatewayPath());
+                    logger.warn("Deux routes sont en conflit (la dernière ne sera pas ajoutée) : {} et {}", currentIndex.getLastEndpoint().getHttpEndpoint().getLocalPath(), endpoint.getLocalPath());
                     return currentIndex.getLastEndpoint();
                 }
                 EndpointParsedData<T> newEndpoint = EndpointParsedData.of(
                     patterns,
-                    parseEndpoint(endpoint.getProviderPath()),
+                    parseEndpoint(endpoint.getDestinationPath()),
                     endpoint
                 );
                 currentIndex.setLastEndpoint(newEndpoint);

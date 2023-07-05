@@ -1,6 +1,6 @@
 package com.coreoz.router;
 
-import com.coreoz.router.beans.*;
+import com.coreoz.router.data.*;
 
 import java.util.*;
 
@@ -82,7 +82,7 @@ public class SearchRouteEngine {
         }
         return TargetRoute.of(
             matchingEndpoint.getHttpEndpoint().getEndpointData(),
-            matchingEndpoint.getHttpEndpoint().getProviderBaseUrl() + result.toString()
+            matchingEndpoint.getHttpEndpoint().getDestinationBaseUrl() + result.toString()
         );
     }
 }

@@ -1,4 +1,4 @@
-package com.coreoz.router.beans;
+package com.coreoz.router.data;
 
 import lombok.*;
 
@@ -10,7 +10,7 @@ import lombok.*;
 public class HttpEndpoint<T> {
     private T endpointData;
 	private String method;
-	private String gatewayPath;
-	private String providerPath;
-	private String providerBaseUrl;
+	private String localPath;
+	private String destinationPath;
+	private String destinationBaseUrl;
 }

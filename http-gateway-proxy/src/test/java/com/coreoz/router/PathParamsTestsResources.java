@@ -1,9 +1,9 @@
 package com.coreoz.router;
 
-import com.coreoz.router.beans.HttpEndpoint;
-import com.coreoz.router.beans.EndpointParsedData;
-import com.coreoz.router.beans.IndexedEndpoints;
-import com.coreoz.router.beans.ParsedSegment;
+import com.coreoz.router.data.HttpEndpoint;
+import com.coreoz.router.data.EndpointParsedData;
+import com.coreoz.router.data.IndexedEndpoints;
+import com.coreoz.router.data.ParsedSegment;
 
 import java.util.List;
 import java.util.Map;

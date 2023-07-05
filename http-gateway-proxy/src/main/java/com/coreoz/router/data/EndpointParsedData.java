@@ -1,4 +1,4 @@
-package com.coreoz.router.beans;
+package com.coreoz.router.data;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
