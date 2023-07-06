@@ -6,6 +6,7 @@ import com.coreoz.conf.HttpGatewayConfiguration;
 import com.coreoz.conf.HttpGatewayRouterConfiguration;
 import com.coreoz.router.HttpGatewayRouter;
 import com.coreoz.router.data.HttpEndpoint;
+import com.coreoz.router.data.TargetRoute;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
@@ -18,6 +19,8 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+
+import static com.coreoz.play.HttpGatewayResponses.buildError;
 
 public class HttpGatewayTest {
     static int HTTP_PORT = 9876;
@@ -55,14 +58,22 @@ public class HttpGatewayTest {
     @Test
     public void integration_test__verify_that_server_and_gateway_client_is_working() throws IOException, InterruptedException {
         HttpGatewayClient httpGatewayClient = new HttpGatewayClient();
+        // TODO create endpoint list from config
         HttpGatewayRouter<String> httpRouter = new HttpGatewayRouter<>(List.of(
             HttpEndpoint.of("endpoint1", "GET", "/endpoint1", "/end-point1", "http://localhost"),
             HttpEndpoint.of("endpoint2", "GET", "/endpoint1/{id}", "/end-point1/{id}", "http://localhost")
         ));
-        // TODO new indexedRoutes
         HttpGateway httpGateway = HttpGateway.start(new HttpGatewayConfiguration(
             HTTP_PORT,
             HttpGatewayRouterConfiguration.asyncRouting(request -> {
+                TargetRoute<String> targetRoute = httpRouter
+                    .searchRoute(request.method(), request.path())
+                    .map(httpRouter::computeTargetRoute)
+                    .orElse(null);
+                if (targetRoute == null) {
+                    return buildError(HttpResponseStatus.NOT_FOUND, "No route exists for " + request.method() + " " + request.path());
+                }
+
                 HttpGatewayRemoteRequest remoteRequest = httpGatewayClient.prepareRequest(request);
                 // TODO mettre en place le routing générique qui permet de résoudre un chemin de manière indexée
                 // TODO HttpGatewayRouter.resolve
