@@ -1,19 +1,13 @@
 package com.coreoz.router.data;
 
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.List;
 import java.util.Map;
 
-@Getter
-@AllArgsConstructor(staticName = "of")
-@EqualsAndHashCode
-@ToString
+@Value
 public class EndpointParsedData<T> {
-    private Map<String, Integer> patterns;
-    private List<ParsedSegment> destinationRouteSegments;
-    private HttpEndpoint<T> httpEndpoint;
+    Map<String, Integer> patterns;
+    List<ParsedSegment> destinationRouteSegments;
+    HttpEndpoint<T> httpEndpoint;
 }

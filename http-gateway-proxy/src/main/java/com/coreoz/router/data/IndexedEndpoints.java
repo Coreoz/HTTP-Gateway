@@ -4,12 +4,8 @@ import lombok.*;
 
 import java.util.Map;
 
-@Getter
-@Setter
-@AllArgsConstructor(staticName = "of")
-@NoArgsConstructor
-@EqualsAndHashCode
-@ToString
+@AllArgsConstructor
+@Data
 public class IndexedEndpoints<T> {
     private EndpointParsedData<T> lastEndpoint;
     private long rating;

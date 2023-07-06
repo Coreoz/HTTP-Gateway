@@ -21,7 +21,7 @@ public class SearchRouteEngine {
         //substring(1) permet d'enlever le premier /
         ArrayDeque<String> requestElements = new ArrayDeque<>(Arrays.asList(requestPath.substring(1).split(SEGMENT_SEPARATOR)));
         List<SearchSegment<T>> segmentOptions = new ArrayList<>();
-        segmentOptions.add(SearchSegment.of(
+        segmentOptions.add(new SearchSegment<>(
             indexEndpoints,
             requestElements,
             new HashMap<>()
@@ -33,7 +33,7 @@ public class SearchRouteEngine {
 
             if (currentEndpointsOption.getRequestRemainingSegments().isEmpty() && indexedEndpoints.getLastEndpoint() != null) {
                 return Optional.of(
-                    MatchingRoute.of(
+                    new MatchingRoute<>(
                         indexedEndpoints.getLastEndpoint(),
                         currentEndpointsOption.getParams()
                     )
@@ -59,7 +59,7 @@ public class SearchRouteEngine {
     }
 
     private static <T> SearchSegment<T> toSearchSegment(IndexedEndpoints<T> indexedEndpoints, SearchSegment<T> currentSegmentOption) {
-        return SearchSegment.of(
+        return new SearchSegment<>(
             indexedEndpoints,
             currentSegmentOption.getRequestRemainingSegments().clone(),
             currentSegmentOption.getParams()
@@ -80,7 +80,7 @@ public class SearchRouteEngine {
                 result.append(currentSegment.getName());
             }
         }
-        return TargetRoute.of(
+        return new TargetRoute<>(
             matchingEndpoint.getHttpEndpoint().getEndpointData(),
             matchingEndpoint.getHttpEndpoint().getDestinationBaseUrl() + result.toString()
         );

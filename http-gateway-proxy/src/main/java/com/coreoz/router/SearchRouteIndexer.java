@@ -57,7 +57,7 @@ public class SearchRouteIndexer {
      * ou la route existante qui était déjà présente dans l'arbre.
      */
     public static <T> EndpointParsedData<T> addEndpointToIndex(Map<String, IndexedEndpoints<T>> indexedEndpoints, HttpEndpoint<T> endpoint) {
-        IndexedEndpoints<T> rootIndex = indexedEndpoints.computeIfAbsent(endpoint.getMethod(), method -> IndexedEndpoints.of(
+        IndexedEndpoints<T> rootIndex = indexedEndpoints.computeIfAbsent(endpoint.getMethod(), method -> new IndexedEndpoints(
             null,
             1L << MAX_LONG_OFFSET_FOR_POSITIVE_NUMBERS,
             0,
@@ -86,7 +86,7 @@ public class SearchRouteIndexer {
                     logger.warn("Deux routes sont en conflit (la dernière ne sera pas ajoutée) : {} et {}", currentIndex.getLastEndpoint().getHttpEndpoint().getLocalPath(), endpoint.getLocalPath());
                     return currentIndex.getLastEndpoint();
                 }
-                EndpointParsedData<T> newEndpoint = EndpointParsedData.of(
+                EndpointParsedData<T> newEndpoint = new EndpointParsedData<>(
                     patterns,
                     parseEndpoint(endpoint.getDestinationPath()),
                     endpoint
@@ -101,7 +101,7 @@ public class SearchRouteIndexer {
     }
 
     private static <T> IndexedEndpoints<T> computeSegmentIndex(IndexedEndpoints<T> currentIndex, String segmentName, int segmentIndex) {
-        return currentIndex.getSegments().computeIfAbsent(segmentName, (segmentNameToAdd) -> IndexedEndpoints.of(
+        return currentIndex.getSegments().computeIfAbsent(segmentName, (segmentNameToAdd) -> new IndexedEndpoints(
             null,
             currentIndex.getRating() | 1L << (MAX_LONG_OFFSET_FOR_POSITIVE_NUMBERS - segmentIndex),
             segmentIndex,
@@ -113,7 +113,7 @@ public class SearchRouteIndexer {
     private static <T> IndexedEndpoints<T> computePatternIndex(IndexedEndpoints<T> currentIndex, String segmentName, int segmentIndex, Map<String, Integer> patterns) {
         patterns.put(segmentName, segmentIndex);
         if (currentIndex.getPattern() == null) {
-            IndexedEndpoints<T> pattern = IndexedEndpoints.of(
+            IndexedEndpoints<T> pattern = new IndexedEndpoints(
                 null,
                 currentIndex.getRating(),
                 segmentIndex,

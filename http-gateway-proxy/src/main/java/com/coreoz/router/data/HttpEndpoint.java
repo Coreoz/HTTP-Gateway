@@ -2,15 +2,11 @@ package com.coreoz.router.data;
 
 import lombok.*;
 
-@Getter
-@AllArgsConstructor(staticName = "of")
-@NoArgsConstructor
-@EqualsAndHashCode
-@ToString
+@Value(staticConstructor = "of")
 public class HttpEndpoint<T> {
-    private T endpointData;
-	private String method;
-	private String localPath;
-	private String destinationPath;
-	private String destinationBaseUrl;
+    T endpointData;
+	String method;
+	String localPath;
+	String destinationPath;
+	String destinationBaseUrl;
 }

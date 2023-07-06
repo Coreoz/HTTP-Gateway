@@ -1,17 +1,11 @@
 package com.coreoz.router.data;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.Map;
 
-@Getter
-@Setter
-@AllArgsConstructor(staticName = "of")
-@NoArgsConstructor
+@Value
 public class MatchingRoute<T> {
-    private EndpointParsedData<T> matchingEndpoint;
-    private Map<Integer, String> params;
+    EndpointParsedData<T> matchingEndpoint;
+    Map<Integer, String> params;
 }

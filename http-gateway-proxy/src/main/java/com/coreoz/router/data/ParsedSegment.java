@@ -1,15 +1,9 @@
 package com.coreoz.router.data;
 
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 
-@AllArgsConstructor
-@Getter
-@EqualsAndHashCode
-@ToString
+@Value
 public class ParsedSegment {
-    private String name;
-    private boolean isPattern;
+    String name;
+    boolean isPattern;
 }

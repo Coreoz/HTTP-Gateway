@@ -26,8 +26,8 @@ public class PathParamsTestsResources {
             HttpEndpoint.of(9L, "PUT", "/test/machinchouette", "/test/machinchouette-found", "")
     );
 
-    static IndexedEndpoints<Long> choseSegment = IndexedEndpoints.of(
-            EndpointParsedData.of(
+    static IndexedEndpoints<Long> choseSegment = new IndexedEndpoints<>(
+            new EndpointParsedData<>(
                     Map.of(),
                     List.of(new ParsedSegment("test", false), new ParsedSegment("chose", false)),
                     HttpEndpoint.of(1L, "GET", "/test/chose", "/test/chose", "")
@@ -38,8 +38,8 @@ public class PathParamsTestsResources {
             null
     );
 
-    static IndexedEndpoints<Long> testBiduleChoseSegment = IndexedEndpoints.of(
-            EndpointParsedData.of(
+    static IndexedEndpoints<Long> testBiduleChoseSegment = new IndexedEndpoints<>(
+            new EndpointParsedData<>(
                     Map.of(),
                     List.of(new ParsedSegment("test", false), new ParsedSegment("bidule", false), new ParsedSegment("chose", false)),
                     HttpEndpoint.of(2L, "GET", "/test/bidule/chose", "/test/bidule/chose", "")
@@ -50,8 +50,8 @@ public class PathParamsTestsResources {
             null
     );
 
-    static IndexedEndpoints<Long> testTrucBidulePattern = IndexedEndpoints.of(
-            EndpointParsedData.of(
+    static IndexedEndpoints<Long> testTrucBidulePattern = new IndexedEndpoints<>(
+            new EndpointParsedData<>(
                     Map.of("truc", 2, "bidule",3),
                     List.of(new ParsedSegment("test", false), new ParsedSegment("truc", true), new ParsedSegment("bidule", true)),
                     HttpEndpoint.of(3L, "GET", "/test/{truc}/{bidule}", "/test/{truc}/{bidule}", "")
@@ -62,8 +62,8 @@ public class PathParamsTestsResources {
             null
     );
 
-    static IndexedEndpoints<Long> testTrucMachinTrucSegment = IndexedEndpoints.of(
-            EndpointParsedData.of(
+    static IndexedEndpoints<Long> testTrucMachinTrucSegment = new IndexedEndpoints<>(
+            new EndpointParsedData<>(
                     Map.of("truc", 2),
                     List.of(new ParsedSegment("test", false), new ParsedSegment("truc", true), new ParsedSegment("machin", false), new ParsedSegment("truc", false)),
                     HttpEndpoint.of(6L, "GET", "/test/{truc}/machin/truc", "/test/{truc}/machin/truc", "")
@@ -73,8 +73,8 @@ public class PathParamsTestsResources {
             Map.of(),
             null
     );
-    static IndexedEndpoints<Long> testTrucMachinChosePattern = IndexedEndpoints.of(
-            EndpointParsedData.of(
+    static IndexedEndpoints<Long> testTrucMachinChosePattern = new IndexedEndpoints<>(
+            new EndpointParsedData<>(
                     Map.of("truc", 2, "chose", 4),
                     List.of(new ParsedSegment("test", false), new ParsedSegment("chose", true), new ParsedSegment("machin", false), new ParsedSegment("truc", true)),
                     HttpEndpoint.of(5L, "GET", "/test/{truc}/machin/{chose}", "/test/{chose}/machin/{truc}", "")
@@ -84,8 +84,8 @@ public class PathParamsTestsResources {
             Map.of(),
             null
     );
-    static IndexedEndpoints<Long> testTrucMachinSegment = IndexedEndpoints.of(
-            EndpointParsedData.of(
+    static IndexedEndpoints<Long> testTrucMachinSegment = new IndexedEndpoints<>(
+            new EndpointParsedData<>(
                     Map.of("truc", 2),
                     List.of(new ParsedSegment("test", false), new ParsedSegment("truc", true), new ParsedSegment("machin", false)),
                     HttpEndpoint.of(4L, "GET", "/test/{truc}/machin", "/test/{truc}/machin", "")
@@ -96,7 +96,7 @@ public class PathParamsTestsResources {
             testTrucMachinChosePattern
     );
 
-    static IndexedEndpoints<Long> biduleSegments = IndexedEndpoints.of(
+    static IndexedEndpoints<Long> biduleSegments = new IndexedEndpoints<>(
             null,
             1L << 62 | 1L << 61 | 1L << 60,
             2,
@@ -104,7 +104,7 @@ public class PathParamsTestsResources {
             null
     );
 
-    static IndexedEndpoints<Long> testPattern = IndexedEndpoints.of(
+    static IndexedEndpoints<Long> testPattern = new IndexedEndpoints<>(
             null,
             1L << 62 | 1L << 61,
             2,
@@ -112,7 +112,7 @@ public class PathParamsTestsResources {
             testTrucBidulePattern
     );
 
-    static IndexedEndpoints<Long> testSegments = IndexedEndpoints.of(
+    static IndexedEndpoints<Long> testSegments = new IndexedEndpoints<>(
             null,
             1L << 62 | 1L << 61,
             1,
@@ -120,8 +120,8 @@ public class PathParamsTestsResources {
             testPattern
     );
 
-    static IndexedEndpoints<Long> putTestPattern = IndexedEndpoints.of(
-            EndpointParsedData.of(
+    static IndexedEndpoints<Long> putTestPattern = new IndexedEndpoints<>(
+             new EndpointParsedData<>(
                     Map.of("truc", 2),
                     List.of(new ParsedSegment("test", false), new ParsedSegment("truc", true)),
                     HttpEndpoint.of(8L, "PUT", "/test/{truc}", "/test/{truc}", "")
@@ -132,8 +132,8 @@ public class PathParamsTestsResources {
             null
     );
 
-    static IndexedEndpoints<Long> putChouetteSegment = IndexedEndpoints.of(
-            EndpointParsedData.of(
+    static IndexedEndpoints<Long> putChouetteSegment = new IndexedEndpoints<>(
+            new EndpointParsedData<>(
                     Map.of(),
                     List.of(new ParsedSegment("test", false), new ParsedSegment("chouette-found", false)),
                     HttpEndpoint.of(7L, "PUT", "/test/chouette", "/test/chouette-found", "")
@@ -144,8 +144,8 @@ public class PathParamsTestsResources {
             null
     );
 
-    static IndexedEndpoints<Long> putMachinChouetteSegment = IndexedEndpoints.of(
-            EndpointParsedData.of(
+    static IndexedEndpoints<Long> putMachinChouetteSegment = new IndexedEndpoints<>(
+            new EndpointParsedData<>(
                     Map.of(),
                     List.of(new ParsedSegment("test", false), new ParsedSegment("machinchouette-found", false)),
                     HttpEndpoint.of(9L, "PUT", "/test/machinchouette", "/test/machinchouette-found", "")
@@ -156,7 +156,7 @@ public class PathParamsTestsResources {
             null
     );
 
-    static IndexedEndpoints<Long> putTestSegment = IndexedEndpoints.of(
+    static IndexedEndpoints<Long> putTestSegment = new IndexedEndpoints<>(
             null,
             1L << 62 | 1L << 61,
             1,
@@ -165,14 +165,14 @@ public class PathParamsTestsResources {
     );
 
     static Map<String, IndexedEndpoints<Long>> indexedEndpointsResult = Map.of(
-            "GET", IndexedEndpoints.of(
+            "GET", new IndexedEndpoints<>(
                     null,
                     1L << 62,
                     0,
                     Map.of("test", testSegments),
                     null
             ),
-            "PUT", IndexedEndpoints.of(
+            "PUT", new IndexedEndpoints<>(
                     null,
                     1L << 62,
                     0,

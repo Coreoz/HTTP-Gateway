@@ -1,19 +1,13 @@
 package com.coreoz.router.data;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Value;
 
 import java.util.ArrayDeque;
 import java.util.Map;
 
-@Getter
-@Setter
-@AllArgsConstructor(staticName = "of")
-@NoArgsConstructor
+@Value
 public class SearchSegment<T> {
-    private IndexedEndpoints<T> indexedEndpoints;
-    private ArrayDeque<String> requestRemainingSegments;
-    private Map<Integer, String> params;
+    IndexedEndpoints<T> indexedEndpoints;
+    ArrayDeque<String> requestRemainingSegments;
+    Map<Integer, String> params;
 }
