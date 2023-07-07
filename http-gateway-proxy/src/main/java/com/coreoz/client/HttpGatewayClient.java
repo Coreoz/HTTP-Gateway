@@ -1,16 +1,17 @@
 package com.coreoz.client;
 
-import com.google.common.net.HttpHeaders;
+import com.coreoz.play.HttpGatewayRequests;
 import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.DefaultAsyncHttpClient;
 import org.asynchttpclient.DefaultAsyncHttpClientConfig;
+import org.asynchttpclient.RequestBuilder;
+import org.reactivestreams.Publisher;
 import play.mvc.Http;
 
 import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 
 public class HttpGatewayClient {
-
     private final AsyncHttpClient asyncHttpClient;
 
     public HttpGatewayClient(DefaultAsyncHttpClientConfig asyncHttpClientConfig) {
@@ -33,21 +34,17 @@ public class HttpGatewayClient {
     }
 
     /**
-     * Create a new AHC request from an incoming HTTP Gateway request by forwarding basic headers:
-     * <ul>
-     *     <li>{@link HttpHeaders.CONTENT_TYPE}</li>
-     *     <li>{@link HttpHeaders.ACCEPT}</li>
-     *     <li>{@link HttpHeaders.ACCEPT_CHARSET}</li>
-     *     <li>{@link HttpHeaders.ACCEPT_ENCODING}</li>
-     *     <li>{@link HttpHeaders.ACCEPT_LANGUAGE}</li>
-     *     <li>{@link HttpHeaders.COOKIE}</li>
-     * </ul>
-     * @param playHttprequest
-     * @return
+     * Create a new remote request from an incoming HTTP Gateway request
+     * @param incomingHttpRequest The incoming request
+     * @return A request builder
      */
-    public HttpGatewayRemoteRequest prepareRequest(Http.Request playHttprequest) {
-        // TODO
-        return new HttpGatewayRemoteRequest(null, null, 0);
+    public HttpGatewayRemoteRequest prepareRequest(Http.Request incomingHttpRequest) {
+        return new HttpGatewayRemoteRequest(
+            incomingHttpRequest,
+            new RequestBuilder(incomingHttpRequest.method()),
+            incomingHttpRequest.body().as(Publisher.class),
+            HttpGatewayRequests.parsePlayRequestContentLength(incomingHttpRequest)
+        );
     }
 
     public CompletableFuture<HttpGatewayRemoteResponse> executeRemoteRequest(HttpGatewayRemoteRequest remoteRequest) {

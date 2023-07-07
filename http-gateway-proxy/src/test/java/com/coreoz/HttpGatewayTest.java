@@ -4,6 +4,7 @@ import com.coreoz.client.HttpGatewayClient;
 import com.coreoz.client.HttpGatewayRemoteRequest;
 import com.coreoz.conf.HttpGatewayConfiguration;
 import com.coreoz.conf.HttpGatewayRouterConfiguration;
+import com.coreoz.play.HttpGatewayRequests;
 import com.coreoz.router.HttpGatewayRouter;
 import com.coreoz.router.data.HttpEndpoint;
 import com.coreoz.router.data.TargetRoute;
@@ -74,10 +75,8 @@ public class HttpGatewayTest {
                     return buildError(HttpResponseStatus.NOT_FOUND, "No route exists for " + request.method() + " " + request.path());
                 }
 
-                HttpGatewayRemoteRequest remoteRequest = httpGatewayClient.prepareRequest(request);
-                // TODO mettre en place le routing générique qui permet de résoudre un chemin de manière indexée
-                // TODO HttpGatewayRouter.resolve
-                // remoteRequest.getBaseRemoteRequest().
+                // TODO ajouter du publisher peeker via la méthode preparePeekerReques
+                HttpGatewayRemoteRequest remoteRequest = httpGatewayClient.prepareRequest(request).copyBasicHeaders();
                 // TODO ajouter du code pour convertir la réponse
                 // return httpGatewayClient.executeRemoteRequest(remoteRequest);
                 return null;
