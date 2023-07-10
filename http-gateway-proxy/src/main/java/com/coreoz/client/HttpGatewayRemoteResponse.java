@@ -11,10 +11,7 @@ public class HttpGatewayRemoteResponse {
 
     // status code
     private int statusCode;
-    // TODO replace with enum
-    private boolean isTimeout;
-    private boolean isError;
-    private boolean hasRequestFailed;
+    private HttpGatewayResponseStatus responseStatus;
     private String requestFailedError;
 
     // headers
