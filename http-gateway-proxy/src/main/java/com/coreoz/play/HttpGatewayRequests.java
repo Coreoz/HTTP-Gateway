@@ -1,8 +1,14 @@
 package com.coreoz.play;
 
 import com.google.common.net.HttpHeaders;
+import org.asynchttpclient.Param;
 import org.asynchttpclient.RequestBuilder;
 import play.mvc.Http;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class HttpGatewayRequests {
     public static void copyHeader(Http.Request incomingRequest, RequestBuilder remoteRequest, String httpHeader) {
@@ -45,5 +51,17 @@ public class HttpGatewayRequests {
                 }
             })
             .orElse(-1L);
+    }
+
+    public static List<Param> convertQueryParamsToParams(Map<String, String[]> queryParams) {
+        return queryParams
+            .entrySet()
+            .stream()
+            .flatMap(entry ->
+                Arrays
+                    .stream(entry.getValue())
+                    .map(value -> new Param(entry.getKey(), value))
+            )
+            .collect(Collectors.toList());
     }
 }

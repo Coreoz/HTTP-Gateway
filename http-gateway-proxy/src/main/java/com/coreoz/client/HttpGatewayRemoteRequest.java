@@ -21,4 +21,8 @@ public class HttpGatewayRemoteRequest {
         HttpGatewayRequests.copyBasicHeaders(incomingRequest, remoteRequest);
         return this;
     }
+
+    public HttpGatewayRemoteRequest copyQueryParams() {
+
+    }
 }
