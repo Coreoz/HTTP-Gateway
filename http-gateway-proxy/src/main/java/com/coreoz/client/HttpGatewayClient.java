@@ -1,10 +1,8 @@
 package com.coreoz.client;
 
 import com.coreoz.play.HttpGatewayRequests;
-import org.asynchttpclient.AsyncHttpClient;
-import org.asynchttpclient.DefaultAsyncHttpClient;
-import org.asynchttpclient.DefaultAsyncHttpClientConfig;
-import org.asynchttpclient.RequestBuilder;
+import io.netty.buffer.ByteBuf;
+import org.asynchttpclient.*;
 import org.reactivestreams.Publisher;
 import play.mvc.Http;
 
@@ -34,21 +32,42 @@ public class HttpGatewayClient {
     }
 
     /**
-     * Create a new remote request from an incoming HTTP Gateway request
+     * Create a new remote request from an incoming HTTP Gateway request.
+     * The request body along with the request content-length header will be forwarded to the remote request.
      * @param incomingHttpRequest The incoming request
-     * @return A request builder
+     * @return A request builder with the body and content-length header already set
      */
     public HttpGatewayRemoteRequest prepareRequest(Http.Request incomingHttpRequest) {
+        Publisher<ByteBuf> requestBody = incomingHttpRequest.body().as(Publisher.class);
+        long requestContentLength = HttpGatewayRequests.parsePlayRequestContentLength(incomingHttpRequest);
+        RequestBuilder remoteRequestBuilder = new RequestBuilder(incomingHttpRequest.method());
+
+        if (requestBody != null) {
+            if (requestContentLength >= 0) {
+                remoteRequestBuilder.setBody(requestBody, requestContentLength);
+            } else {
+                remoteRequestBuilder.setBody(requestBody);
+            }
+        }
+
         return new HttpGatewayRemoteRequest(
             incomingHttpRequest,
-            new RequestBuilder(incomingHttpRequest.method()),
-            incomingHttpRequest.body().as(Publisher.class),
-            HttpGatewayRequests.parsePlayRequestContentLength(incomingHttpRequest)
+            remoteRequestBuilder
         );
     }
 
     public CompletableFuture<HttpGatewayRemoteResponse> executeRemoteRequest(HttpGatewayRemoteRequest remoteRequest) {
-        // TODO
-        return null;
+        Request request = remoteRequest.getRemoteRequest().build();
+        CompletableFuture<HttpGatewayRemoteResponse> result = new CompletableFuture<>();
+
+        asyncHttpClient.executeRequest(
+            request,
+            new HttpGatewayClientResponseHandler(
+                result,
+                request.getUrl()
+            )
+        );
+
+        return result;
     }
 }

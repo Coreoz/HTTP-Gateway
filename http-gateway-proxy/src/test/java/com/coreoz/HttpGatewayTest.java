@@ -2,9 +2,9 @@ package com.coreoz;
 
 import com.coreoz.client.HttpGatewayClient;
 import com.coreoz.client.HttpGatewayRemoteRequest;
+import com.coreoz.client.HttpGatewayRemoteResponse;
 import com.coreoz.conf.HttpGatewayConfiguration;
 import com.coreoz.conf.HttpGatewayRouterConfiguration;
-import com.coreoz.play.HttpGatewayRequests;
 import com.coreoz.router.HttpGatewayRouter;
 import com.coreoz.router.data.HttpEndpoint;
 import com.coreoz.router.data.TargetRoute;
@@ -77,7 +77,9 @@ public class HttpGatewayTest {
 
                 // TODO ajouter du publisher peeker via la méthode preparePeekerReques
                 HttpGatewayRemoteRequest remoteRequest = httpGatewayClient.prepareRequest(request).copyBasicHeaders();
+                CompletableFuture<HttpGatewayRemoteResponse> remoteResponse = httpGatewayClient.executeRemoteRequest(remoteRequest);
                 // TODO ajouter du code pour convertir la réponse
+                // TODO gestion responseStatus.getStatusCode() < 500
                 // return httpGatewayClient.executeRemoteRequest(remoteRequest);
                 return null;
             })

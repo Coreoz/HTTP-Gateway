@@ -11,8 +11,6 @@ import play.mvc.Http;
 public class HttpGatewayRemoteRequest {
     Http.Request incomingRequest;
     RequestBuilder remoteRequest;
-    Publisher<ByteBuf> body;
-    long contentLength;
 
     public HttpGatewayRemoteRequest copyHeader(String httpHeader) {
         HttpGatewayRequests.copyHeader(incomingRequest, remoteRequest, httpHeader);
