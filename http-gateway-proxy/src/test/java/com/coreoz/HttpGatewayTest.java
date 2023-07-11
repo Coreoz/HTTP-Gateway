@@ -76,7 +76,10 @@ public class HttpGatewayTest {
                 }
 
                 // TODO ajouter du publisher peeker via la méthode preparePeekerReques
-                HttpGatewayRemoteRequest remoteRequest = httpGatewayClient.prepareRequest(request).copyBasicHeaders();
+                HttpGatewayRemoteRequest remoteRequest = httpGatewayClient
+                    .prepareRequest(request)
+                    .copyBasicHeaders()
+                    .copyQueryParams();
                 CompletableFuture<HttpGatewayRemoteResponse> remoteResponse = httpGatewayClient.executeRemoteRequest(remoteRequest);
                 // TODO ajouter du code pour convertir la réponse
                 // TODO gestion responseStatus.getStatusCode() < 500

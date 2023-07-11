@@ -1,11 +1,13 @@
 package com.coreoz.client;
 
 import com.coreoz.play.HttpGatewayRequests;
-import io.netty.buffer.ByteBuf;
 import lombok.Value;
+import org.asynchttpclient.Param;
 import org.asynchttpclient.RequestBuilder;
-import org.reactivestreams.Publisher;
 import play.mvc.Http;
+
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 @Value
 public class HttpGatewayRemoteRequest {
@@ -23,6 +25,16 @@ public class HttpGatewayRemoteRequest {
     }
 
     public HttpGatewayRemoteRequest copyQueryParams() {
-
+        remoteRequest.setQueryParams(
+            incomingRequest.queryString()
+                .entrySet()
+                .stream()
+                .flatMap(entry ->
+                    Arrays
+                        .stream(entry.getValue())
+                        .map(value -> new Param(entry.getKey(), value))
+                )
+                .collect(Collectors.toList())
+        );
     }
 }
