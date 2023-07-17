@@ -5,6 +5,7 @@ import com.coreoz.client.HttpGatewayRemoteRequest;
 import com.coreoz.client.HttpGatewayRemoteResponse;
 import com.coreoz.conf.HttpGatewayConfiguration;
 import com.coreoz.conf.HttpGatewayRouterConfiguration;
+import com.coreoz.play.HttpGatewayResponses;
 import com.coreoz.router.HttpGatewayRouter;
 import com.coreoz.router.data.HttpEndpoint;
 import com.coreoz.router.data.TargetRoute;
@@ -81,10 +82,15 @@ public class HttpGatewayTest {
                     .copyBasicHeaders()
                     .copyQueryParams();
                 CompletableFuture<HttpGatewayRemoteResponse> remoteResponse = httpGatewayClient.executeRemoteRequest(remoteRequest);
-                // TODO ajouter du code pour convertir la réponse
-                // TODO gestion responseStatus.getStatusCode() < 500
-                // return httpGatewayClient.executeRemoteRequest(remoteRequest);
-                return null;
+                return remoteResponse.thenApply(upstreamResponse -> {
+                    if (upstreamResponse.getStatusCode() > HttpResponseStatus.INTERNAL_SERVER_ERROR.code()) {
+                        // Do not forward the response body if the upstream server returns an internal error
+                        // => this enables to avoid forwarding sensitive information
+                        upstreamResponse.setPublisher(null);
+                    }
+
+                    return HttpGatewayResponses.buildResult(upstreamResponse);
+                });
             })
         ));
 

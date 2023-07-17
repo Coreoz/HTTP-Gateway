@@ -36,5 +36,6 @@ public class HttpGatewayRemoteRequest {
                 )
                 .collect(Collectors.toList())
         );
+        return this;
     }
 }
