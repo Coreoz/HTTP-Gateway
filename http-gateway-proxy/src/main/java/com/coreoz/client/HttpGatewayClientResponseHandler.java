@@ -45,6 +45,8 @@ public class HttpGatewayClientResponseHandler implements StreamedAsyncHandler<Vo
 
 	@Override
 	public State onStatusReceived(HttpResponseStatus responseStatus) {
+        responseResult.setStatusCode(responseStatus.getStatusCode());
+
 		if (responseStatus.getStatusCode() < 400) {
 			responseResult.setResponseStatus(HttpGatewayResponseStatus.OK);
 		} else if (responseStatus.getStatusCode() < 500) {

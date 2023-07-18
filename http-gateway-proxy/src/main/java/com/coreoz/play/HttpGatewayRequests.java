@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 public class HttpGatewayRequests {
     public static void copyHeader(Http.Request incomingRequest, RequestBuilder remoteRequest, String httpHeader) {
-        remoteRequest.addHeader(httpHeader, incomingRequest.header(httpHeader).orElse(null));
+        incomingRequest.header(httpHeader).ifPresent((headerValue) -> remoteRequest.addHeader(httpHeader, headerValue));
     }
 
     /**

@@ -14,6 +14,11 @@ public class HttpGatewayRemoteRequest {
     Http.Request incomingRequest;
     RequestBuilder remoteRequest;
 
+    public HttpGatewayRemoteRequest withUrl(String url) {
+        remoteRequest.setUrl(url);
+        return this;
+    }
+
     public HttpGatewayRemoteRequest copyHeader(String httpHeader) {
         HttpGatewayRequests.copyHeader(incomingRequest, remoteRequest, httpHeader);
         return this;
