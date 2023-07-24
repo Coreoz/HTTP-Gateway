@@ -66,7 +66,7 @@ public class SearchRouteEngine {
         );
     }
 
-    public static <T> TargetRoute<T> computeTargetRoute(MatchingRoute<T> matchingRoute) {
+    public static <T> DestinationRoute<T> computeDestinationRoute(MatchingRoute<T> matchingRoute) {
         StringBuilder result = new StringBuilder();
         EndpointParsedData<T> matchingEndpoint = matchingRoute.getMatchingEndpoint();
         for (int segmentIndex = 1; segmentIndex <= matchingEndpoint.getDestinationRouteSegments().size(); segmentIndex++) {
@@ -80,7 +80,7 @@ public class SearchRouteEngine {
                 result.append(currentSegment.getName());
             }
         }
-        return new TargetRoute<>(
+        return new DestinationRoute<>(
             matchingEndpoint.getHttpEndpoint().getEndpointData(),
             matchingEndpoint.getHttpEndpoint().getDestinationBaseUrl() + result.toString()
         );

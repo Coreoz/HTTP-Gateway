@@ -10,7 +10,7 @@ import java.util.List;
 
 @Setter
 @Getter
-public class HttpGatewayRemoteResponse {
+public class HttpGatewayUpstreamResponse {
     private String requestUrl;
 
     // status code

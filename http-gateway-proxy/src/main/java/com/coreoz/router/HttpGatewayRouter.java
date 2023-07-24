@@ -33,7 +33,7 @@ public class HttpGatewayRouter<T> {
         return SearchRouteEngine.searchRoute(methodIndex, requestPath);
     }
 
-    public TargetRoute<T> computeTargetRoute(MatchingRoute<T> matchingRoute) {
-        return SearchRouteEngine.computeTargetRoute(matchingRoute);
+    public DestinationRoute<T> computeDestinationRoute(MatchingRoute<T> matchingRoute) {
+        return SearchRouteEngine.computeDestinationRoute(matchingRoute);
     }
 }

@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class HttpGatewayRequests {
+public class HttpGatewayDownstreamRequests {
     public static void copyHeader(Http.Request incomingRequest, RequestBuilder remoteRequest, String httpHeader) {
         incomingRequest.header(httpHeader).ifPresent((headerValue) -> remoteRequest.addHeader(httpHeader, headerValue));
     }

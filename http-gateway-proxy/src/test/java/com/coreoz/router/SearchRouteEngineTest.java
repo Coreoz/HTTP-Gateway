@@ -2,7 +2,7 @@ package com.coreoz.router;
 
 import com.coreoz.router.data.IndexedEndpoints;
 import com.coreoz.router.data.MatchingRoute;
-import com.coreoz.router.data.TargetRoute;
+import com.coreoz.router.data.DestinationRoute;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
@@ -21,18 +21,18 @@ public class SearchRouteEngineTest {
     @Test
     public void searchGatewayRoute___check_that_mapping_without_param_correct() {
         Map<String, IndexedEndpoints<Long>> indexedEndPoints = PathParamsTestsResources.indexedEndpointsResult;
-        TargetRoute<Long> resultRoute = SearchRouteEngine.searchRoute(indexedEndPoints.get("GET"), "/test/chose").map(SearchRouteEngine::computeTargetRoute).orElse(null);
+        DestinationRoute<Long> resultRoute = SearchRouteEngine.searchRoute(indexedEndPoints.get("GET"), "/test/chose").map(SearchRouteEngine::computeDestinationRoute).orElse(null);
         Assertions.assertThat(resultRoute).isNotNull();
-        Assertions.assertThat(resultRoute.getTargetUrl()).isEqualTo("/test/chose");
+        Assertions.assertThat(resultRoute.getDestinationUrl()).isEqualTo("/test/chose");
     }
 
     @Test
     public void searchGatewayRoute___check_that_mapping_with_path_param_correct() {
         Map<String, IndexedEndpoints<Long>> indexedEndPoints = PathParamsTestsResources.indexedEndpointsResult;
         // gateway route : /test/{truc}/{bidule}
-        TargetRoute<Long> resultRoute = SearchRouteEngine.searchRoute(indexedEndPoints.get("GET"), "/test/param/machin").map(SearchRouteEngine::computeTargetRoute).orElse(null);
+        DestinationRoute<Long> resultRoute = SearchRouteEngine.searchRoute(indexedEndPoints.get("GET"), "/test/param/machin").map(SearchRouteEngine::computeDestinationRoute).orElse(null);
         Assertions.assertThat(resultRoute).isNotNull();
-        Assertions.assertThat(resultRoute.getTargetUrl()).isEqualTo("/test/param/machin");
+        Assertions.assertThat(resultRoute.getDestinationUrl()).isEqualTo("/test/param/machin");
     }
 
     @Test
@@ -40,17 +40,17 @@ public class SearchRouteEngineTest {
         Map<String, IndexedEndpoints<Long>> indexedEndPoints = PathParamsTestsResources.indexedEndpointsResult;
         // gateway route :/test/{truc}/machin/{chose}
         //provider route : /test/{chose}/machin/{truc}
-        TargetRoute<Long> resultRoute =SearchRouteEngine.searchRoute(indexedEndPoints.get("GET"), "/test/bidule/machin/aaaa").map(SearchRouteEngine::computeTargetRoute).orElse(null);
+        DestinationRoute<Long> resultRoute =SearchRouteEngine.searchRoute(indexedEndPoints.get("GET"), "/test/bidule/machin/aaaa").map(SearchRouteEngine::computeDestinationRoute).orElse(null);
         Assertions.assertThat(resultRoute).isNotNull();
-        Assertions.assertThat(resultRoute.getTargetUrl()).isEqualTo("/test/aaaa/machin/bidule");
+        Assertions.assertThat(resultRoute.getDestinationUrl()).isEqualTo("/test/aaaa/machin/bidule");
     }
 
     @Test
     public void searchGatewayRoute___check_that_returns_fail_if_one_parameter_missing() {
         Map<String, IndexedEndpoints<Long>> indexedEndPoints = PathParamsTestsResources.indexedEndpointsResult;
         // gateway route : /test/{truc}/{bidule}
-        TargetRoute<Long> resultRoute = SearchRouteEngine.searchRoute(indexedEndPoints.get("GET"), "/test/param")
-            .map(SearchRouteEngine::computeTargetRoute)
+        DestinationRoute<Long> resultRoute = SearchRouteEngine.searchRoute(indexedEndPoints.get("GET"), "/test/param")
+            .map(SearchRouteEngine::computeDestinationRoute)
             .orElse(null);
 
         Assertions.assertThat(resultRoute).isNull();
@@ -59,27 +59,27 @@ public class SearchRouteEngineTest {
     @Test
     public void searchGatewayRoute__check_that_route_with_exact_name_matches() {
         Map<String, IndexedEndpoints<Long>> indexedEndPoint = SearchRouteIndexer.indexEndpoints(PathParamsTestsResources.endpointsTest());
-        TargetRoute<Long> resultRoute = SearchRouteEngine.searchRoute(indexedEndPoint.get("PUT"), "/test/machinchouette")
-            .map(SearchRouteEngine::computeTargetRoute)
+        DestinationRoute<Long> resultRoute = SearchRouteEngine.searchRoute(indexedEndPoint.get("PUT"), "/test/machinchouette")
+            .map(SearchRouteEngine::computeDestinationRoute)
             .orElse(null);
-        TargetRoute<Long> resultRoute2 = SearchRouteEngine.searchRoute(indexedEndPoint.get("PUT"), "/test/chouette")
-            .map(SearchRouteEngine::computeTargetRoute)
+        DestinationRoute<Long> resultRoute2 = SearchRouteEngine.searchRoute(indexedEndPoint.get("PUT"), "/test/chouette")
+            .map(SearchRouteEngine::computeDestinationRoute)
             .orElse(null);
 
         Assertions.assertThat(resultRoute).isNotNull();
         Assertions.assertThat(resultRoute2).isNotNull();
-        Assertions.assertThat(resultRoute.getTargetUrl()).isEqualTo("/test/machinchouette-found");
-        Assertions.assertThat(resultRoute2.getTargetUrl()).isEqualTo("/test/chouette-found");
+        Assertions.assertThat(resultRoute.getDestinationUrl()).isEqualTo("/test/machinchouette-found");
+        Assertions.assertThat(resultRoute2.getDestinationUrl()).isEqualTo("/test/chouette-found");
     }
 
     @Test
     public void searchGatewayRoute__check_that_route_with_non_exact_name_matches() {
         Map<String, IndexedEndpoints<Long>> indexedEndPoint = SearchRouteIndexer.indexEndpoints(PathParamsTestsResources.endpointsTest());
-        TargetRoute<Long> resultRoute = SearchRouteEngine.searchRoute(indexedEndPoint.get("PUT"), "/test/wildcard-route")
-            .map(SearchRouteEngine::computeTargetRoute)
+        DestinationRoute<Long> resultRoute = SearchRouteEngine.searchRoute(indexedEndPoint.get("PUT"), "/test/wildcard-route")
+            .map(SearchRouteEngine::computeDestinationRoute)
             .orElse(null);
 
         Assertions.assertThat(resultRoute).isNotNull();
-        Assertions.assertThat(resultRoute.getTargetUrl()).isEqualTo("/test/wildcard-route");
+        Assertions.assertThat(resultRoute.getDestinationUrl()).isEqualTo("/test/wildcard-route");
     }
 }

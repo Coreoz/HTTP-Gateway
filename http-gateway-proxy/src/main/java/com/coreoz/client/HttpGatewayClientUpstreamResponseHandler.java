@@ -15,14 +15,14 @@ import java.util.concurrent.TimeoutException;
 /**
  * Handle async HTTP response from Netty
  */
-public class HttpGatewayClientResponseHandler implements StreamedAsyncHandler<Void> {
-	private final CompletableFuture<HttpGatewayRemoteResponse> futureResponse;
+public class HttpGatewayClientUpstreamResponseHandler implements StreamedAsyncHandler<Void> {
+	private final CompletableFuture<HttpGatewayUpstreamResponse> futureResponse;
 
-	private final HttpGatewayRemoteResponse responseResult;
+	private final HttpGatewayUpstreamResponse responseResult;
 
-	public HttpGatewayClientResponseHandler(CompletableFuture<HttpGatewayRemoteResponse> futureResponse, String requestUrl) {
+	public HttpGatewayClientUpstreamResponseHandler(CompletableFuture<HttpGatewayUpstreamResponse> futureResponse, String requestUrl) {
 		this.futureResponse = futureResponse;
-		this.responseResult = new HttpGatewayRemoteResponse();
+		this.responseResult = new HttpGatewayUpstreamResponse();
 		this.responseResult.setRequestUrl(requestUrl);
 		responseResult.setResponseHeaders(new ArrayList<>());
 	}

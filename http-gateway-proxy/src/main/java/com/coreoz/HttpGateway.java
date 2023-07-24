@@ -6,7 +6,6 @@ import play.Mode;
 import play.routing.RoutingDsl;
 import play.server.Server;
 
-// TODO rename everywhere upstream and downstream
 public class HttpGateway {
 
     private final Server server;

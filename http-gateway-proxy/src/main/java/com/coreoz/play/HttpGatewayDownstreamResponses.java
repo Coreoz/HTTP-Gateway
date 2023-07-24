@@ -3,7 +3,7 @@ package com.coreoz.play;
 import akka.NotUsed;
 import akka.stream.javadsl.Source;
 import akka.util.ByteString;
-import com.coreoz.client.HttpGatewayRemoteResponse;
+import com.coreoz.client.HttpGatewayUpstreamResponse;
 import com.coreoz.play.responses.JsonContent;
 import com.coreoz.play.responses.ResultError;
 import com.google.common.net.HttpHeaders;
@@ -21,7 +21,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
-public class HttpGatewayResponses {
+public class HttpGatewayDownstreamResponses {
     public static CompletableFuture<Result> buildError(HttpResponseStatus status, String errorMessage) {
         return CompletableFuture.completedFuture(Results.status(
             status.code(),
@@ -29,7 +29,7 @@ public class HttpGatewayResponses {
         ));
     }
 
-    public static Result buildResult(HttpGatewayRemoteResponse upstreamResponse) {
+    public static Result buildResult(HttpGatewayUpstreamResponse upstreamResponse) {
         StatusHeader resultStatus = Results
             .status(upstreamResponse.getStatusCode());
         // If there is no upstream response body, just returns the headers

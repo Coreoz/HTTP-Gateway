@@ -1,15 +1,15 @@
 package com.coreoz;
 
-import com.coreoz.client.HttpGatewayClient;
-import com.coreoz.client.HttpGatewayRemoteRequest;
-import com.coreoz.client.HttpGatewayRemoteResponse;
+import com.coreoz.client.HttpGatewayUpstreamClient;
+import com.coreoz.client.HttpGatewayUpstreamRequest;
+import com.coreoz.client.HttpGatewayUpstreamResponse;
 import com.coreoz.conf.HttpGatewayConfiguration;
 import com.coreoz.conf.HttpGatewayRouterConfiguration;
 import com.coreoz.mock.SparkMockServer;
-import com.coreoz.play.HttpGatewayResponses;
+import com.coreoz.play.HttpGatewayDownstreamResponses;
 import com.coreoz.router.HttpGatewayRouter;
 import com.coreoz.router.data.HttpEndpoint;
-import com.coreoz.router.data.TargetRoute;
+import com.coreoz.router.data.DestinationRoute;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
@@ -23,7 +23,7 @@ import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import static com.coreoz.play.HttpGatewayResponses.buildError;
+import static com.coreoz.play.HttpGatewayDownstreamResponses.buildError;
 
 public class HttpGatewayTest {
     static int HTTP_GATEWAY_PORT = 9876;
@@ -62,7 +62,7 @@ public class HttpGatewayTest {
     public void integration_test__verify_that_server_and_gateway_client_is_working() throws IOException, InterruptedException {
         SparkMockServer.initialize();
 
-        HttpGatewayClient httpGatewayClient = new HttpGatewayClient();
+        HttpGatewayUpstreamClient httpGatewayUpstreamClient = new HttpGatewayUpstreamClient();
         // TODO create endpoint list from config
         HttpGatewayRouter<String> httpRouter = new HttpGatewayRouter<>(List.of(
             HttpEndpoint.of("endpoint1", "GET", "/endpoint1", "/hello", "http://localhost:" + SparkMockServer.SPARK_HTTP_PORT),
@@ -70,30 +70,30 @@ public class HttpGatewayTest {
         ));
         HttpGateway httpGateway = HttpGateway.start(new HttpGatewayConfiguration(
             HTTP_GATEWAY_PORT,
-            HttpGatewayRouterConfiguration.asyncRouting(request -> {
-                TargetRoute<String> targetRoute = httpRouter
-                    .searchRoute(request.method(), request.path())
-                    .map(httpRouter::computeTargetRoute)
+            HttpGatewayRouterConfiguration.asyncRouting(downstreamRequest -> {
+                DestinationRoute<String> destinationRoute = httpRouter
+                    .searchRoute(downstreamRequest.method(), downstreamRequest.path())
+                    .map(httpRouter::computeDestinationRoute)
                     .orElse(null);
-                if (targetRoute == null) {
-                    return buildError(HttpResponseStatus.NOT_FOUND, "No route exists for " + request.method() + " " + request.path());
+                if (destinationRoute == null) {
+                    return buildError(HttpResponseStatus.NOT_FOUND, "No route exists for " + downstreamRequest.method() + " " + downstreamRequest.path());
                 }
 
                 // TODO ajouter du publisher peeker via la méthode preparePeekerReques
-                HttpGatewayRemoteRequest remoteRequest = httpGatewayClient
-                    .prepareRequest(request)
-                    .withUrl(targetRoute.getTargetUrl())
+                HttpGatewayUpstreamRequest remoteRequest = httpGatewayUpstreamClient
+                    .prepareRequest(downstreamRequest)
+                    .withUrl(destinationRoute.getDestinationUrl())
                     .copyBasicHeaders()
                     .copyQueryParams();
-                CompletableFuture<HttpGatewayRemoteResponse> remoteResponse = httpGatewayClient.executeRemoteRequest(remoteRequest);
-                return remoteResponse.thenApply(upstreamResponse -> {
+                CompletableFuture<HttpGatewayUpstreamResponse> upstreamFutureResponse = httpGatewayUpstreamClient.executeUpstreamRequest(remoteRequest);
+                return upstreamFutureResponse.thenApply(upstreamResponse -> {
                     if (upstreamResponse.getStatusCode() > HttpResponseStatus.INTERNAL_SERVER_ERROR.code()) {
                         // Do not forward the response body if the upstream server returns an internal error
                         // => this enables to avoid forwarding sensitive information
                         upstreamResponse.setPublisher(null);
                     }
 
-                    return HttpGatewayResponses.buildResult(upstreamResponse);
+                    return HttpGatewayDownstreamResponses.buildResult(upstreamResponse);
                 });
             })
         ));
