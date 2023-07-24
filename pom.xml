@@ -70,7 +70,7 @@
 	</properties>
 
 	<modules>
-		<module>proxy</module>
+		<module>core</module>
 	</modules>
 
 	<profiles>

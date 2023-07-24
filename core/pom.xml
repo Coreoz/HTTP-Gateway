@@ -8,7 +8,7 @@
 		<version>1.0.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>http-gateway-proxy</artifactId>
+	<artifactId>http-gateway-core</artifactId>
 	<packaging>jar</packaging>
 	<name>HTTP Gateway Proxy</name>
 	<description>The HTTP Gateway component that will proxy incoming HTTP requests</description>
