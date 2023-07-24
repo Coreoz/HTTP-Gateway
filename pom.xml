@@ -70,7 +70,7 @@
 	</properties>
 
 	<modules>
-		<module>http-gateway-proxy</module>
+		<module>proxy</module>
 	</modules>
 
 	<profiles>
