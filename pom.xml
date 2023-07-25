@@ -67,10 +67,15 @@
 		<maven.compiler.target>11</maven.compiler.target>
 		<javadoc.java-version>8</javadoc.java-version>
 		<additionalparam>-Xdoclint:none</additionalparam>
+
+        <!-- dependencies -->
+        <config-version>1.4.2</config-version>
 	</properties>
 
 	<modules>
 		<module>core</module>
+		<module>router-config</module>
+		<module>interceptor</module>
 	</modules>
 
 	<profiles>
@@ -163,11 +168,29 @@
 
 	<dependencyManagement>
 		<dependencies>
+            <!-- Projet modules -->
 			<dependency>
 				<groupId>com.coreoz</groupId>
 				<artifactId>http-gateway-proxy</artifactId>
 				<version>${project.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>com.coreoz</groupId>
+				<artifactId>http-gateway-router-config</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.coreoz</groupId>
+				<artifactId>http-gateway-interceptor</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
+            <!-- External dependencies -->
+            <dependency>
+                <groupId>com.typesafe</groupId>
+                <artifactId>config</artifactId>
+                <version>${config-version}</version>
+            </dependency>
 		</dependencies>
 	</dependencyManagement>
 

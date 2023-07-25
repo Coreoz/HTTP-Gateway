@@ -10,8 +10,8 @@
 
 	<artifactId>http-gateway-core</artifactId>
 	<packaging>jar</packaging>
-	<name>HTTP Gateway Proxy</name>
-	<description>The HTTP Gateway component that will proxy incoming HTTP requests</description>
+	<name>HTTP Gateway Core</name>
+	<description>The core HTTP Gateway component that will proxy incoming HTTP requests to upstream servers</description>
 
 	<properties>
 		<play-version>2.8.19</play-version>
