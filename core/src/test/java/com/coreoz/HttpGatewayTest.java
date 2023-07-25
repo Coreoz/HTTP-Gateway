@@ -10,6 +10,7 @@ import com.coreoz.play.HttpGatewayDownstreamResponses;
 import com.coreoz.router.HttpGatewayRouter;
 import com.coreoz.router.data.HttpEndpoint;
 import com.coreoz.router.data.DestinationRoute;
+import com.google.common.net.HttpHeaders;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
@@ -102,9 +103,13 @@ public class HttpGatewayTest {
         Assertions.assertThat(httpResponse.statusCode()).isEqualTo(HttpResponseStatus.OK.code());
         Assertions.assertThat(httpResponse.body()).isEqualTo("World");
 
-        httpResponse = makeHttpRequest("/endpoint2/custom-param-value");
+        httpResponse = makeHttpRequest("/endpoint2/custom-param-value?param1=value1&param2=value2");
         Assertions.assertThat(httpResponse.statusCode()).isEqualTo(HttpResponseStatus.OK.code());
-        Assertions.assertThat(httpResponse.body()).isEqualTo("custom-param-value");
+        Assertions.assertThat(httpResponse.body()).isEqualTo("custom-param-value" +
+            "\nparam1=value1&param2=value2"
+            + "\naccept-header=custom_accept"
+            + "\nauthorization=null"
+        );
 
         httpGateway.stop();
     }
@@ -114,6 +119,8 @@ public class HttpGatewayTest {
             HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:" + HTTP_GATEWAY_PORT + path))
                 .GET()
+                .header(HttpHeaders.ACCEPT, "custom_accept")
+                .header(HttpHeaders.AUTHORIZATION, "custom_auth")
                 .build(),
             HttpResponse.BodyHandlers.ofString()
         );

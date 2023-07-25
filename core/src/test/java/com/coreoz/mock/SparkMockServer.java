@@ -1,5 +1,6 @@
 package com.coreoz.mock;
 
+import com.google.common.net.HttpHeaders;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import spark.Spark;
 
@@ -18,7 +19,13 @@ public class SparkMockServer {
     private static void initializeSpark() {
         Spark.port(SPARK_HTTP_PORT);
         Spark.get("/hello", (request, response) -> "World");
-        Spark.get("/echo/:param", (request, response) -> request.params("param"));
+        Spark.get("/echo/:param", (request, response) -> request.params("param")
+            + "\n"
+            + request.queryString()
+            + "\n"
+            + "accept-header=" + request.headers(HttpHeaders.ACCEPT)
+            + "\n"
+            + "authorization=" + request.headers(HttpHeaders.AUTHORIZATION));
         Spark.get("/slow-api", (request, response) -> {
             Thread.sleep(300);
             return "slow response";
