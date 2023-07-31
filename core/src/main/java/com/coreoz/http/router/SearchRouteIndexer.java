@@ -56,8 +56,8 @@ public class SearchRouteIndexer {
      * Retourne la nouvelle route ajoutée à l'arbre
      * ou la route existante qui était déjà présente dans l'arbre.
      */
-    public static <T> EndpointParsedData<T> addEndpointToIndex(Map<String, IndexedEndpoints<T>> indexedEndpoints, HttpEndpoint<T> endpoint) {
-        IndexedEndpoints<T> rootIndex = indexedEndpoints.computeIfAbsent(endpoint.getMethod(), method -> new IndexedEndpoints(
+    public static  EndpointParsedData addEndpointToIndex(Map<String, IndexedEndpoints> indexedEndpoints, HttpEndpoint endpoint) {
+        IndexedEndpoints rootIndex = indexedEndpoints.computeIfAbsent(endpoint.getMethod(), method -> new IndexedEndpoints(
             null,
             1L << MAX_LONG_OFFSET_FOR_POSITIVE_NUMBERS,
             0,
@@ -70,7 +70,7 @@ public class SearchRouteIndexer {
         // initialise patterns map
         Map<String, Integer> patterns = new HashMap<>();
 
-        IndexedEndpoints<T> currentIndex = rootIndex;
+        IndexedEndpoints currentIndex = rootIndex;
         for (int segmentIndex = 1; segmentIndex <= segments.size(); segmentIndex++) {
             ParsedSegment parsedSegmentToAdd = segments.get(segmentIndex - 1);
             if (parsedSegmentToAdd.isPattern()) {
@@ -86,7 +86,7 @@ public class SearchRouteIndexer {
                     logger.warn("Deux routes sont en conflit (la dernière ne sera pas ajoutée) : {} et {}", currentIndex.getLastEndpoint().getHttpEndpoint().getLocalPath(), endpoint.getLocalPath());
                     return currentIndex.getLastEndpoint();
                 }
-                EndpointParsedData<T> newEndpoint = new EndpointParsedData<>(
+                EndpointParsedData newEndpoint = new EndpointParsedData(
                     patterns,
                     parseEndpoint(endpoint.getDestinationPath()),
                     endpoint
@@ -100,7 +100,7 @@ public class SearchRouteIndexer {
         return null;
     }
 
-    private static <T> IndexedEndpoints<T> computeSegmentIndex(IndexedEndpoints<T> currentIndex, String segmentName, int segmentIndex) {
+    private static  IndexedEndpoints computeSegmentIndex(IndexedEndpoints currentIndex, String segmentName, int segmentIndex) {
         return currentIndex.getSegments().computeIfAbsent(segmentName, (segmentNameToAdd) -> new IndexedEndpoints(
             null,
             currentIndex.getRating() | 1L << (MAX_LONG_OFFSET_FOR_POSITIVE_NUMBERS - segmentIndex),
@@ -110,10 +110,10 @@ public class SearchRouteIndexer {
         ));
     }
 
-    private static <T> IndexedEndpoints<T> computePatternIndex(IndexedEndpoints<T> currentIndex, String segmentName, int segmentIndex, Map<String, Integer> patterns) {
+    private static  IndexedEndpoints computePatternIndex(IndexedEndpoints currentIndex, String segmentName, int segmentIndex, Map<String, Integer> patterns) {
         patterns.put(segmentName, segmentIndex);
         if (currentIndex.getPattern() == null) {
-            IndexedEndpoints<T> pattern = new IndexedEndpoints(
+            IndexedEndpoints pattern = new IndexedEndpoints(
                 null,
                 currentIndex.getRating(),
                 segmentIndex,
@@ -129,11 +129,11 @@ public class SearchRouteIndexer {
     /**
      * Main indexation method
      */
-    public static <T> Map<String, IndexedEndpoints<T>> indexEndpoints(Iterable<HttpEndpoint<T>> endpoints) {
+    public static  Map<String, IndexedEndpoints> indexEndpoints(Iterable<HttpEndpoint> endpoints) {
         // 1. on construit le résultat final
-        Map<String, IndexedEndpoints<T>> indexedEndpoints = new HashMap<>();
+        Map<String, IndexedEndpoints> indexedEndpoints = new HashMap<>();
         // 2. on boucle sur les endpoints et on les ajoute
-        for (HttpEndpoint<T> endpoint : endpoints) {
+        for (HttpEndpoint endpoint : endpoints) {
             addEndpointToIndex(indexedEndpoints, endpoint);
         }
         // 3. on retourne le résultat

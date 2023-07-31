@@ -2,14 +2,13 @@ package com.coreoz.http.router;
 
 import com.coreoz.http.router.data.*;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public class HttpGatewayRouter<T> {
-    private final Map<String, IndexedEndpoints<T>> routerIndex;
+public class HttpGatewayRouter {
+    private final Map<String, IndexedEndpoints> routerIndex;
 
-    public HttpGatewayRouter(Iterable<HttpEndpoint<T>> endpoints) {
+    public HttpGatewayRouter(Iterable<HttpEndpoint> endpoints) {
         this.routerIndex = SearchRouteIndexer.indexEndpoints(endpoints);
     }
 
@@ -18,22 +17,22 @@ public class HttpGatewayRouter<T> {
      * @return The endpoint passed as an argument if it the new route was added. If there were an already existing route
      * for the specified path, then the new endpoint is NOT added and the existing endpoint is returned.
      */
-    public HttpEndpoint<T> addEndpoint(HttpEndpoint<T> endpoint) {
-        EndpointParsedData<T> addedEndpoint = SearchRouteIndexer.addEndpointToIndex(routerIndex, endpoint);
+    public HttpEndpoint addEndpoint(HttpEndpoint endpoint) {
+        EndpointParsedData addedEndpoint = SearchRouteIndexer.addEndpointToIndex(routerIndex, endpoint);
         return addedEndpoint == null ? null : addedEndpoint.getHttpEndpoint();
     }
 
     // SEARCH
 
-    public Optional<MatchingRoute<T>> searchRoute(String method, String requestPath) {
-        IndexedEndpoints<T> methodIndex = routerIndex.get(method);
+    public Optional<MatchingRoute> searchRoute(String method, String requestPath) {
+        IndexedEndpoints methodIndex = routerIndex.get(method);
         if (methodIndex == null) {
             return Optional.empty();
         }
         return SearchRouteEngine.searchRoute(methodIndex, requestPath);
     }
 
-    public DestinationRoute<T> computeDestinationRoute(MatchingRoute<T> matchingRoute) {
+    public DestinationRoute computeDestinationRoute(MatchingRoute matchingRoute) {
         return SearchRouteEngine.computeDestinationRoute(matchingRoute);
     }
 }

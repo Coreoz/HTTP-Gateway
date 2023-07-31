@@ -5,7 +5,7 @@ import lombok.*;
 import java.util.Map;
 
 @Value
-public class MatchingRoute<T> {
-    EndpointParsedData<T> matchingEndpoint;
+public class MatchingRoute {
+    EndpointParsedData matchingEndpoint;
     Map<Integer, String> params;
 }

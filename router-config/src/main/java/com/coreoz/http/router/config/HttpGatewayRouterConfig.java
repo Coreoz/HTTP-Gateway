@@ -13,7 +13,7 @@ public class HttpGatewayRouterConfig {
                 .getConfigList("http-gateway.remote-services")
                 .stream()
                 // TODO parse service
-                .flatMap(serviceConfig -> serviceConfig.getConfigList("routes").stream().map(routeConfig -> new HttpEndpoint.of(
+                .flatMap(serviceConfig -> serviceConfig.getConfigList("routes").stream().map(routeConfig -> new HttpEndpoint(
                     routeConfig.getString("id"),
                     routeConfig.getString("method"),
                     routeConfig.getString("method"),

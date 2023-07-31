@@ -63,14 +63,14 @@ public class HttpGatewayTest {
 
         HttpGatewayUpstreamClient httpGatewayUpstreamClient = new HttpGatewayUpstreamClient();
         // TODO create endpoint list from config
-        HttpGatewayRouter<String> httpRouter = new HttpGatewayRouter<>(List.of(
-            HttpEndpoint.of("endpoint1", "GET", "/endpoint1", "/hello", "http://localhost:" + SparkMockServer.SPARK_HTTP_PORT),
-            HttpEndpoint.of("endpoint2", "GET", "/endpoint2/{id}", "/echo/{id}", "http://localhost:" + SparkMockServer.SPARK_HTTP_PORT)
+        HttpGatewayRouter httpRouter = new HttpGatewayRouter(List.of(
+            new HttpEndpoint("endpoint1", "GET", "/endpoint1", "/hello", "http://localhost:" + SparkMockServer.SPARK_HTTP_PORT),
+            new HttpEndpoint("endpoint2", "GET", "/endpoint2/{id}", "/echo/{id}", "http://localhost:" + SparkMockServer.SPARK_HTTP_PORT)
         ));
         HttpGateway httpGateway = HttpGateway.start(new HttpGatewayConfiguration(
             HTTP_GATEWAY_PORT,
             HttpGatewayRouterConfiguration.asyncRouting(downstreamRequest -> {
-                DestinationRoute<String> destinationRoute = httpRouter
+                DestinationRoute destinationRoute = httpRouter
                     .searchRoute(downstreamRequest.method(), downstreamRequest.path())
                     .map(httpRouter::computeDestinationRoute)
                     .orElse(null);

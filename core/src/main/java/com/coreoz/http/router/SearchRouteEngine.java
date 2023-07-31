@@ -16,24 +16,24 @@ import java.util.*;
 public class SearchRouteEngine {
     private static final String SEGMENT_SEPARATOR = "/";
 
-    public static <T> Optional<MatchingRoute<T>> searchRoute(IndexedEndpoints<T> indexEndpoints, String requestPath) {
+    public static Optional<MatchingRoute> searchRoute(IndexedEndpoints indexEndpoints, String requestPath) {
         // initialisation
         //substring(1) permet d'enlever le premier /
         ArrayDeque<String> requestElements = new ArrayDeque<>(Arrays.asList(requestPath.substring(1).split(SEGMENT_SEPARATOR)));
-        List<SearchSegment<T>> segmentOptions = new ArrayList<>();
-        segmentOptions.add(new SearchSegment<>(
+        List<SearchSegment> segmentOptions = new ArrayList<>();
+        segmentOptions.add(new SearchSegment(
             indexEndpoints,
             requestElements,
             new HashMap<>()
         ));
 
         while (!segmentOptions.isEmpty()) {
-            SearchSegment<T> currentEndpointsOption = segmentOptions.remove(0);
-            IndexedEndpoints<T> indexedEndpoints = currentEndpointsOption.getIndexedEndpoints();
+            SearchSegment currentEndpointsOption = segmentOptions.remove(0);
+            IndexedEndpoints indexedEndpoints = currentEndpointsOption.getIndexedEndpoints();
 
             if (currentEndpointsOption.getRequestRemainingSegments().isEmpty() && indexedEndpoints.getLastEndpoint() != null) {
                 return Optional.of(
-                    new MatchingRoute<>(
+                    new MatchingRoute(
                         indexedEndpoints.getLastEndpoint(),
                         currentEndpointsOption.getParams()
                     )
@@ -50,7 +50,7 @@ public class SearchRouteEngine {
                     segmentOptions.add(toSearchSegment(indexedEndpoints.getPattern(), currentEndpointsOption));
                 }
                 segmentOptions
-                    .sort(Comparator.comparingLong((SearchSegment<T> searchSegment) -> searchSegment.getIndexedEndpoints().getRating())
+                    .sort(Comparator.comparingLong((SearchSegment searchSegment) -> searchSegment.getIndexedEndpoints().getRating())
                     .reversed());
             }
 
@@ -58,17 +58,17 @@ public class SearchRouteEngine {
         return Optional.empty();
     }
 
-    private static <T> SearchSegment<T> toSearchSegment(IndexedEndpoints<T> indexedEndpoints, SearchSegment<T> currentSegmentOption) {
-        return new SearchSegment<>(
+    private static  SearchSegment toSearchSegment(IndexedEndpoints indexedEndpoints, SearchSegment currentSegmentOption) {
+        return new SearchSegment(
             indexedEndpoints,
             currentSegmentOption.getRequestRemainingSegments().clone(),
             currentSegmentOption.getParams()
         );
     }
 
-    public static <T> DestinationRoute<T> computeDestinationRoute(MatchingRoute<T> matchingRoute) {
+    public static  DestinationRoute computeDestinationRoute(MatchingRoute matchingRoute) {
         StringBuilder result = new StringBuilder();
-        EndpointParsedData<T> matchingEndpoint = matchingRoute.getMatchingEndpoint();
+        EndpointParsedData matchingEndpoint = matchingRoute.getMatchingEndpoint();
         for (int segmentIndex = 1; segmentIndex <= matchingEndpoint.getDestinationRouteSegments().size(); segmentIndex++) {
             ParsedSegment currentSegment = matchingEndpoint.getDestinationRouteSegments().get(segmentIndex - 1);
             if (segmentIndex < matchingEndpoint.getDestinationRouteSegments().size() + 1) {
@@ -80,8 +80,8 @@ public class SearchRouteEngine {
                 result.append(currentSegment.getName());
             }
         }
-        return new DestinationRoute<>(
-            matchingEndpoint.getHttpEndpoint().getEndpointData(),
+        return new DestinationRoute(
+            matchingEndpoint.getHttpEndpoint().getRouteId(),
             matchingEndpoint.getHttpEndpoint().getDestinationBaseUrl() + result.toString()
         );
     }

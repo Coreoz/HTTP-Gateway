@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 @Value
-public class EndpointParsedData<T> {
+public class EndpointParsedData {
     Map<String, Integer> patterns;
     List<ParsedSegment> destinationRouteSegments;
-    HttpEndpoint<T> httpEndpoint;
+    HttpEndpoint httpEndpoint;
 }

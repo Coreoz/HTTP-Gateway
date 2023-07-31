@@ -6,8 +6,8 @@ import java.util.ArrayDeque;
 import java.util.Map;
 
 @Value
-public class SearchSegment<T> {
-    IndexedEndpoints<T> indexedEndpoints;
+public class SearchSegment {
+    IndexedEndpoints indexedEndpoints;
     ArrayDeque<String> requestRemainingSegments;
     Map<Integer, String> params;
 }
