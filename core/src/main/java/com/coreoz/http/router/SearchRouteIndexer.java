@@ -129,7 +129,7 @@ public class SearchRouteIndexer {
     /**
      * Main indexation method
      */
-    public static <T> Map<String, IndexedEndpoints<T>> indexEndpoints(List<HttpEndpoint<T>> endpoints) {
+    public static <T> Map<String, IndexedEndpoints<T>> indexEndpoints(Iterable<HttpEndpoint<T>> endpoints) {
         // 1. on construit le résultat final
         Map<String, IndexedEndpoints<T>> indexedEndpoints = new HashMap<>();
         // 2. on boucle sur les endpoints et on les ajoute

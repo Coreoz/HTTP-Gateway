@@ -9,7 +9,7 @@ import java.util.Optional;
 public class HttpGatewayRouter<T> {
     private final Map<String, IndexedEndpoints<T>> routerIndex;
 
-    public HttpGatewayRouter(List<HttpEndpoint<T>> endpoints) {
+    public HttpGatewayRouter(Iterable<HttpEndpoint<T>> endpoints) {
         this.routerIndex = SearchRouteIndexer.indexEndpoints(endpoints);
     }
 
