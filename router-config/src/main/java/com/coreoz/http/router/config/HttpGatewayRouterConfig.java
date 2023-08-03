@@ -7,7 +7,7 @@ import com.typesafe.config.Config;
 public class HttpGatewayRouterConfig {
     // TODO do not return HttpGatewayRouter directly, just return indexed routes by id and services
     // TODO then this object can be changed to a list of HttpEndpoint
-    public static <T> HttpGatewayRouter<T> readConfig(Config baseConfig) {
+    public static HttpGatewayRouter<T> readConfig(Config baseConfig) {
         return new HttpGatewayRouter<>(
             baseConfig
                 .getConfigList("http-gateway.remote-services")

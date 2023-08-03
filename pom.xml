@@ -76,6 +76,7 @@
 		<module>core</module>
 		<module>router-config</module>
 		<module>interceptor</module>
+		<module>remote-services</module>
 	</modules>
 
 	<profiles>
