@@ -8,7 +8,7 @@
 		<version>1.0.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>http-gateway-router-config</artifactId>
+	<artifactId>http-gateway-config-remote-services</artifactId>
 	<packaging>jar</packaging>
 	<name>HTTP Gateway Router Config</name>
 	<description>Provide HTTP Gateway router configuration through configuration file</description>
