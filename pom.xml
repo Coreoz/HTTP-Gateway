@@ -81,9 +81,10 @@
 	<modules>
 		<module>core</module>
 		<module>test</module>
+		<module>sample</module>
 		<module>config-remote-services</module>
-		<module>interceptor</module>
-		<module>remote-services</module>
+        <module>remote-services</module>
+        <module>interceptor</module>
 	</modules>
 
 	<profiles>

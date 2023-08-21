@@ -2,26 +2,25 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>com.coreoz</groupId>
-		<artifactId>http-gateway-parent</artifactId>
-		<version>1.0.0-SNAPSHOT</version>
-	</parent>
+    <parent>
+        <groupId>com.coreoz</groupId>
+        <artifactId>http-gateway-parent</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
 
-	<artifactId>http-gateway-config-remote-services</artifactId>
+	<artifactId>http-gateway-sample</artifactId>
 	<packaging>jar</packaging>
 	<name>HTTP Gateway Router Config</name>
-	<description>Provide HTTP Gateway router configuration through configuration file</description>
+	<description>Sample projet that uses most of the Gateway components</description>
 
 	<dependencies>
         <dependency>
             <groupId>com.coreoz</groupId>
-            <artifactId>http-gateway-remote-services</artifactId>
+            <artifactId>http-gateway-core</artifactId>
         </dependency>
-
         <dependency>
-            <groupId>com.typesafe</groupId>
-            <artifactId>config</artifactId>
+            <groupId>com.coreoz</groupId>
+            <artifactId>http-gateway-config-remote-services</artifactId>
         </dependency>
 
 		<dependency>
@@ -30,5 +29,11 @@
 			<version>1.18.28</version>
 			<scope>provided</scope>
 		</dependency>
+
+        <!-- unit testing -->
+        <dependency>
+            <groupId>com.coreoz</groupId>
+            <artifactId>http-gateway-test</artifactId>
+        </dependency>
     </dependencies>
 </project>

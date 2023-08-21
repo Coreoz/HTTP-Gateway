@@ -35,7 +35,7 @@ public class HttpGatewayConfigRemoteServices {
 
     public static List<HttpGatewayRewriteRoute> readRewriteRoutes(Config baseConfig) {
         return baseConfig
-            .getConfigList("http-gateway.remote-services")
+            .getConfigList("http-gateway.gateway-rewrite-routes")
             .stream()
             .map(rewriteRouteConfig -> new HttpGatewayRewriteRoute(
                 rewriteRouteConfig.getString("gateway-path"),

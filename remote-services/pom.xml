@@ -25,17 +25,5 @@
 			<version>1.18.28</version>
 			<scope>provided</scope>
 		</dependency>
-
-		<!-- unit testing -->
-        <dependency>
-            <groupId>com.coreoz</groupId>
-            <artifactId>http-gateway-config-remote-services</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.coreoz</groupId>
-            <artifactId>http-gateway-test</artifactId>
-            <scope>test</scope>
-        </dependency>
 	</dependencies>
 </project>

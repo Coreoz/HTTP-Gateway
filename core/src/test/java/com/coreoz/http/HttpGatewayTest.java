@@ -11,16 +11,12 @@ import com.coreoz.http.play.HttpGatewayDownstreamResponses;
 import com.coreoz.http.router.HttpGatewayRouter;
 import com.coreoz.http.router.data.DestinationRoute;
 import com.coreoz.http.router.data.HttpEndpoint;
-import com.google.common.net.HttpHeaders;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import play.mvc.Results;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
