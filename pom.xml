@@ -70,10 +70,17 @@
 
         <!-- dependencies -->
         <config-version>1.4.2</config-version>
+        <play-version>2.8.19</play-version>
+        <netty-version>4.1.87.Final</netty-version>
+        <!-- TODO à mettre à jour en v3 pour corriger https://github.com/AsyncHttpClient/async-http-client/issues/1660 -->
+        <async-http-client-version>2.12.3</async-http-client-version>
+        <jackson.version>2.15.2</jackson.version>
+        <guava.version>30.1-jre</guava.version>
 	</properties>
 
 	<modules>
 		<module>core</module>
+		<module>test</module>
 		<module>config-remote-services</module>
 		<module>interceptor</module>
 		<module>remote-services</module>
@@ -172,12 +179,7 @@
             <!-- Projet modules -->
 			<dependency>
 				<groupId>com.coreoz</groupId>
-				<artifactId>http-gateway-proxy</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.coreoz</groupId>
-				<artifactId>http-gateway-router-config</artifactId>
+				<artifactId>http-gateway-core</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
@@ -185,6 +187,22 @@
 				<artifactId>http-gateway-interceptor</artifactId>
 				<version>${project.version}</version>
 			</dependency>
+            <dependency>
+                <groupId>com.coreoz</groupId>
+                <artifactId>http-gateway-remote-services</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.coreoz</groupId>
+                <artifactId>http-gateway-config-remote-services</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <!-- unit testing -->
+            <dependency>
+                <groupId>com.coreoz</groupId>
+                <artifactId>http-gateway-test</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
             <!-- External dependencies -->
             <dependency>
@@ -192,7 +210,12 @@
                 <artifactId>config</artifactId>
                 <version>${config-version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+            </dependency>
 		</dependencies>
 	</dependencyManagement>
-
 </project>

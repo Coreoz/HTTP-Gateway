@@ -14,6 +14,7 @@ public class HttpGatewayRemoteServicesIndex {
     private final List<HttpGatewayRemoteService> services;
     private final Map<String, String> gatewayRewriteRoutes;
 
+    // TODO provide a way to validate all the config
     public HttpGatewayRemoteServicesIndex(List<HttpGatewayRemoteService> services, List<HttpGatewayRewriteRoute> rewriteRoutes) {
         this.services = services;
         this.servicesByRouteId = services

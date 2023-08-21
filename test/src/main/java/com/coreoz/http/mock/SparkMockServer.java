@@ -1,7 +1,7 @@
 package com.coreoz.http.mock;
 
 import com.google.common.net.HttpHeaders;
-import io.netty.handler.codec.http.HttpResponseStatus;
+import org.eclipse.jetty.http.HttpStatus;
 import spark.Spark;
 
 public class SparkMockServer {
@@ -31,7 +31,7 @@ public class SparkMockServer {
             return "slow response";
         });
         Spark.post("/no-body-simple", (request, response) -> {
-            response.status(HttpResponseStatus.CREATED.code());
+            response.status(HttpStatus.CREATED_201);
             // make sure no body is returned
             response.raw().getOutputStream().close();
             // spark does not allow null responses...
