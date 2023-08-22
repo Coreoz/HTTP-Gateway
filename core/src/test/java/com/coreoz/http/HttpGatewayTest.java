@@ -59,7 +59,6 @@ public class HttpGatewayTest {
         SparkMockServer.initialize();
 
         HttpGatewayUpstreamClient httpGatewayUpstreamClient = new HttpGatewayUpstreamClient();
-        // TODO create endpoint list from config
         HttpGatewayRouter httpRouter = new HttpGatewayRouter(List.of(
             new HttpEndpoint("endpoint1", "GET", "/endpoint1", "/hello", "http://localhost:" + SparkMockServer.SPARK_HTTP_PORT),
             new HttpEndpoint("endpoint2", "GET", "/endpoint2/{id}", "/echo/{id}", "http://localhost:" + SparkMockServer.SPARK_HTTP_PORT)
