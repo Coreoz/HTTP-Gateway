@@ -76,6 +76,15 @@
         <async-http-client-version>2.12.3</async-http-client-version>
         <jackson.version>2.15.2</jackson.version>
         <guava.version>30.1-jre</guava.version>
+        <slf4j.version>2.0.7</slf4j.version>
+        <guice.version>5.1.0</guice.version>
+        <lombok.version>1.18.28</lombok.version>
+        <javax-annotation.version>1.3.2</javax-annotation.version>
+        <!-- Unit testing -->
+        <junit.version>4.13.2</junit.version>
+        <assertj.version>3.24.2</assertj.version>
+        <logback.version>1.4.7</logback.version>
+        <spark.version>2.9.4</spark.version>
 	</properties>
 
 	<modules>
@@ -213,9 +222,102 @@
             </dependency>
 
             <dependency>
+                <groupId>com.typesafe.play</groupId>
+                <artifactId>play-server_2.13</artifactId>
+                <version>${play-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.typesafe.play</groupId>
+                <artifactId>play-netty-server_2.13</artifactId>
+                <version>${play-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.typesafe.play</groupId>
+                <artifactId>play-java_2.13</artifactId>
+                <version>${play-version}</version>
+            </dependency>
+
+            <!-- Pour avoir les mêmes versions de Jackson dans Play et Plume Framework -->
+            <dependency>
+                <groupId>com.fasterxml.jackson.module</groupId>
+                <artifactId>jackson-module-scala_2.13</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.module</groupId>
+                <artifactId>jackson-module-parameter-names</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.asynchttpclient</groupId>
+                <artifactId>async-http-client</artifactId>
+                <version>${async-http-client-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-resolver-dns</artifactId>
+                <version>${netty-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-transport-native-epoll</artifactId>
+                <version>${netty-version}</version>
+                <classifier>linux-x86_64</classifier>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-codec-http</artifactId>
+                <version>${netty-version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.inject</groupId>
+                <artifactId>guice</artifactId>
+                <version>${guice.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>${guava.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.annotation</groupId>
+                <artifactId>javax.annotation-api</artifactId>
+                <version>${javax-annotation.version}</version>
+            </dependency>
+
+            <!-- unit testing -->
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.assertj</groupId>
+                <artifactId>assertj-core</artifactId>
+                <version>${assertj.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${logback.version}</version>
+            </dependency>
+            <!-- mock HTTP server for remote calls -->
+            <dependency>
+                <groupId>com.sparkjava</groupId>
+                <artifactId>spark-core</artifactId>
+                <version>${spark.version}</version>
             </dependency>
 		</dependencies>
 	</dependencyManagement>

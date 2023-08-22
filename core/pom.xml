@@ -13,92 +13,65 @@
 	<name>HTTP Gateway Core</name>
 	<description>The core HTTP Gateway component that will proxy incoming HTTP requests to upstream servers</description>
 
-	<properties>
-		<play-version>2.8.19</play-version>
-		<netty-version>4.1.87.Final</netty-version>
-		<!-- TODO à mettre à jour en v3 pour corriger https://github.com/AsyncHttpClient/async-http-client/issues/1660 -->
-		<async-http-client-version>2.12.3</async-http-client-version>
-		<jackson.version>2.15.2</jackson.version>
-	</properties>
-
 	<dependencies>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>2.0.7</version>
 		</dependency>
-
 		<dependency>
 			<groupId>com.google.inject</groupId>
 			<artifactId>guice</artifactId>
-			<version>5.1.0</version>
 		</dependency>
 
 		<dependency>
 			<groupId>com.typesafe.play</groupId>
 			<artifactId>play-server_2.13</artifactId>
-			<version>${play-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.typesafe.play</groupId>
 			<artifactId>play-netty-server_2.13</artifactId>
-			<version>${play-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.typesafe.play</groupId>
 			<artifactId>play-java_2.13</artifactId>
-			<version>${play-version}</version>
 		</dependency>
 
 		<!-- Pour avoir les mêmes versions de Jackson dans Play et Plume Framework -->
 		<dependency>
 			<groupId>com.fasterxml.jackson.module</groupId>
 			<artifactId>jackson-module-scala_2.13</artifactId>
-			<version>${jackson.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.module</groupId>
 			<artifactId>jackson-module-parameter-names</artifactId>
-			<version>${jackson.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.asynchttpclient</groupId>
 			<artifactId>async-http-client</artifactId>
-			<version>${async-http-client-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.netty</groupId>
 			<artifactId>netty-resolver-dns</artifactId>
-			<version>${netty-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.netty</groupId>
 			<artifactId>netty-transport-native-epoll</artifactId>
-			<version>${netty-version}</version>
-		</dependency>
-		<dependency>
-			<groupId>io.netty</groupId>
-			<artifactId>netty-transport-native-epoll</artifactId>
-			<version>${netty-version}</version>
 			<classifier>linux-x86_64</classifier>
 		</dependency>
 		<dependency>
 			<groupId>io.netty</groupId>
 			<artifactId>netty-codec-http</artifactId>
-			<version>${netty-version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>1.18.28</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>javax.annotation</groupId>
 			<artifactId>javax.annotation-api</artifactId>
-			<version>1.3.2</version>
 		</dependency>
 
 		<!-- unit testing -->
