@@ -15,22 +15,22 @@ public class PathParamsTestsResources {
     }
 
     private static final List<HttpEndpoint> endpointsTest = List.of(
-            new HttpEndpoint("1", "GET", "/test/chose", "/test/chose", ""),
-            new HttpEndpoint("2", "GET", "/test/bidule/chose", "/test/bidule/chose", ""),
-            new HttpEndpoint("3", "GET", "/test/{truc}/{bidule}", "/test/{truc}/{bidule}", ""),
-            new HttpEndpoint("4", "GET", "/test/{truc}/machin", "/test/{truc}/machin", ""),
-            new HttpEndpoint("5", "GET", "/test/{truc}/machin/{chose}", "/test/{chose}/machin/{truc}", ""),
-            new HttpEndpoint("6", "GET", "/test/{truc}/machin/truc", "/test/{truc}/machin/truc", ""),
-            new HttpEndpoint("7", "PUT", "/test/chouette", "/test/chouette-found", ""),
-            new HttpEndpoint("8", "PUT", "/test/{truc}", "/test/{truc}", ""),
-            new HttpEndpoint("9", "PUT", "/test/machinchouette", "/test/machinchouette-found", "")
+            new HttpEndpoint("1", "GET", "/test/chose", "/test/chose"),
+            new HttpEndpoint("2", "GET", "/test/bidule/chose", "/test/bidule/chose"),
+            new HttpEndpoint("3", "GET", "/test/{truc}/{bidule}", "/test/{truc}/{bidule}"),
+            new HttpEndpoint("4", "GET", "/test/{truc}/machin", "/test/{truc}/machin"),
+            new HttpEndpoint("5", "GET", "/test/{truc}/machin/{chose}", "/test/{chose}/machin/{truc}"),
+            new HttpEndpoint("6", "GET", "/test/{truc}/machin/truc", "/test/{truc}/machin/truc"),
+            new HttpEndpoint("7", "PUT", "/test/chouette", "/test/chouette-found"),
+            new HttpEndpoint("8", "PUT", "/test/{truc}", "/test/{truc}"),
+            new HttpEndpoint("9", "PUT", "/test/machinchouette", "/test/machinchouette-found")
     );
 
     static IndexedEndpoints choseSegment = new IndexedEndpoints(
             new EndpointParsedData(
                     Map.of(),
                     List.of(new ParsedSegment("test", false), new ParsedSegment("chose", false)),
-                    new HttpEndpoint("1", "GET", "/test/chose", "/test/chose", "")
+                    new HttpEndpoint("1", "GET", "/test/chose", "/test/chose")
             ),
             1L << 62 | 1L << 61 | 1L << 60,
             2,
@@ -42,7 +42,7 @@ public class PathParamsTestsResources {
             new EndpointParsedData(
                     Map.of(),
                     List.of(new ParsedSegment("test", false), new ParsedSegment("bidule", false), new ParsedSegment("chose", false)),
-                    new HttpEndpoint("2", "GET", "/test/bidule/chose", "/test/bidule/chose", "")
+                    new HttpEndpoint("2", "GET", "/test/bidule/chose", "/test/bidule/chose")
             ),
             1L << 62 | 1L << 61 | 1L << 60 | 1L << 59,
             3,
@@ -54,7 +54,7 @@ public class PathParamsTestsResources {
             new EndpointParsedData(
                     Map.of("truc", 2, "bidule",3),
                     List.of(new ParsedSegment("test", false), new ParsedSegment("truc", true), new ParsedSegment("bidule", true)),
-                    new HttpEndpoint("3", "GET", "/test/{truc}/{bidule}", "/test/{truc}/{bidule}", "")
+                    new HttpEndpoint("3", "GET", "/test/{truc}/{bidule}", "/test/{truc}/{bidule}")
             ),
             1L << 62 | 1L << 61,
             3,
@@ -66,7 +66,7 @@ public class PathParamsTestsResources {
             new EndpointParsedData(
                     Map.of("truc", 2),
                     List.of(new ParsedSegment("test", false), new ParsedSegment("truc", true), new ParsedSegment("machin", false), new ParsedSegment("truc", false)),
-                    new HttpEndpoint("6", "GET", "/test/{truc}/machin/truc", "/test/{truc}/machin/truc", "")
+                    new HttpEndpoint("6", "GET", "/test/{truc}/machin/truc", "/test/{truc}/machin/truc")
             ),
             1L << 62 | 1L << 61 | 1L << 59 | 1L << 58,
             4,
@@ -77,7 +77,7 @@ public class PathParamsTestsResources {
             new EndpointParsedData(
                     Map.of("truc", 2, "chose", 4),
                     List.of(new ParsedSegment("test", false), new ParsedSegment("chose", true), new ParsedSegment("machin", false), new ParsedSegment("truc", true)),
-                    new HttpEndpoint("5", "GET", "/test/{truc}/machin/{chose}", "/test/{chose}/machin/{truc}", "")
+                    new HttpEndpoint("5", "GET", "/test/{truc}/machin/{chose}", "/test/{chose}/machin/{truc}")
             ),
             1L << 62 | 1L << 61 | 1L << 59,
             4,
@@ -88,7 +88,7 @@ public class PathParamsTestsResources {
             new EndpointParsedData(
                     Map.of("truc", 2),
                     List.of(new ParsedSegment("test", false), new ParsedSegment("truc", true), new ParsedSegment("machin", false)),
-                    new HttpEndpoint("4", "GET", "/test/{truc}/machin", "/test/{truc}/machin", "")
+                    new HttpEndpoint("4", "GET", "/test/{truc}/machin", "/test/{truc}/machin")
             ),
             1L << 62 | 1L << 61 | 1L << 59,
             3,
@@ -124,7 +124,7 @@ public class PathParamsTestsResources {
              new EndpointParsedData(
                     Map.of("truc", 2),
                     List.of(new ParsedSegment("test", false), new ParsedSegment("truc", true)),
-                    new HttpEndpoint("8", "PUT", "/test/{truc}", "/test/{truc}", "")
+                    new HttpEndpoint("8", "PUT", "/test/{truc}", "/test/{truc}")
             ),
             1L << 62 | 1L << 61,
             2,
@@ -136,7 +136,7 @@ public class PathParamsTestsResources {
             new EndpointParsedData(
                     Map.of(),
                     List.of(new ParsedSegment("test", false), new ParsedSegment("chouette-found", false)),
-                    new HttpEndpoint("7", "PUT", "/test/chouette", "/test/chouette-found", "")
+                    new HttpEndpoint("7", "PUT", "/test/chouette", "/test/chouette-found")
             ),
             1L << 62 | 1L << 61 | 1L << 60,
             2,
@@ -148,7 +148,7 @@ public class PathParamsTestsResources {
             new EndpointParsedData(
                     Map.of(),
                     List.of(new ParsedSegment("test", false), new ParsedSegment("machinchouette-found", false)),
-                    new HttpEndpoint("9", "PUT", "/test/machinchouette", "/test/machinchouette-found", "")
+                    new HttpEndpoint("9", "PUT", "/test/machinchouette", "/test/machinchouette-found")
             ),
             1L << 62 | 1L << 61 | 1L << 60,
             2,

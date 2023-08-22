@@ -8,6 +8,4 @@ public class HttpEndpoint {
 	String method;
 	String localPath;
 	String destinationPath;
-    // TODO Remove this, it has no sense to be duplicated here
-	String destinationBaseUrl;
 }

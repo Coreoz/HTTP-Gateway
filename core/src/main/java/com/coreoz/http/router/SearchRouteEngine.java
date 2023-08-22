@@ -66,7 +66,7 @@ public class SearchRouteEngine {
         );
     }
 
-    public static  DestinationRoute computeDestinationRoute(MatchingRoute matchingRoute) {
+    public static  DestinationRoute computeDestinationRoute(MatchingRoute matchingRoute, String destinationBaseUrl) {
         StringBuilder result = new StringBuilder();
         EndpointParsedData matchingEndpoint = matchingRoute.getMatchingEndpoint();
         for (int segmentIndex = 1; segmentIndex <= matchingEndpoint.getDestinationRouteSegments().size(); segmentIndex++) {
@@ -82,7 +82,7 @@ public class SearchRouteEngine {
         }
         return new DestinationRoute(
             matchingEndpoint.getHttpEndpoint().getRouteId(),
-            matchingEndpoint.getHttpEndpoint().getDestinationBaseUrl() + result.toString()
+            destinationBaseUrl == null ? result.toString() : (destinationBaseUrl + result)
         );
     }
 }

@@ -1,6 +1,7 @@
 package com.coreoz.http.remote.services;
 
 import com.coreoz.http.router.data.HttpEndpoint;
+import com.coreoz.http.router.data.MatchingRoute;
 
 import java.util.List;
 import java.util.Map;
@@ -43,13 +44,20 @@ public class HttpGatewayRemoteServicesIndex {
                 route.getRouteId(),
                 route.getMethod(),
                 route.getPath(),
-                gatewayRewriteRoutes.getOrDefault(route.getRouteId(), route.getPath()),
-                service.getBaseUrl()
+                gatewayRewriteRoutes.getOrDefault(route.getRouteId(), route.getPath())
             )))
             ::iterator;
     }
 
     public HttpGatewayRemoteService findService(String routeId) {
         return servicesByRouteId.get(routeId);
+    }
+
+    public String findServiceBaseUrl(MatchingRoute matchingRoute) {
+        HttpGatewayRemoteService remoteService = findService(matchingRoute.getMatchingEndpoint().getHttpEndpoint().getRouteId());
+        if (remoteService != null) {
+            return remoteService.getBaseUrl();
+        }
+        return null;
     }
 }

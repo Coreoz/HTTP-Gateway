@@ -32,7 +32,7 @@ public class GatewayApplication {
             HttpGatewayRouterConfiguration.asyncRouting(downstreamRequest -> {
                 DestinationRoute destinationRoute = httpRouter
                     .searchRoute(downstreamRequest.method(), downstreamRequest.path())
-                    .map(httpRouter::computeDestinationRoute)
+                    .map((matchingRoute) -> httpRouter.computeDestinationRoute(matchingRoute, servicesIndex.findServiceBaseUrl(matchingRoute)))
                     .orElse(null);
                 if (destinationRoute == null) {
                     return HttpGatewayDownstreamResponses.buildError(HttpResponseStatus.NOT_FOUND, "No route exists for " + downstreamRequest.method() + " " + downstreamRequest.path());

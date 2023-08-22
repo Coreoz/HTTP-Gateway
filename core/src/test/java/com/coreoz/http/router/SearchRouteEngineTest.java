@@ -21,7 +21,7 @@ public class SearchRouteEngineTest {
     @Test
     public void searchGatewayRoute___check_that_mapping_without_param_correct() {
         Map<String, IndexedEndpoints> indexedEndPoints = PathParamsTestsResources.indexedEndpointsResult;
-        DestinationRoute resultRoute = SearchRouteEngine.searchRoute(indexedEndPoints.get("GET"), "/test/chose").map(SearchRouteEngine::computeDestinationRoute).orElse(null);
+        DestinationRoute resultRoute = SearchRouteEngine.searchRoute(indexedEndPoints.get("GET"), "/test/chose").map(matchingRoute -> SearchRouteEngine.computeDestinationRoute(matchingRoute, null)).orElse(null);
         Assertions.assertThat(resultRoute).isNotNull();
         Assertions.assertThat(resultRoute.getDestinationUrl()).isEqualTo("/test/chose");
     }
@@ -30,7 +30,7 @@ public class SearchRouteEngineTest {
     public void searchGatewayRoute___check_that_mapping_with_path_param_correct() {
         Map<String, IndexedEndpoints> indexedEndPoints = PathParamsTestsResources.indexedEndpointsResult;
         // gateway route : /test/{truc}/{bidule}
-        DestinationRoute resultRoute = SearchRouteEngine.searchRoute(indexedEndPoints.get("GET"), "/test/param/machin").map(SearchRouteEngine::computeDestinationRoute).orElse(null);
+        DestinationRoute resultRoute = SearchRouteEngine.searchRoute(indexedEndPoints.get("GET"), "/test/param/machin").map(matchingRoute -> SearchRouteEngine.computeDestinationRoute(matchingRoute, null)).orElse(null);
         Assertions.assertThat(resultRoute).isNotNull();
         Assertions.assertThat(resultRoute.getDestinationUrl()).isEqualTo("/test/param/machin");
     }
@@ -40,7 +40,7 @@ public class SearchRouteEngineTest {
         Map<String, IndexedEndpoints> indexedEndPoints = PathParamsTestsResources.indexedEndpointsResult;
         // gateway route :/test/{truc}/machin/{chose}
         //provider route : /test/{chose}/machin/{truc}
-        DestinationRoute resultRoute =SearchRouteEngine.searchRoute(indexedEndPoints.get("GET"), "/test/bidule/machin/aaaa").map(SearchRouteEngine::computeDestinationRoute).orElse(null);
+        DestinationRoute resultRoute =SearchRouteEngine.searchRoute(indexedEndPoints.get("GET"), "/test/bidule/machin/aaaa").map(matchingRoute -> SearchRouteEngine.computeDestinationRoute(matchingRoute, null)).orElse(null);
         Assertions.assertThat(resultRoute).isNotNull();
         Assertions.assertThat(resultRoute.getDestinationUrl()).isEqualTo("/test/aaaa/machin/bidule");
     }
@@ -50,7 +50,7 @@ public class SearchRouteEngineTest {
         Map<String, IndexedEndpoints> indexedEndPoints = PathParamsTestsResources.indexedEndpointsResult;
         // gateway route : /test/{truc}/{bidule}
         DestinationRoute resultRoute = SearchRouteEngine.searchRoute(indexedEndPoints.get("GET"), "/test/param")
-            .map(SearchRouteEngine::computeDestinationRoute)
+            .map(matchingRoute -> SearchRouteEngine.computeDestinationRoute(matchingRoute, null))
             .orElse(null);
 
         Assertions.assertThat(resultRoute).isNull();
@@ -60,10 +60,10 @@ public class SearchRouteEngineTest {
     public void searchGatewayRoute__check_that_route_with_exact_name_matches() {
         Map<String, IndexedEndpoints> indexedEndPoint = SearchRouteIndexer.indexEndpoints(PathParamsTestsResources.endpointsTest());
         DestinationRoute resultRoute = SearchRouteEngine.searchRoute(indexedEndPoint.get("PUT"), "/test/machinchouette")
-            .map(SearchRouteEngine::computeDestinationRoute)
+            .map(matchingRoute -> SearchRouteEngine.computeDestinationRoute(matchingRoute, null))
             .orElse(null);
         DestinationRoute resultRoute2 = SearchRouteEngine.searchRoute(indexedEndPoint.get("PUT"), "/test/chouette")
-            .map(SearchRouteEngine::computeDestinationRoute)
+            .map(matchingRoute -> SearchRouteEngine.computeDestinationRoute(matchingRoute, null))
             .orElse(null);
 
         Assertions.assertThat(resultRoute).isNotNull();
@@ -76,7 +76,7 @@ public class SearchRouteEngineTest {
     public void searchGatewayRoute__check_that_route_with_non_exact_name_matches() {
         Map<String, IndexedEndpoints> indexedEndPoint = SearchRouteIndexer.indexEndpoints(PathParamsTestsResources.endpointsTest());
         DestinationRoute resultRoute = SearchRouteEngine.searchRoute(indexedEndPoint.get("PUT"), "/test/wildcard-route")
-            .map(SearchRouteEngine::computeDestinationRoute)
+            .map(matchingRoute -> SearchRouteEngine.computeDestinationRoute(matchingRoute, null))
             .orElse(null);
 
         Assertions.assertThat(resultRoute).isNotNull();

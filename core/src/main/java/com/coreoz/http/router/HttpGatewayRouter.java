@@ -32,8 +32,7 @@ public class HttpGatewayRouter {
         return SearchRouteEngine.searchRoute(methodIndex, requestPath);
     }
 
-    public DestinationRoute computeDestinationRoute(MatchingRoute matchingRoute) {
-        // TODO take the destinationBaseUrl as a parameter => this way the destinationBaseUrl can be removed everywhere
-        return SearchRouteEngine.computeDestinationRoute(matchingRoute);
+    public DestinationRoute computeDestinationRoute(MatchingRoute matchingRoute, String destinationBaseUrl) {
+        return SearchRouteEngine.computeDestinationRoute(matchingRoute, destinationBaseUrl);
     }
 }

@@ -60,15 +60,15 @@ public class HttpGatewayTest {
 
         HttpGatewayUpstreamClient httpGatewayUpstreamClient = new HttpGatewayUpstreamClient();
         HttpGatewayRouter httpRouter = new HttpGatewayRouter(List.of(
-            new HttpEndpoint("endpoint1", "GET", "/endpoint1", "/hello", "http://localhost:" + SparkMockServer.SPARK_HTTP_PORT),
-            new HttpEndpoint("endpoint2", "GET", "/endpoint2/{id}", "/echo/{id}", "http://localhost:" + SparkMockServer.SPARK_HTTP_PORT)
+            new HttpEndpoint("endpoint1", "GET", "/endpoint1", "/hello"),
+            new HttpEndpoint("endpoint2", "GET", "/endpoint2/{id}", "/echo/{id}")
         ));
         HttpGateway httpGateway = HttpGateway.start(new HttpGatewayConfiguration(
             HTTP_GATEWAY_PORT,
             HttpGatewayRouterConfiguration.asyncRouting(downstreamRequest -> {
                 DestinationRoute destinationRoute = httpRouter
                     .searchRoute(downstreamRequest.method(), downstreamRequest.path())
-                    .map(httpRouter::computeDestinationRoute)
+                    .map((matchingRoute) -> httpRouter.computeDestinationRoute(matchingRoute, "http://localhost:" + SparkMockServer.SPARK_HTTP_PORT))
                     .orElse(null);
                 if (destinationRoute == null) {
                     return HttpGatewayDownstreamResponses.buildError(HttpResponseStatus.NOT_FOUND, "No route exists for " + downstreamRequest.method() + " " + downstreamRequest.path());
