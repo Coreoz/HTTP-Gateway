@@ -92,7 +92,9 @@
 		<module>test</module>
 		<module>sample</module>
 		<module>config-remote-services</module>
+		<module>config-access-control</module>
         <module>remote-services</module>
+        <module>access-control</module>
         <module>interceptor</module>
 	</modules>
 
@@ -204,7 +206,17 @@
             </dependency>
             <dependency>
                 <groupId>com.coreoz</groupId>
+                <artifactId>http-gateway-access-control</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.coreoz</groupId>
                 <artifactId>http-gateway-config-remote-services</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.coreoz</groupId>
+                <artifactId>http-gateway-config-access-control</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <!-- unit testing -->

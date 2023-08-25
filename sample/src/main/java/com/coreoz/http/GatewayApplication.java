@@ -22,6 +22,8 @@ public class GatewayApplication {
     public static void main(String[] args) {
         Config config = ConfigFactory.load();
         HttpGatewayRemoteServicesIndex servicesIndex = HttpGatewayConfigRemoteServices.indexRemoteServices(config);
+        // TODO load the clients
+        gatewayClients = HttpGatewayConfigClientApiKey.index(config);
 
         HttpGatewayRouter httpRouter = new HttpGatewayRouter(servicesIndex.getRoutes());
 
@@ -30,6 +32,8 @@ public class GatewayApplication {
         HttpGateway.start(new HttpGatewayConfiguration(
             HTTP_GATEWAY_PORT,
             HttpGatewayRouterConfiguration.asyncRouting(downstreamRequest -> {
+                // TODO client auth
+
                 DestinationRoute destinationRoute = httpRouter
                     .searchRoute(downstreamRequest.method(), downstreamRequest.path())
                     .map((matchingRoute) -> httpRouter.computeDestinationRoute(matchingRoute, servicesIndex.findServiceBaseUrl(matchingRoute)))
@@ -37,6 +41,9 @@ public class GatewayApplication {
                 if (destinationRoute == null) {
                     return HttpGatewayDownstreamResponses.buildError(HttpResponseStatus.NOT_FOUND, "No route exists for " + downstreamRequest.method() + " " + downstreamRequest.path());
                 }
+
+                // TODO client route access validation
+                // destinationRoute.getRouteId()
 
                 // TODO ajouter du publisher peeker via la méthode preparePeekerReques
                 HttpGatewayUpstreamRequest remoteRequest = httpGatewayUpstreamClient

@@ -1,0 +1,28 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.coreoz</groupId>
+		<artifactId>http-gateway-parent</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>http-gateway-access-control</artifactId>
+	<packaging>jar</packaging>
+	<name>HTTP Gateway Access control</name>
+	<description>Provide HTTP Gateway access control concept</description>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.coreoz</groupId>
+			<artifactId>http-gateway-core</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+</project>
