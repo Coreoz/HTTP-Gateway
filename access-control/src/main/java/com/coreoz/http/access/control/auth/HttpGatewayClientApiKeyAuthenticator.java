@@ -1,4 +1,4 @@
-package com.coreoz.http.remote.services;
+package com.coreoz.http.access.control.auth;
 
 import com.google.common.net.HttpHeaders;
 import lombok.extern.slf4j.Slf4j;
@@ -8,9 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-// TODO add an authenticator interface
 @Slf4j
-public class HttpGatewayClientApiKeyAuthenticator {
+public class HttpGatewayClientApiKeyAuthenticator implements HttpGatewayAuthenticator {
     private static final String AUTHORIZATION_BEARER = "Bearer ";
 
     private final Map<String, String> clientIndexedByApiKey;
@@ -21,6 +20,8 @@ public class HttpGatewayClientApiKeyAuthenticator {
             HttpGatewayClientAuthApiKey::getClientId
         ));
     }
+
+    // TODO faire un TU avec un second authenticator
 
     public String authenticate(Request downstreamRequest) {
         String authorizationHeaderValue = downstreamRequest.header(HttpHeaders.AUTHORIZATION).orElse(null);

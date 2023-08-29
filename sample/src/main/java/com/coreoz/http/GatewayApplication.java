@@ -6,7 +6,7 @@ import com.coreoz.http.client.HttpGatewayUpstreamResponse;
 import com.coreoz.http.conf.HttpGatewayConfiguration;
 import com.coreoz.http.conf.HttpGatewayRouterConfiguration;
 import com.coreoz.http.play.HttpGatewayDownstreamResponses;
-import com.coreoz.http.remote.services.HttpGatewayRemoteServicesIndex;
+import com.coreoz.http.access.control.HttpGatewayRemoteServicesIndex;
 import com.coreoz.http.router.HttpGatewayRouter;
 import com.coreoz.http.router.config.HttpGatewayConfigRemoteServices;
 import com.coreoz.http.router.data.DestinationRoute;
@@ -21,7 +21,7 @@ public class GatewayApplication {
 
     public static void main(String[] args) {
         Config config = ConfigFactory.load();
-        HttpGatewayRemoteServicesIndex servicesIndex = HttpGatewayConfigRemoteServices.indexRemoteServices(config);
+        HttpGatewayRemoteServicesIndex servicesIndex = HttpGatewayConfigRemoteServices.readConfig(config);
         // TODO load the clients
         gatewayClients = HttpGatewayConfigClientApiKey.index(config);
 

@@ -1,5 +1,8 @@
 package com.coreoz.http.router.config;
 
+import com.coreoz.http.access.control.auth.HttpGatewayAuthenticator;
+import com.coreoz.http.access.control.auth.HttpGatewayClientAuthApiKey;
+import com.coreoz.http.access.control.routes.HttpGatewayClientRouteAccessControl;
 import com.coreoz.http.remote.services.HttpGatewayRemoteService;
 import com.coreoz.http.remote.services.HttpGatewayRemoteServiceRoute;
 import com.coreoz.http.remote.services.HttpGatewayRemoteServicesIndex;
@@ -9,20 +12,20 @@ import com.typesafe.config.Config;
 import java.util.List;
 import java.util.stream.Collectors;
 
-// TODO to implement
-public class HttpGatewayConfigRemoteServices {
-    public static HttpGatewayRemoteServicesIndex indexRemoteServices(Config baseConfig) {
-        return new HttpGatewayRemoteServicesIndex(
-            readRemoteServices(baseConfig),
-            readRewriteRoutes(baseConfig)
-        );
+public class HttpGatewayConfigAccessControl {
+    private final HttpGatewayAuthenticator authenticator;
+    private final HttpGatewayClientRouteAccessControl routeAccessControl;
+
+    public static HttpGatewayConfigAccessControl readConfig(Config baseConfig) {
+        List<? extends Config> clientConfigs = baseConfig.getConfigList("http-gateway.clients");
+        HttpGatewayAuthenticator authenticator = HttpGatewayConfigClientAuth.readAuth(clientConfigs);
+        HttpGatewayClientRouteAccessControl routeAccessControl = TODO;
     }
 
-    public static List<HttpGatewayRemoteService> readRemoteServices(Config baseConfig) {
-        return baseConfig
-            .getConfigList("http-gateway.remote-services")
+    public static List<HttpGatewayAuthenticator> readAuth(Config baseConfig) {
+        return
             .stream()
-            .map(serviceConfig -> new HttpGatewayRemoteService(
+            .map(clientConfig -> new HttpGatewayRemoteService(
                 serviceConfig.getString("id"),
                 serviceConfig.getString("base-url"),
                 serviceConfig.getConfigList("routes").stream().map(routeConfig -> new HttpGatewayRemoteServiceRoute(
@@ -34,6 +37,8 @@ public class HttpGatewayConfigRemoteServices {
             .collect(Collectors.toList());
     }
 
+
+
     public static List<HttpGatewayRewriteRoute> readRewriteRoutes(Config baseConfig) {
         return baseConfig
             .getConfigList("http-gateway.gateway-rewrite-routes")
@@ -44,4 +49,5 @@ public class HttpGatewayConfigRemoteServices {
             ))
             .collect(Collectors.toList());
     }
+
 }

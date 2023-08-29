@@ -1,16 +1,16 @@
 package com.coreoz.http.router.config;
 
-import com.coreoz.http.remote.services.HttpGatewayRemoteService;
-import com.coreoz.http.remote.services.HttpGatewayRemoteServiceRoute;
-import com.coreoz.http.remote.services.HttpGatewayRemoteServicesIndex;
-import com.coreoz.http.remote.services.HttpGatewayRewriteRoute;
+import com.coreoz.http.access.control.HttpGatewayRemoteService;
+import com.coreoz.http.access.control.HttpGatewayRemoteServiceRoute;
+import com.coreoz.http.access.control.HttpGatewayRemoteServicesIndex;
+import com.coreoz.http.access.control.HttpGatewayRewriteRoute;
 import com.typesafe.config.Config;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class HttpGatewayConfigRemoteServices {
-    public static HttpGatewayRemoteServicesIndex indexRemoteServices(Config baseConfig) {
+    public static HttpGatewayRemoteServicesIndex readConfig(Config baseConfig) {
         return new HttpGatewayRemoteServicesIndex(
             readRemoteServices(baseConfig),
             readRewriteRoutes(baseConfig)
@@ -22,10 +22,10 @@ public class HttpGatewayConfigRemoteServices {
             .getConfigList("http-gateway.remote-services")
             .stream()
             .map(serviceConfig -> new HttpGatewayRemoteService(
-                serviceConfig.getString("id"),
+                serviceConfig.getString("serviceId"),
                 serviceConfig.getString("base-url"),
                 serviceConfig.getConfigList("routes").stream().map(routeConfig -> new HttpGatewayRemoteServiceRoute(
-                    routeConfig.getString("id"),
+                    routeConfig.getString("routeId"),
                     routeConfig.getString("method"),
                     routeConfig.getString("path")
                 )).collect(Collectors.toList())
