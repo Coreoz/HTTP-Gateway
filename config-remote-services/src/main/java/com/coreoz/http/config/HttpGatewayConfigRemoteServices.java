@@ -1,4 +1,4 @@
-package com.coreoz.http.router.config;
+package com.coreoz.http.config;
 
 import com.coreoz.http.access.control.HttpGatewayRemoteService;
 import com.coreoz.http.access.control.HttpGatewayRemoteServiceRoute;
@@ -10,16 +10,20 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class HttpGatewayConfigRemoteServices {
-    public static HttpGatewayRemoteServicesIndex readConfig(Config baseConfig) {
+    public static HttpGatewayRemoteServicesIndex readConfig(HttpGatewayConfigLoader configLoader) {
+        return readConfig(configLoader.getHttpGatewayConfig());
+    }
+
+    public static HttpGatewayRemoteServicesIndex readConfig(Config gatewayConfig) {
         return new HttpGatewayRemoteServicesIndex(
-            readRemoteServices(baseConfig),
-            readRewriteRoutes(baseConfig)
+            readRemoteServices(gatewayConfig),
+            readRewriteRoutes(gatewayConfig)
         );
     }
 
-    public static List<HttpGatewayRemoteService> readRemoteServices(Config baseConfig) {
-        return baseConfig
-            .getConfigList("http-gateway.remote-services")
+    public static List<HttpGatewayRemoteService> readRemoteServices(Config gatewayConfig) {
+        return gatewayConfig
+            .getConfigList("remote-services")
             .stream()
             .map(serviceConfig -> new HttpGatewayRemoteService(
                 serviceConfig.getString("serviceId"),
@@ -33,9 +37,9 @@ public class HttpGatewayConfigRemoteServices {
             .collect(Collectors.toList());
     }
 
-    public static List<HttpGatewayRewriteRoute> readRewriteRoutes(Config baseConfig) {
-        return baseConfig
-            .getConfigList("http-gateway.gateway-rewrite-routes")
+    public static List<HttpGatewayRewriteRoute> readRewriteRoutes(Config gatewayConfig) {
+        return gatewayConfig
+            .getConfigList("gateway-rewrite-routes")
             .stream()
             .map(rewriteRouteConfig -> new HttpGatewayRewriteRoute(
                 rewriteRouteConfig.getString("gateway-path"),

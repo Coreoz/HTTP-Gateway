@@ -1,4 +1,4 @@
-package com.coreoz.http.router.config;
+package com.coreoz.http.config;
 
 import com.coreoz.http.access.control.auth.HttpGatewayAuthenticator;
 import com.coreoz.http.access.control.auth.HttpGatewayClientApiKeyAuthenticator;
@@ -14,6 +14,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+// TODO to merge with client auth
 public class HttpGatewayConfigClientAuth {
     public static final ClientConfigAuth<HttpGatewayClientAuthApiKey> KEY_AUTH = ClientConfigAuth.of("key", HttpGatewayConfigClientAuth::readAuthKey, HttpGatewayClientApiKeyAuthenticator::new);
 
@@ -35,12 +36,13 @@ public class HttpGatewayConfigClientAuth {
         Map<String, List<?>> authReadConfigs = new HashMap<>();
         for (Config clientConfig : clientsConfig) {
             String clientId = clientConfig.getString("clientId");
-            String authType = clientConfig.getString("type");
+            Config baseAuthConfig = clientConfig.getConfig("auth");
+            String authType = baseAuthConfig.getString("type");
             ClientConfigAuth<?> authConfig = indexedSupportedAuthConfigs.get(authType);
             if (authConfig == null) {
                 throw new IllegalArgumentException("Unrecognized authentication type '"+authType+"' for client '"+clientId+"'");
             }
-            Object authConfigObject = authConfig.authReader.apply(clientId, clientConfig.getConfig("auth"));
+            Object authConfigObject = authConfig.authReader.apply(clientId, baseAuthConfig);
             List<Object> authConfigObjects = (List<Object>) authReadConfigs.computeIfAbsent(authType, authTypeLambda -> new ArrayList<>());
             authConfigObjects.add(authConfigObject);
         }

@@ -6,7 +6,7 @@ import java.util.List;
 
 @Value
 public class HttpGatewayRemoteService {
-    String id;
+    String serviceId;
     String baseUrl;
     List<HttpGatewayRemoteServiceRoute> routes;
 }

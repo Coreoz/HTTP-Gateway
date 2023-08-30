@@ -8,21 +8,12 @@
 		<version>1.0.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>http-gateway-config-remote-services</artifactId>
+	<artifactId>http-gateway-config</artifactId>
 	<packaging>jar</packaging>
-	<name>HTTP Gateway Router Config</name>
-	<description>Provide HTTP Gateway router configuration through configuration file</description>
+	<name>HTTP Gateway Config</name>
+	<description>Provide HTTP Gateway base config module</description>
 
 	<dependencies>
-        <dependency>
-            <groupId>com.coreoz</groupId>
-            <artifactId>http-gateway-config</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.coreoz</groupId>
-            <artifactId>http-gateway-remote-services</artifactId>
-        </dependency>
-
         <dependency>
             <groupId>com.typesafe</groupId>
             <artifactId>config</artifactId>
