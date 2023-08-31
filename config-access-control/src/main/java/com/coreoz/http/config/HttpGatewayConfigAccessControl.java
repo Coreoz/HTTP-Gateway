@@ -23,7 +23,6 @@ public class HttpGatewayConfigAccessControl {
     public static HttpGatewayConfigAccessControl readConfig(Config gatewayConfig) {
         List<? extends Config> clientConfigs = gatewayConfig.getConfigList("clients");
         HttpGatewayAuthenticator authenticator = HttpGatewayConfigClientAuth.readAuth(clientConfigs);
-        // TODO implémenter la lecture de la conf de gestion des accès sur le routing
         HttpGatewayClientRouteAccessControl routeAccessControl = HttpGatewayConfigClientRoutes.readClientsRoutes(gatewayConfig, clientConfigs);
         return new HttpGatewayConfigAccessControl(authenticator, routeAccessControl);
     }
