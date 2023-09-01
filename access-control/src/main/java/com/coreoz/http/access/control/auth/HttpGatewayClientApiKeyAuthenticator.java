@@ -10,14 +10,12 @@ import java.util.stream.Collectors;
 
 @Slf4j
 public class HttpGatewayClientApiKeyAuthenticator implements HttpGatewayAuthenticator {
-    private static final String AUTHORIZATION_BEARER = "Bearer ";
-
     private final Map<String, String> clientIndexedByApiKey;
 
-    public HttpGatewayClientApiKeyAuthenticator(List<HttpGatewayClientAuthApiKey> clients) {
+    public HttpGatewayClientApiKeyAuthenticator(List<HttpGatewayAuthApiKey> clients) {
         this.clientIndexedByApiKey = clients.stream().collect(Collectors.toMap(
-            HttpGatewayClientAuthApiKey::getAuthKey,
-            HttpGatewayClientAuthApiKey::getClientId
+            HttpGatewayAuthApiKey::getAuthKey,
+            HttpGatewayAuthApiKey::getObjectId
         ));
     }
 
@@ -49,8 +47,8 @@ public class HttpGatewayClientApiKeyAuthenticator implements HttpGatewayAuthenti
 
     private static String extractApiKeyFromRequest(String authorizationHeaderValue) {
         if(authorizationHeaderValue != null) {
-            if(authorizationHeaderValue.startsWith(AUTHORIZATION_BEARER)) {
-                return authorizationHeaderValue.substring(AUTHORIZATION_BEARER.length());
+            if(authorizationHeaderValue.startsWith(HttpGatewayAuthApiKey.AUTHORIZATION_BEARER)) {
+                return authorizationHeaderValue.substring(HttpGatewayAuthApiKey.AUTHORIZATION_BEARER.length());
             }
         }
 

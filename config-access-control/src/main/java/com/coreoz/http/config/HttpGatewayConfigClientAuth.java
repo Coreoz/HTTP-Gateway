@@ -2,23 +2,19 @@ package com.coreoz.http.config;
 
 import com.coreoz.http.access.control.auth.HttpGatewayAuthenticator;
 import com.coreoz.http.access.control.auth.HttpGatewayClientApiKeyAuthenticator;
-import com.coreoz.http.access.control.auth.HttpGatewayClientAuthApiKey;
+import com.coreoz.http.access.control.auth.HttpGatewayAuthApiKey;
 import com.typesafe.config.Config;
 import lombok.Value;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-// TODO to merge with client auth
 public class HttpGatewayConfigClientAuth {
-    public static final ClientConfigAuth<HttpGatewayClientAuthApiKey> KEY_AUTH = ClientConfigAuth.of("key", HttpGatewayConfigClientAuth::readAuthKey, HttpGatewayClientApiKeyAuthenticator::new);
+    public static final HttpGatewayClientAuthConfig<HttpGatewayAuthApiKey> KEY_AUTH = HttpGatewayClientAuthConfig.of(HttpGatewayConfigAuth.KEY_AUTH, HttpGatewayClientApiKeyAuthenticator::new);
 
-    private final static List<ClientConfigAuth<?>> supportedAuthConfigs = List.of(
+    private final static List<HttpGatewayClientAuthConfig<?>> supportedAuthConfigs = List.of(
         KEY_AUTH
     );
 
@@ -26,55 +22,43 @@ public class HttpGatewayConfigClientAuth {
         return readAuth(clientsConfig, supportedAuthConfigs());
     }
 
-    public static HttpGatewayAuthenticator readAuth(List<? extends Config> clientsConfig, List<ClientConfigAuth<?>> supportedAuthConfigs) {
-        Map<String, ClientConfigAuth<?>> indexedSupportedAuthConfigs = supportedAuthConfigs
+    public static HttpGatewayAuthenticator readAuth(List<? extends Config> clientsConfig, List<HttpGatewayClientAuthConfig<?>> supportedAuthConfigs) {
+        Map<String, List<?>> authReadConfigs = HttpGatewayConfigAuth.readAuth(
+            "clientId",
+            clientsConfig,
+            supportedAuthConfigs.stream().map(HttpGatewayClientAuthConfig::getAuthConfig).collect(Collectors.toList())
+        );
+
+        Map<String, Function<List<?>, HttpGatewayAuthenticator>> indexedAuthenticatorCreator = supportedAuthConfigs
             .stream()
             .collect(Collectors.toMap(
-                ClientConfigAuth::getAuthType,
-                Function.identity()
+                availableAuthConfig -> availableAuthConfig.authConfig.getAuthType(),
+                availableAuthConfig -> (Function) availableAuthConfig.getAuthenticatorCreator()
             ));
-        Map<String, List<?>> authReadConfigs = new HashMap<>();
-        for (Config clientConfig : clientsConfig) {
-            String clientId = clientConfig.getString("clientId");
-            Config baseAuthConfig = clientConfig.getConfig("auth");
-            String authType = baseAuthConfig.getString("type");
-            ClientConfigAuth<?> authConfig = indexedSupportedAuthConfigs.get(authType);
-            if (authConfig == null) {
-                throw new IllegalArgumentException("Unrecognized authentication type '"+authType+"' for client '"+clientId+"'");
-            }
-            Object authConfigObject = authConfig.authReader.apply(clientId, baseAuthConfig);
-            List<Object> authConfigObjects = (List<Object>) authReadConfigs.computeIfAbsent(authType, authTypeLambda -> new ArrayList<>());
-            authConfigObjects.add(authConfigObject);
-        }
-        return makeAuthenticator(indexedSupportedAuthConfigs, authReadConfigs);
+        return makeAuthenticator(indexedAuthenticatorCreator, authReadConfigs);
     }
 
     private static HttpGatewayAuthenticator makeAuthenticator(
-        Map<String, ClientConfigAuth<?>> indexedSupportedAuthConfigs,
+        Map<String, Function<List<?>, HttpGatewayAuthenticator>> indexedAuthenticatorCreator,
         Map<String, List<?>> authReadConfigs
         ) {
         return HttpGatewayAuthenticator.merge(authReadConfigs
             .entrySet()
             .stream()
             .map((authConfig) -> {
-                ClientConfigAuth<?> clientAuthConfig = indexedSupportedAuthConfigs.get(authConfig.getKey());
-                return clientAuthConfig.authenticatorCreator.apply((List) authConfig.getValue());
+                Function<List<?>, HttpGatewayAuthenticator> clientAuthenticatorCreator = indexedAuthenticatorCreator.get(authConfig.getKey());
+                return clientAuthenticatorCreator.apply(authConfig.getValue());
             })
             .collect(Collectors.toList()));
     }
 
-    public static HttpGatewayClientAuthApiKey readAuthKey(String clientId, Config authConfig) {
-        return new HttpGatewayClientAuthApiKey(clientId, authConfig.getString("value"));
-    }
-
-    public static List<ClientConfigAuth<?>> supportedAuthConfigs() {
+    public static List<HttpGatewayClientAuthConfig<?>> supportedAuthConfigs() {
         return supportedAuthConfigs;
     }
 
     @Value(staticConstructor = "of")
-    public static class ClientConfigAuth<T> {
-        String authType;
-        BiFunction<String, Config, T> authReader;
+    public static class HttpGatewayClientAuthConfig<T> {
+        HttpGatewayConfigAuth.HttpGatewayAuthConfig<T> authConfig;
         Function<List<T>, HttpGatewayAuthenticator> authenticatorCreator;
     }
 }

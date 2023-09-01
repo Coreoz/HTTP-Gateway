@@ -92,8 +92,10 @@
 		<module>test</module>
 		<module>sample</module>
 		<module>config</module>
+		<module>config-auth</module>
 		<module>config-remote-services</module>
 		<module>config-access-control</module>
+        <module>auth</module>
         <module>remote-services</module>
         <module>access-control</module>
         <module>interceptor</module>
@@ -197,6 +199,11 @@
 			</dependency>
 			<dependency>
 				<groupId>com.coreoz</groupId>
+				<artifactId>http-gateway-auth</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.coreoz</groupId>
 				<artifactId>http-gateway-interceptor</artifactId>
 				<version>${project.version}</version>
 			</dependency>
@@ -213,6 +220,11 @@
             <dependency>
                 <groupId>com.coreoz</groupId>
                 <artifactId>http-gateway-config</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.coreoz</groupId>
+                <artifactId>http-gateway-config-auth</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

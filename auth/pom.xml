@@ -8,19 +8,15 @@
 		<version>1.0.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>http-gateway-access-control</artifactId>
+	<artifactId>http-gateway-auth</artifactId>
 	<packaging>jar</packaging>
-	<name>HTTP Gateway Access control</name>
-	<description>Provide HTTP Gateway access control concept</description>
+	<name>HTTP Gateway Authentication</name>
+	<description>Provide HTTP Gateway authentication definitions</description>
 
 	<dependencies>
 		<dependency>
 			<groupId>com.coreoz</groupId>
 			<artifactId>http-gateway-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.coreoz</groupId>
-			<artifactId>http-gateway-auth</artifactId>
 		</dependency>
 
 		<dependency>
