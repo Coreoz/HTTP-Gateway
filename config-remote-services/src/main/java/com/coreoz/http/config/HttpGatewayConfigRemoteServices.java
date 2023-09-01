@@ -26,10 +26,10 @@ public class HttpGatewayConfigRemoteServices {
             .getConfigList("remote-services")
             .stream()
             .map(serviceConfig -> new HttpGatewayRemoteService(
-                serviceConfig.getString("serviceId"),
+                serviceConfig.getString("service-id"),
                 serviceConfig.getString("base-url"),
                 serviceConfig.getConfigList("routes").stream().map(routeConfig -> new HttpGatewayRemoteServiceRoute(
-                    routeConfig.getString("routeId"),
+                    routeConfig.getString("route-id"),
                     routeConfig.getString("method"),
                     routeConfig.getString("path")
                 )).collect(Collectors.toList())
@@ -43,7 +43,7 @@ public class HttpGatewayConfigRemoteServices {
             .stream()
             .map(rewriteRouteConfig -> new HttpGatewayRewriteRoute(
                 rewriteRouteConfig.getString("gateway-path"),
-                rewriteRouteConfig.getString("routeId")
+                rewriteRouteConfig.getString("route-id")
             ))
             .collect(Collectors.toList());
     }

@@ -21,7 +21,7 @@ public class HttpGatewayConfigClientRoutes {
             .getConfigList("routes-groups")
             .stream()
             .map(routeGroupConfig -> new HttpGatewayRoutesGroup(
-                routeGroupConfig.getString("routesGroupId"),
+                routeGroupConfig.getString("routes-group-id"),
                 routeGroupConfig.getStringList("routes")
             ))
             .collect(Collectors.toList());
@@ -31,7 +31,7 @@ public class HttpGatewayConfigClientRoutes {
         return clientConfigs
             .stream()
             .map(clientConfig -> new HttpGatewayClientRoutesControl(
-                clientConfig.getString("clientId"),
+                clientConfig.getString("client-id"),
                 clientConfig.getStringList("restricted-routes"),
                 clientConfig.getStringList("restricted-routes-groups"),
                 clientConfig.getStringList("restricted-services")

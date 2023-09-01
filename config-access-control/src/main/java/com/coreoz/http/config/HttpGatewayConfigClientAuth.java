@@ -24,7 +24,7 @@ public class HttpGatewayConfigClientAuth {
 
     public static HttpGatewayAuthenticator readAuth(List<? extends Config> clientsConfig, List<HttpGatewayClientAuthConfig<?>> supportedAuthConfigs) {
         Map<String, List<?>> authReadConfigs = HttpGatewayConfigAuth.readAuth(
-            "clientId",
+            "client-id",
             clientsConfig,
             supportedAuthConfigs.stream().map(HttpGatewayClientAuthConfig::getAuthConfig).collect(Collectors.toList())
         );
