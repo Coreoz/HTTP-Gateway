@@ -1,4 +1,4 @@
-package com.coreoz.http.access.control;
+package com.coreoz.http.remoteservices;
 
 import lombok.Value;
 

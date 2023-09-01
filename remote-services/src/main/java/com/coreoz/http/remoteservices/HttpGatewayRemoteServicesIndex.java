@@ -1,4 +1,4 @@
-package com.coreoz.http.access.control;
+package com.coreoz.http.remoteservices;
 
 import com.coreoz.http.router.data.HttpEndpoint;
 import com.coreoz.http.router.data.MatchingRoute;

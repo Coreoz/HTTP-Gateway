@@ -8,7 +8,7 @@ import com.coreoz.http.conf.HttpGatewayRouterConfiguration;
 import com.coreoz.http.config.HttpGatewayConfigAccessControl;
 import com.coreoz.http.config.HttpGatewayConfigLoader;
 import com.coreoz.http.play.HttpGatewayDownstreamResponses;
-import com.coreoz.http.access.control.HttpGatewayRemoteServicesIndex;
+import com.coreoz.http.remoteservices.HttpGatewayRemoteServicesIndex;
 import com.coreoz.http.router.HttpGatewayRouter;
 import com.coreoz.http.config.HttpGatewayConfigRemoteServices;
 import com.coreoz.http.router.data.DestinationRoute;
