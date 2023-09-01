@@ -3,7 +3,7 @@ package com.coreoz.http.play;
 import akka.NotUsed;
 import akka.stream.javadsl.Source;
 import akka.util.ByteString;
-import com.coreoz.http.client.HttpGatewayUpstreamResponse;
+import com.coreoz.http.upstream.HttpGatewayUpstreamResponse;
 import com.coreoz.http.play.responses.JsonContent;
 import com.coreoz.http.play.responses.ResultError;
 import com.google.common.net.HttpHeaders;

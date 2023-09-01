@@ -1,4 +1,4 @@
-package com.coreoz.http.client;
+package com.coreoz.http.upstream;
 
 import lombok.Getter;
 import lombok.Setter;

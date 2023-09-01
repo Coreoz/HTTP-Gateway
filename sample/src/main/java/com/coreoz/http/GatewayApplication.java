@@ -1,8 +1,8 @@
 package com.coreoz.http;
 
-import com.coreoz.http.client.HttpGatewayUpstreamClient;
-import com.coreoz.http.client.HttpGatewayUpstreamRequest;
-import com.coreoz.http.client.HttpGatewayUpstreamResponse;
+import com.coreoz.http.upstream.HttpGatewayUpstreamClient;
+import com.coreoz.http.upstream.HttpGatewayUpstreamRequest;
+import com.coreoz.http.upstream.HttpGatewayUpstreamResponse;
 import com.coreoz.http.conf.HttpGatewayConfiguration;
 import com.coreoz.http.conf.HttpGatewayRouterConfiguration;
 import com.coreoz.http.config.HttpGatewayConfigAccessControl;

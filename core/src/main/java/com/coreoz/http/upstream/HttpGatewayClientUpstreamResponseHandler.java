@@ -1,4 +1,4 @@
-package com.coreoz.http.client;
+package com.coreoz.http.upstream;
 
 import io.netty.handler.codec.http.HttpHeaders;
 import org.asynchttpclient.HttpResponseBodyPart;

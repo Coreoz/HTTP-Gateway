@@ -1,4 +1,4 @@
-package com.coreoz.http.client;
+package com.coreoz.http.upstream;
 
 public enum HttpGatewayResponseStatus {
 	OK,

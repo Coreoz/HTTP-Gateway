@@ -1,4 +1,4 @@
-package com.coreoz.http.client;
+package com.coreoz.http.upstream;
 
 import com.coreoz.http.play.HttpGatewayDownstreamRequests;
 import io.netty.buffer.ByteBuf;
