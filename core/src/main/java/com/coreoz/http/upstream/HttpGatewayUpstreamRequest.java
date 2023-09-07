@@ -7,6 +7,7 @@ import org.asynchttpclient.RequestBuilder;
 import play.mvc.Http;
 
 import java.util.Arrays;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 @Value
@@ -51,6 +52,13 @@ public class HttpGatewayUpstreamRequest {
                 )
                 .collect(Collectors.toList())
         );
+        return this;
+    }
+
+    public HttpGatewayUpstreamRequest with(BiConsumer<Http.Request, RequestBuilder> customizer) {
+        if (customizer != null) {
+            customizer.accept(downstreamRequest, upstreamRequest);
+        }
         return this;
     }
 }

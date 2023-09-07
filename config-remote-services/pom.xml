@@ -22,6 +22,14 @@
             <groupId>com.coreoz</groupId>
             <artifactId>http-gateway-remote-services</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.coreoz</groupId>
+            <artifactId>http-gateway-upstream-auth</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.coreoz</groupId>
+            <artifactId>http-gateway-config-auth</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>com.typesafe</groupId>

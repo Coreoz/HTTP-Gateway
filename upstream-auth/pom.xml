@@ -8,10 +8,10 @@
 		<version>1.0.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>http-gateway-remote-services</artifactId>
+	<artifactId>http-gateway-upstream-auth</artifactId>
 	<packaging>jar</packaging>
-	<name>HTTP Gateway Remote Services</name>
-	<description>Provide HTTP Gateway remote services concept with routing for each services</description>
+	<name>HTTP Gateway Upstream Authentication</name>
+	<description>Provide HTTP Gateway upstream services authentication</description>
 
 	<dependencies>
 		<dependency>
@@ -20,7 +20,7 @@
 		</dependency>
         <dependency>
             <groupId>com.coreoz</groupId>
-            <artifactId>http-gateway-upstream-auth</artifactId>
+            <artifactId>http-gateway-auth</artifactId>
         </dependency>
 
 		<dependency>

@@ -11,7 +11,9 @@ import com.coreoz.http.play.HttpGatewayDownstreamResponses;
 import com.coreoz.http.remoteservices.HttpGatewayRemoteServicesIndex;
 import com.coreoz.http.router.HttpGatewayRouter;
 import com.coreoz.http.config.HttpGatewayConfigRemoteServices;
+import com.coreoz.http.config.HttpGatewayConfigRemoteServicesAuth;
 import com.coreoz.http.router.data.DestinationRoute;
+import com.coreoz.http.remoteservices.HttpGatewayRemoteServiceAuthenticator;
 import io.netty.handler.codec.http.HttpResponseStatus;
 
 import java.util.concurrent.CompletableFuture;
@@ -22,6 +24,7 @@ public class GatewayApplication {
     public static void main(String[] args) {
         HttpGatewayConfigLoader configLoader = new HttpGatewayConfigLoader();
         HttpGatewayRemoteServicesIndex servicesIndex = HttpGatewayConfigRemoteServices.readConfig(configLoader);
+        HttpGatewayRemoteServiceAuthenticator remoteServiceAuthenticator = HttpGatewayConfigRemoteServicesAuth.readConfig(configLoader);
         HttpGatewayConfigAccessControl gatewayClients = HttpGatewayConfigAccessControl.readConfig(configLoader);
 
         HttpGatewayRouter httpRouter = new HttpGatewayRouter(servicesIndex.getRoutes());
@@ -47,8 +50,8 @@ public class GatewayApplication {
                     return HttpGatewayDownstreamResponses.buildError(HttpResponseStatus.NOT_FOUND, "No route exists for " + downstreamRequest.method() + " " + downstreamRequest.path());
                 }
 
-                // TODO Could we make this code easier ?
-                if (!gatewayClients.hasAccess(clientId, destinationRoute.getRouteId(), servicesIndex.findService(destinationRoute.getRouteId()).getServiceId())) {
+                String remoteServiceId = servicesIndex.findService(destinationRoute.getRouteId()).getServiceId();
+                if (!gatewayClients.hasAccess(clientId, destinationRoute.getRouteId(), remoteServiceId)) {
                     return HttpGatewayDownstreamResponses.buildError(HttpResponseStatus.UNAUTHORIZED, "Access denied to route " + downstreamRequest.method() + " " + downstreamRequest.path());
                 }
 
@@ -56,6 +59,7 @@ public class GatewayApplication {
                 HttpGatewayUpstreamRequest remoteRequest = httpGatewayUpstreamClient
                     .prepareRequest(downstreamRequest)
                     .withUrl(destinationRoute.getDestinationUrl())
+                    .with(remoteServiceAuthenticator.forRoute(remoteServiceId, destinationRoute.getRouteId()))
                     .copyBasicHeaders()
                     .copyQueryParams();
                 CompletableFuture<HttpGatewayUpstreamResponse> upstreamFutureResponse = httpGatewayUpstreamClient.executeUpstreamRequest(remoteRequest);

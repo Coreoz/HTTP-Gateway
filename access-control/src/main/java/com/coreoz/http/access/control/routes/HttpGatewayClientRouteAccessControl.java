@@ -1,7 +1,5 @@
 package com.coreoz.http.access.control.routes;
 
-import com.coreoz.http.access.control.auth.HttpGatewayAuthenticator;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Set;

@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
-public class HttpGatewayClientApiKeyAuthenticator implements HttpGatewayAuthenticator {
+public class HttpGatewayClientApiKeyAuthenticator implements HttpGatewayClientAuthenticator {
     private final Map<String, String> clientIndexedByApiKey;
 
     public HttpGatewayClientApiKeyAuthenticator(List<HttpGatewayAuthApiKey> clients) {
@@ -47,8 +47,8 @@ public class HttpGatewayClientApiKeyAuthenticator implements HttpGatewayAuthenti
 
     private static String extractApiKeyFromRequest(String authorizationHeaderValue) {
         if(authorizationHeaderValue != null) {
-            if(authorizationHeaderValue.startsWith(HttpGatewayAuthApiKey.AUTHORIZATION_BEARER)) {
-                return authorizationHeaderValue.substring(HttpGatewayAuthApiKey.AUTHORIZATION_BEARER.length());
+            if(authorizationHeaderValue.startsWith(HttpGatewayAuthApiKey.AUTHORIZATION_BEARER_PREFIX)) {
+                return authorizationHeaderValue.substring(HttpGatewayAuthApiKey.AUTHORIZATION_BEARER_PREFIX.length());
             }
         }
 

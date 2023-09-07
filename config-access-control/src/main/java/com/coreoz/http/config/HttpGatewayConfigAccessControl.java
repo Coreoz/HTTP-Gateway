@@ -1,6 +1,6 @@
 package com.coreoz.http.config;
 
-import com.coreoz.http.access.control.auth.HttpGatewayAuthenticator;
+import com.coreoz.http.access.control.auth.HttpGatewayClientAuthenticator;
 import com.coreoz.http.access.control.routes.HttpGatewayClientRouteAccessControl;
 import com.typesafe.config.Config;
 import play.mvc.Http;
@@ -8,10 +8,10 @@ import play.mvc.Http;
 import java.util.List;
 
 public class HttpGatewayConfigAccessControl {
-    private final HttpGatewayAuthenticator authenticator;
+    private final HttpGatewayClientAuthenticator authenticator;
     private final HttpGatewayClientRouteAccessControl routeAccessControl;
 
-    private HttpGatewayConfigAccessControl(HttpGatewayAuthenticator authenticator, HttpGatewayClientRouteAccessControl routeAccessControl) {
+    private HttpGatewayConfigAccessControl(HttpGatewayClientAuthenticator authenticator, HttpGatewayClientRouteAccessControl routeAccessControl) {
         this.authenticator = authenticator;
         this.routeAccessControl = routeAccessControl;
     }
@@ -22,7 +22,7 @@ public class HttpGatewayConfigAccessControl {
 
     public static HttpGatewayConfigAccessControl readConfig(Config gatewayConfig) {
         List<? extends Config> clientConfigs = gatewayConfig.getConfigList("clients");
-        HttpGatewayAuthenticator authenticator = HttpGatewayConfigClientAuth.readAuth(clientConfigs);
+        HttpGatewayClientAuthenticator authenticator = HttpGatewayConfigClientAuth.readAuth(clientConfigs);
         HttpGatewayClientRouteAccessControl routeAccessControl = HttpGatewayConfigClientRoutes.readClientsRoutes(gatewayConfig, clientConfigs);
         return new HttpGatewayConfigAccessControl(authenticator, routeAccessControl);
     }

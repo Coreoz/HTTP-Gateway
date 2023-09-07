@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class HttpGatewayConfigRemoteServices {
+    static final String CONFIG_SERVICE_ID = "service-id";
+
     public static HttpGatewayRemoteServicesIndex readConfig(HttpGatewayConfigLoader configLoader) {
         return readConfig(configLoader.getHttpGatewayConfig());
     }
@@ -21,12 +23,15 @@ public class HttpGatewayConfigRemoteServices {
         );
     }
 
+    static List<? extends Config> readRemoteServicesConfig(Config gatewayConfig) {
+        return gatewayConfig.getConfigList("remote-services");
+    }
+
     public static List<HttpGatewayRemoteService> readRemoteServices(Config gatewayConfig) {
-        return gatewayConfig
-            .getConfigList("remote-services")
+        return readRemoteServicesConfig(gatewayConfig)
             .stream()
             .map(serviceConfig -> new HttpGatewayRemoteService(
-                serviceConfig.getString("service-id"),
+                serviceConfig.getString(CONFIG_SERVICE_ID),
                 serviceConfig.getString("base-url"),
                 serviceConfig.getConfigList("routes").stream().map(routeConfig -> new HttpGatewayRemoteServiceRoute(
                     routeConfig.getString("route-id"),

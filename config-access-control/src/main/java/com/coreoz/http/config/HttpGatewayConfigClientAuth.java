@@ -1,6 +1,6 @@
 package com.coreoz.http.config;
 
-import com.coreoz.http.access.control.auth.HttpGatewayAuthenticator;
+import com.coreoz.http.access.control.auth.HttpGatewayClientAuthenticator;
 import com.coreoz.http.access.control.auth.HttpGatewayClientApiKeyAuthenticator;
 import com.coreoz.http.access.control.auth.HttpGatewayAuthApiKey;
 import com.typesafe.config.Config;
@@ -18,18 +18,19 @@ public class HttpGatewayConfigClientAuth {
         KEY_AUTH
     );
 
-    public static HttpGatewayAuthenticator readAuth(List<? extends Config> clientsConfig) {
+    public static HttpGatewayClientAuthenticator readAuth(List<? extends Config> clientsConfig) {
         return readAuth(clientsConfig, supportedAuthConfigs());
     }
 
-    public static HttpGatewayAuthenticator readAuth(List<? extends Config> clientsConfig, List<HttpGatewayClientAuthConfig<?>> supportedAuthConfigs) {
+    public static HttpGatewayClientAuthenticator readAuth(List<? extends Config> clientsConfig, List<HttpGatewayClientAuthConfig<?>> supportedAuthConfigs) {
         Map<String, List<?>> authReadConfigs = HttpGatewayConfigAuth.readAuth(
             "client-id",
             clientsConfig,
             supportedAuthConfigs.stream().map(HttpGatewayClientAuthConfig::getAuthConfig).collect(Collectors.toList())
         );
 
-        Map<String, Function<List<?>, HttpGatewayAuthenticator>> indexedAuthenticatorCreator = supportedAuthConfigs
+        @SuppressWarnings({"unchecked", "rawtypes"})
+        Map<String, Function<List<?>, HttpGatewayClientAuthenticator>> indexedAuthenticatorCreator = supportedAuthConfigs
             .stream()
             .collect(Collectors.toMap(
                 availableAuthConfig -> availableAuthConfig.authConfig.getAuthType(),
@@ -38,15 +39,15 @@ public class HttpGatewayConfigClientAuth {
         return makeAuthenticator(indexedAuthenticatorCreator, authReadConfigs);
     }
 
-    private static HttpGatewayAuthenticator makeAuthenticator(
-        Map<String, Function<List<?>, HttpGatewayAuthenticator>> indexedAuthenticatorCreator,
+    private static HttpGatewayClientAuthenticator makeAuthenticator(
+        Map<String, Function<List<?>, HttpGatewayClientAuthenticator>> indexedAuthenticatorCreator,
         Map<String, List<?>> authReadConfigs
         ) {
-        return HttpGatewayAuthenticator.merge(authReadConfigs
+        return HttpGatewayClientAuthenticator.merge(authReadConfigs
             .entrySet()
             .stream()
             .map((authConfig) -> {
-                Function<List<?>, HttpGatewayAuthenticator> clientAuthenticatorCreator = indexedAuthenticatorCreator.get(authConfig.getKey());
+                Function<List<?>, HttpGatewayClientAuthenticator> clientAuthenticatorCreator = indexedAuthenticatorCreator.get(authConfig.getKey());
                 return clientAuthenticatorCreator.apply(authConfig.getValue());
             })
             .collect(Collectors.toList()));
@@ -59,6 +60,6 @@ public class HttpGatewayConfigClientAuth {
     @Value(staticConstructor = "of")
     public static class HttpGatewayClientAuthConfig<T> {
         HttpGatewayConfigAuth.HttpGatewayAuthConfig<T> authConfig;
-        Function<List<T>, HttpGatewayAuthenticator> authenticatorCreator;
+        Function<List<T>, HttpGatewayClientAuthenticator> authenticatorCreator;
     }
 }

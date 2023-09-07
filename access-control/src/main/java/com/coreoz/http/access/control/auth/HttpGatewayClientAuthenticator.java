@@ -4,7 +4,7 @@ import play.mvc.Http;
 
 import java.util.List;
 
-public interface HttpGatewayAuthenticator {
+public interface HttpGatewayClientAuthenticator {
     /**
      * Authenticate a client from an incoming HTTP Gateway request
      * @param downstreamRequest The incoming HTTP request
@@ -12,20 +12,20 @@ public interface HttpGatewayAuthenticator {
      */
     String authenticate(Http.Request downstreamRequest);
 
-    static HttpGatewayAuthenticator merge(List<HttpGatewayAuthenticator> authenticators) {
-        return new HttpGatewayMergedAuthenticator(authenticators);
+    static HttpGatewayClientAuthenticator merge(List<HttpGatewayClientAuthenticator> authenticators) {
+        return new HttpGatewayMergedClientAuthenticator(authenticators);
     }
 
-    static class HttpGatewayMergedAuthenticator implements HttpGatewayAuthenticator {
-        private final List<HttpGatewayAuthenticator> authenticators;
+    static class HttpGatewayMergedClientAuthenticator implements HttpGatewayClientAuthenticator {
+        private final List<HttpGatewayClientAuthenticator> authenticators;
 
-        public HttpGatewayMergedAuthenticator(List<HttpGatewayAuthenticator> authenticators) {
+        public HttpGatewayMergedClientAuthenticator(List<HttpGatewayClientAuthenticator> authenticators) {
             this.authenticators = authenticators;
         }
 
         @Override
         public String authenticate(Http.Request downstreamRequest) {
-            for (HttpGatewayAuthenticator authenticator : authenticators) {
+            for (HttpGatewayClientAuthenticator authenticator : authenticators) {
                 String clientId = authenticator.authenticate(downstreamRequest);
                 if (clientId != null) {
                     return clientId;
