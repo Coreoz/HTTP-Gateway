@@ -35,6 +35,9 @@ public class GatewayApplication {
             HTTP_GATEWAY_PORT,
             HttpGatewayRouterConfiguration.asyncRouting(downstreamRequest -> {
                 // TODO how errors can be handled in a clean way?
+                //      => Create a HttpGatewayError type
+                //      => mate it easy to log and return it
+                //      => provide a way to monad it: firstMethod.ifSuccess((params) -> secondMethod(params))
                 // TODO make a class that gather clientAuthentication and routing resolution
                 // TODO add logs when error occurs
                 String clientId = gatewayClients.authenticate(downstreamRequest);
