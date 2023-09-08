@@ -2,6 +2,7 @@ package com.coreoz.http.config;
 
 import com.coreoz.http.access.control.auth.HttpGatewayAuthApiKey;
 import com.coreoz.http.access.control.auth.HttpGatewayAuthBasic;
+import com.coreoz.http.access.control.auth.HttpGatewayAuthObject;
 import com.typesafe.config.Config;
 import lombok.Value;
 
@@ -17,28 +18,28 @@ public class HttpGatewayConfigAuth {
     public static final HttpGatewayAuthConfig<HttpGatewayAuthApiKey> KEY_AUTH = HttpGatewayAuthConfig.of("key", HttpGatewayConfigAuth::readAuthKey);
     public static final HttpGatewayAuthConfig<HttpGatewayAuthBasic> BASIC_AUTH = HttpGatewayAuthConfig.of("basic", HttpGatewayConfigAuth::readBasicAuth);
 
-    public static Map<String, List<?>> readAuth(
-        String configObjectId, List<? extends Config> objectsConfig, List<HttpGatewayAuthConfig<?>> supportedAuthConfigs
+    public static Map<String, List<? extends HttpGatewayAuthObject>> readAuth(
+        String configObjectId, List<? extends Config> objectsConfig, List<HttpGatewayAuthConfig<? extends HttpGatewayAuthObject>> supportedAuthConfigs
     ) {
-        Map<String, HttpGatewayAuthConfig<?>> indexedSupportedAuthConfigs = supportedAuthConfigs
+        Map<String, HttpGatewayAuthConfig<? extends HttpGatewayAuthObject>> indexedSupportedAuthConfigs = supportedAuthConfigs
             .stream()
             .collect(Collectors.toMap(
                 HttpGatewayAuthConfig::getAuthType,
                 Function.identity()
             ));
-        Map<String, List<?>> authReadConfigs = new HashMap<>();
+        Map<String, List<? extends HttpGatewayAuthObject>> authReadConfigs = new HashMap<>();
         for (Config objectConfig : objectsConfig) {
             String objectId = objectConfig.getString(configObjectId);
             if (objectConfig.hasPath("auth")) {
                 Config baseAuthConfig = objectConfig.getConfig("auth");
                 String authType = baseAuthConfig.getString("type");
-                HttpGatewayAuthConfig<?> authConfig = indexedSupportedAuthConfigs.get(authType);
+                HttpGatewayAuthConfig<? extends HttpGatewayAuthObject> authConfig = indexedSupportedAuthConfigs.get(authType);
                 if (authConfig == null) {
                     throw new IllegalArgumentException("Unrecognized authentication type '" + authType + "' for " + configObjectId + "=" + objectId);
                 }
-                Object authConfigObject = authConfig.authReader.apply(objectId, baseAuthConfig);
+                HttpGatewayAuthObject authConfigObject = authConfig.authReader.apply(objectId, baseAuthConfig);
                 @SuppressWarnings("unchecked")
-                List<Object> authConfigObjects = (List<Object>) authReadConfigs.computeIfAbsent(authType, authTypeLambda -> new ArrayList<>());
+                List<HttpGatewayAuthObject> authConfigObjects = (List<HttpGatewayAuthObject>) authReadConfigs.computeIfAbsent(authType, authTypeLambda -> new ArrayList<>());
                 authConfigObjects.add(authConfigObject);
             }
         }
