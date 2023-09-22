@@ -18,12 +18,6 @@
 			<groupId>com.coreoz</groupId>
 			<artifactId>http-gateway-core</artifactId>
 		</dependency>
-        <dependency>
-            <groupId>com.coreoz</groupId>
-            <artifactId>http-gateway-upstream-peeker</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
 
 		<dependency>
 			<groupId>org.projectlombok</groupId>
