@@ -1,8 +1,6 @@
 package com.coreoz.http;
 
-import com.coreoz.http.upstream.HttpGatewayUpstreamClient;
-import com.coreoz.http.upstream.HttpGatewayUpstreamRequest;
-import com.coreoz.http.upstream.HttpGatewayUpstreamResponse;
+import com.coreoz.http.upstream.*;
 import com.coreoz.http.conf.HttpGatewayConfiguration;
 import com.coreoz.http.conf.HttpGatewayRouterConfiguration;
 import com.coreoz.http.config.HttpGatewayConfigAccessControl;
@@ -15,9 +13,11 @@ import com.coreoz.http.config.HttpGatewayConfigRemoteServicesAuth;
 import com.coreoz.http.router.data.DestinationRoute;
 import com.coreoz.http.remoteservices.HttpGatewayRemoteServiceAuthenticator;
 import io.netty.handler.codec.http.HttpResponseStatus;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.CompletableFuture;
 
+@Slf4j
 public class GatewayApplication {
     static int HTTP_GATEWAY_PORT = 8080;
 
@@ -29,7 +29,8 @@ public class GatewayApplication {
 
         HttpGatewayRouter httpRouter = new HttpGatewayRouter(servicesIndex.getRoutes());
 
-        HttpGatewayUpstreamClient httpGatewayUpstreamClient = new HttpGatewayUpstreamClient();
+        // HttpGatewayUpstreamClient httpGatewayUpstreamClient = new HttpGatewayUpstreamClient();
+        HttpGatewayUpstreamStringPeekerClient httpGatewayUpstreamClient = new HttpGatewayUpstreamStringPeekerClient();
 
         HttpGateway.start(new HttpGatewayConfiguration(
             HTTP_GATEWAY_PORT,
@@ -58,20 +59,24 @@ public class GatewayApplication {
                     return HttpGatewayDownstreamResponses.buildError(HttpResponseStatus.UNAUTHORIZED, "Access denied to route " + downstreamRequest.method() + " " + downstreamRequest.path());
                 }
 
-                // TODO ajouter du publisher peeker via la méthode preparePeekerReques
-                HttpGatewayUpstreamRequest remoteRequest = httpGatewayUpstreamClient
+                HttpGatewayPeekingUpstreamRequest<String, String> remoteRequest = httpGatewayUpstreamClient
                     .prepareRequest(downstreamRequest)
                     .withUrl(destinationRoute.getDestinationUrl())
                     .with(remoteServiceAuthenticator.forRoute(remoteServiceId, destinationRoute.getRouteId()))
                     .copyBasicHeaders()
                     .copyQueryParams();
-                CompletableFuture<HttpGatewayUpstreamResponse> upstreamFutureResponse = httpGatewayUpstreamClient.executeUpstreamRequest(remoteRequest);
-                return upstreamFutureResponse.thenApply(upstreamResponse -> {
+                CompletableFuture<HttpGatewayUpstreamKeepingResponse<String, String>> peekingUpstreamFutureResponse = httpGatewayUpstreamClient.executeUpstreamRequest(remoteRequest);
+                return peekingUpstreamFutureResponse.thenApply(peekingUpstreamResponse -> {
+                    HttpGatewayUpstreamResponse upstreamResponse = peekingUpstreamResponse.getUpstreamResponse();
                     if (upstreamResponse.getStatusCode() > HttpResponseStatus.INTERNAL_SERVER_ERROR.code()) {
                         // Do not forward the response body if the upstream server returns an internal error
                         // => this enables to avoid forwarding sensitive information
                         upstreamResponse.setPublisher(null);
                     }
+
+                    peekingUpstreamResponse.getStreamsPeeked().thenAccept(peekedStreams -> {
+                       logger.debug("Proxied request: downstream={} upstream={}", peekedStreams.getDownstreamPeeking(), peekedStreams.getUpstreamPeeking());
+                    });
 
                     return HttpGatewayDownstreamResponses.buildResult(upstreamResponse);
                 });

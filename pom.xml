@@ -99,7 +99,7 @@
         <module>remote-services</module>
         <module>access-control</module>
         <module>upstream-auth</module>
-        <module>interceptor</module>
+        <module>upstream-peeker</module>
 	</modules>
 
 	<profiles>

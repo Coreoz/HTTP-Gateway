@@ -42,7 +42,21 @@ public class HttpGatewayUpstreamClient {
      * @return A request builder with the body and content-length header already set
      */
     public HttpGatewayUpstreamRequest prepareRequest(Http.Request downstreamHttpRequest) {
-        Publisher<ByteBuf> requestBody = downstreamHttpRequest.body().as(Publisher.class);
+        //noinspection unchecked
+        return prepareRequest(
+            downstreamHttpRequest,
+            downstreamHttpRequest.body().as(Publisher.class)
+        );
+    }
+
+    /**
+     * Create a new remote request from an incoming HTTP Gateway request.
+     * The request body along with the request content-length header will be forwarded to the remote request.
+     * @param downstreamHttpRequest The incoming request
+     * @param requestBody The Publisher of the incoming request
+     * @return A request builder with the body and content-length header already set
+     */
+    public HttpGatewayUpstreamRequest prepareRequest(Http.Request downstreamHttpRequest, Publisher<ByteBuf> requestBody) {
         long requestContentLength = HttpGatewayDownstreamRequests.parsePlayRequestContentLength(downstreamHttpRequest);
         RequestBuilder upstreamRequestBuilder = new RequestBuilder(downstreamHttpRequest.method());
 

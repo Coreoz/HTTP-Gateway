@@ -1,7 +1,6 @@
 package com.coreoz.http.upstream;
 
 import com.coreoz.http.play.HttpGatewayDownstreamRequests;
-import lombok.Value;
 import org.asynchttpclient.Param;
 import org.asynchttpclient.RequestBuilder;
 import play.mvc.Http;
@@ -10,10 +9,14 @@ import java.util.Arrays;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
-@Value
 public class HttpGatewayUpstreamRequest {
-    Http.Request downstreamRequest;
-    RequestBuilder upstreamRequest;
+    private final Http.Request downstreamRequest;
+    private final RequestBuilder upstreamRequest;
+
+    public HttpGatewayUpstreamRequest(Http.Request downstreamRequest, RequestBuilder upstreamRequest) {
+        this.downstreamRequest = downstreamRequest;
+        this.upstreamRequest = upstreamRequest;
+    }
 
     public HttpGatewayUpstreamRequest withUrl(String url) {
         upstreamRequest.setUrl(url);
@@ -60,5 +63,13 @@ public class HttpGatewayUpstreamRequest {
             customizer.accept(downstreamRequest, upstreamRequest);
         }
         return this;
+    }
+
+    public Http.Request getDownstreamRequest() {
+        return downstreamRequest;
+    }
+
+    public RequestBuilder getUpstreamRequest() {
+        return upstreamRequest;
     }
 }
