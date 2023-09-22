@@ -210,7 +210,7 @@
 			</dependency>
 			<dependency>
 				<groupId>com.coreoz</groupId>
-				<artifactId>http-gateway-interceptor</artifactId>
+				<artifactId>http-gateway-upstream-peeker</artifactId>
 				<version>${project.version}</version>
 			</dependency>
             <dependency>
