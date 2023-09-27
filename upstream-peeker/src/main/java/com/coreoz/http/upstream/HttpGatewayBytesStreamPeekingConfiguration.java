@@ -24,6 +24,7 @@ public class HttpGatewayBytesStreamPeekingConfiguration<D, U> {
     @Value
     public static class HttpGatewayBytesStreamPublisherConfiguration<S, T> {
         int maxBytesToPeek;
+        // TODO use custom function to describe parameters
         BiFunction<S, byte[], T> peeker;
     }
 }
