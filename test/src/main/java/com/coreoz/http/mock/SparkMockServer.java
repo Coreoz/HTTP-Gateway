@@ -41,6 +41,10 @@ public class SparkMockServer {
             response.header("Sample-Response-Header", "Sample response value");
             return "This is a loooooooooooooooooong body";
         });
+        Spark.post("/long-body", (request, response) -> {
+            response.header("Sample-Response-Header", "Sample response value");
+            return "This is a loooooooooooooooooong body";
+        });
         Spark.post("/server-error", (request, response) -> {
             response.status(500);
             return "Internal server error!";

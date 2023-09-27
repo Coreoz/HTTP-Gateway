@@ -12,6 +12,7 @@ import com.coreoz.http.config.HttpGatewayConfigRemoteServices;
 import com.coreoz.http.config.HttpGatewayConfigRemoteServicesAuth;
 import com.coreoz.http.router.data.DestinationRoute;
 import com.coreoz.http.remoteservices.HttpGatewayRemoteServiceAuthenticator;
+import com.coreoz.http.upstream.publisher.PeekerPublishersConsumer;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import lombok.extern.slf4j.Slf4j;
 
@@ -68,9 +69,10 @@ public class GatewayApplication {
                 CompletableFuture<HttpGatewayUpstreamKeepingResponse<String, String>> peekingUpstreamFutureResponse = httpGatewayUpstreamClient.executeUpstreamRequest(remoteRequest);
                 return peekingUpstreamFutureResponse.thenApply(peekingUpstreamResponse -> {
                     HttpGatewayUpstreamResponse upstreamResponse = peekingUpstreamResponse.getUpstreamResponse();
-                    if (upstreamResponse.getStatusCode() > HttpResponseStatus.INTERNAL_SERVER_ERROR.code()) {
+                    if (upstreamResponse.getStatusCode() >= HttpResponseStatus.INTERNAL_SERVER_ERROR.code()) {
                         // Do not forward the response body if the upstream server returns an internal error
                         // => this enables to avoid forwarding sensitive information
+                        PeekerPublishersConsumer.consume(upstreamResponse.getPublisher());
                         upstreamResponse.setPublisher(null);
                     }
 

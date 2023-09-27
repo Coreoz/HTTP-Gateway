@@ -74,7 +74,6 @@ public class HttpGatewayTest {
                     return HttpGatewayDownstreamResponses.buildError(HttpResponseStatus.NOT_FOUND, "No route exists for " + downstreamRequest.method() + " " + downstreamRequest.path());
                 }
 
-                // TODO ajouter du publisher peeker via la méthode preparePeekerReques
                 HttpGatewayUpstreamRequest remoteRequest = httpGatewayUpstreamClient
                     .prepareRequest(downstreamRequest)
                     .withUrl(destinationRoute.getDestinationUrl())
@@ -109,6 +108,6 @@ public class HttpGatewayTest {
     }
 
     private static HttpResponse<String> makeHttpRequest(String path) throws IOException, InterruptedException {
-        return LocalHttpClient.makeHttpRequest(HTTP_GATEWAY_PORT, path);
+        return LocalHttpClient.makeHttpGetRequest(HTTP_GATEWAY_PORT, path);
     }
 }
