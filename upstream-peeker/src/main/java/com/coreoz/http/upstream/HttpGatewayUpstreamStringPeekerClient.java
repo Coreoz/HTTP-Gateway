@@ -31,17 +31,21 @@ public class HttpGatewayUpstreamStringPeekerClient {
         HttpGatewayUpstreamClient upstreamClient
     ) {
         this.bytesPeekerClient = new HttpGatewayUpstreamBytesPeekerClient<>(
-            new HttpGatewayBytesStreamPeekingConfiguration<>(
-                new HttpGatewayBytesStreamPeekingConfiguration.HttpGatewayBytesStreamPublisherConfiguration<>(
-                    defaultConfiguration.getMaxBytesToPeek(),
-                    DOWNSTREAM_STRING_PEEKER
-                ),
-                new HttpGatewayBytesStreamPeekingConfiguration.HttpGatewayBytesStreamPublisherConfiguration<>(
-                    defaultConfiguration.getMaxBytesToPeek(),
-                    UPSTREAM_STRING_PEEKER
-                )
-            ),
+            makeBytesStreamConfiguration(defaultConfiguration),
             upstreamClient
+        );
+    }
+
+    private static HttpGatewayBytesStreamPeekingConfiguration<String, String> makeBytesStreamConfiguration(HttpGatewayStringStreamPeekingConfiguration configuration) {
+        return new HttpGatewayBytesStreamPeekingConfiguration<>(
+            new HttpGatewayBytesStreamPeekingConfiguration.HttpGatewayBytesStreamPublisherConfiguration<>(
+                configuration.getMaxBytesToPeek(),
+                DOWNSTREAM_STRING_PEEKER
+            ),
+            new HttpGatewayBytesStreamPeekingConfiguration.HttpGatewayBytesStreamPublisherConfiguration<>(
+                configuration.getMaxBytesToPeek(),
+                UPSTREAM_STRING_PEEKER
+            )
         );
     }
 
@@ -53,9 +57,12 @@ public class HttpGatewayUpstreamStringPeekerClient {
         this(HttpGatewayStringStreamPeekingConfiguration.DEFAULT_CONFIG);
     }
 
-
     public HttpGatewayPeekingUpstreamRequest<String, String> prepareRequest(Http.Request downstreamRequest) {
         return bytesPeekerClient.prepareRequest(downstreamRequest);
+    }
+
+    public HttpGatewayPeekingUpstreamRequest<String, String> prepareRequest(Http.Request downstreamRequest, HttpGatewayStringStreamPeekingConfiguration configuration) {
+        return bytesPeekerClient.prepareRequest(downstreamRequest, makeBytesStreamConfiguration(configuration));
     }
 
     public CompletableFuture<HttpGatewayUpstreamKeepingResponse<String, String>> executeUpstreamRequest(HttpGatewayPeekingUpstreamRequest<String, String> remoteRequest) {

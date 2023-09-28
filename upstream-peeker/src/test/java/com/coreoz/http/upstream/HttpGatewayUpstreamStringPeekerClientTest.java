@@ -20,6 +20,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 public class HttpGatewayUpstreamStringPeekerClientTest {
+    private static final String HEADER_PEEKING_BYTES_COUNT = "X-Peeking-Bytes-Count";
     static int HTTP_GATEWAY_PORT = 9876;
 
     static HttpGateway httpGateway;
@@ -35,8 +36,13 @@ public class HttpGatewayUpstreamStringPeekerClientTest {
             HTTP_GATEWAY_PORT,
             HttpGatewayRouterConfiguration.asyncRouting(downstreamRequest -> {
 
+                HttpGatewayStringStreamPeekingConfiguration peekingConfig = new HttpGatewayStringStreamPeekingConfiguration(downstreamRequest
+                    .header(HEADER_PEEKING_BYTES_COUNT)
+                    .map(Integer::parseInt)
+                    .orElse(HttpGatewayStringStreamPeekingConfiguration.DEFAULT_MAX_BYTES_TO_PEEK));
+
                 HttpGatewayPeekingUpstreamRequest<String, String> remoteRequest = httpGatewayUpstreamClient
-                    .prepareRequest(downstreamRequest)
+                    .prepareRequest(downstreamRequest, peekingConfig)
                     .withUrl("http://localhost:" + SparkMockServer.SPARK_HTTP_PORT + downstreamRequest.path())
                     .copyBasicHeaders()
                     .copyQueryParams();
@@ -68,12 +74,21 @@ public class HttpGatewayUpstreamStringPeekerClientTest {
     }
 
     private static HttpResponse<String> makeHttpRequest(String targetPath, String requestBody) throws IOException, InterruptedException {
+        return makeHttpRequest(targetPath, requestBody, null);
+    }
+
+    private static HttpResponse<String> makeHttpRequest(String targetPath, String requestBody, Integer maxBytesToPeek) throws IOException, InterruptedException {
         return LocalHttpClient.makeHttpRequest(HTTP_GATEWAY_PORT, targetPath, requestBuilder -> {
             if (requestBody != null) {
                 requestBuilder.POST(HttpRequest.BodyPublishers.ofString(requestBody));
             } else {
                 requestBuilder.GET();
             }
+
+            if (maxBytesToPeek != null) {
+                requestBuilder.header(HEADER_PEEKING_BYTES_COUNT, maxBytesToPeek.toString());
+            }
+
             return requestBuilder;
         });
     }
@@ -118,5 +133,13 @@ public class HttpGatewayUpstreamStringPeekerClientTest {
         Assertions.assertThat(peekedContent.getUpstreamPeeking()).isEqualTo("Internal server error!");
     }
 
-    // TODO test peeking content size
+    @Test
+    public void integration_test__verify_that_peeking_size_is_correctly_used() throws Exception {
+        HttpResponse<String> httpResponse = makeHttpRequest("/long-body", "long request body with many characters", 10);
+        Assertions.assertThat(httpResponse.body()).isEqualTo("This is a loooooooooooooooooong body");
+        Assertions.assertThat(peakedStreams).isNotNull();
+        HttpGatewayUpstreamKeepingResponse.HttpGatewayUpstreamPeeked<String, String> peekedContent = peakedStreams.get(1, TimeUnit.SECONDS);
+        Assertions.assertThat(peekedContent.getDownstreamPeeking()).isEqualTo("long reque");
+        Assertions.assertThat(peekedContent.getUpstreamPeeking()).isEqualTo("This is a ");
+    }
 }
