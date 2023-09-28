@@ -68,6 +68,7 @@ public class PublisherPeeker<T> implements Publisher<T> {
             @Override
             public void onError(Throwable t) {
                 logger.info("Error handling body data", t);
+                PublisherPeeker.this.terminatePeeking();
 
                 s.onError(t);
             }

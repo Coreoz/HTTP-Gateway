@@ -4,12 +4,20 @@ import com.coreoz.http.upstream.publisher.HttpCharsetParser;
 import play.mvc.Http;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.function.BiFunction;
 
+/**
+ * An upstream client like {@link HttpGatewayUpstreamClient} that provides a peeking feature for the bodies
+ * of the incoming downstream request body and the remote upstream response body.<br>
+ * <br>
+ * The peeked streams will be interpreted as strings.<br>
+ * The string charset is interpreted from the request/response content-type header. See {@link HttpCharsetParser} for details.
+ * <br>
+ * A raw {@code byte[]} peeker is available: {@link HttpGatewayUpstreamBytesPeekerClient}
+ */
 public class HttpGatewayUpstreamStringPeekerClient {
     private final HttpGatewayUpstreamBytesPeekerClient<String, String> bytesPeekerClient;
 
-    public static final BiFunction<Http.Request, byte[], String> DOWNSTREAM_STRING_PEEKER = (downstreamRequest, bytesPeeked) ->
+    public static final HttpGatewayBytesStreamPeekingConfiguration.PeekingFunction<Http.Request, String> DOWNSTREAM_STRING_PEEKER = (downstreamRequest, bytesPeeked) ->
         bytesPeeked == null ?
             null
             : new String(
@@ -18,7 +26,7 @@ public class HttpGatewayUpstreamStringPeekerClient {
                     downstreamRequest.contentType().orElse(null)
                 )
             );
-    public static final BiFunction<HttpGatewayUpstreamResponse, byte[], String> UPSTREAM_STRING_PEEKER = (upstreamRequest, bytesPeeked) ->
+    public static final HttpGatewayBytesStreamPeekingConfiguration.PeekingFunction<HttpGatewayUpstreamResponse, String> UPSTREAM_STRING_PEEKER = (upstreamRequest, bytesPeeked) ->
         bytesPeeked == null ?
             null
             : new String(

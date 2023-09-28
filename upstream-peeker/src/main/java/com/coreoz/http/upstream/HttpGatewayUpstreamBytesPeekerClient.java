@@ -8,6 +8,21 @@ import play.mvc.Http;
 
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * An upstream client like {@link HttpGatewayUpstreamClient} that provides a peeking feature for the bodies
+ * of the incoming downstream request body and the remote upstream response body.<br>
+ * <br>
+ * This peeking feature enables to peek only the first body bytes, so it will not fill the server memory.<br>
+ * <br>
+ * It is also important to note that the peeking process is done only when the request/response body are read.
+ * This means that if the body {@link Publisher} is not consumed:<br>
+ * - This peeking bytes client will not read the body<br>
+ * - The stream peeked {@link CompletableFuture} will not resolve or resolve with a null value<br>
+ * <br>
+ * A {@link String} peeker is available: {@link HttpGatewayUpstreamStringPeekerClient}
+ * @param <D> See {@link HttpGatewayBytesStreamPeekingConfiguration}
+ * @param <U> See {@link HttpGatewayBytesStreamPeekingConfiguration}
+ */
 public class HttpGatewayUpstreamBytesPeekerClient<D, U> {
     private final HttpGatewayBytesStreamPeekingConfiguration<D, U> defaultConfiguration;
     private final HttpGatewayUpstreamClient upstreamClient;
@@ -44,7 +59,7 @@ public class HttpGatewayUpstreamBytesPeekerClient<D, U> {
             requestPublisher = new PublisherPeeker<>(
                 requestPublisher,
                 requestBodyFirstBytes -> streamPeekersFuture.downstreamBodyProcessed(
-                    requestPeekingConfig.getPeeker().apply(downstreamRequest, requestBodyFirstBytes)
+                    requestPeekingConfig.getPeeker().peek(downstreamRequest, requestBodyFirstBytes)
                 ),
                 ByteReaders::readBytesFromByteBuf,
                 requestPeekingConfig.getMaxBytesToPeek()
@@ -69,7 +84,7 @@ public class HttpGatewayUpstreamBytesPeekerClient<D, U> {
                     upstreamResponse.setPublisher(new PublisherPeeker<>(
                         upstreamResponse.getPublisher(),
                         responseBodyFirstBytes -> remoteRequest.getStreamPeekersFuture().upstreamBodyProcessed(
-                            remoteRequest.getUpstreamBodyKeeperConfig().getPeeker().apply(upstreamResponse, responseBodyFirstBytes)
+                            remoteRequest.getUpstreamBodyKeeperConfig().getPeeker().peek(upstreamResponse, responseBodyFirstBytes)
                         ),
                         ByteReaders::readBytesFromHttpResponseBodyPart,
                         remoteRequest.getUpstreamBodyKeeperConfig().getMaxBytesToPeek()

@@ -5,6 +5,11 @@ import play.mvc.Http;
 
 import java.util.function.BiConsumer;
 
+/**
+ * A wrapper for {@link HttpGatewayUpstreamRequest} to use {@link HttpGatewayUpstreamBytesPeekerClient}
+ * @param <D> See {@link HttpGatewayBytesStreamPeekingConfiguration}
+ * @param <U> See {@link HttpGatewayBytesStreamPeekingConfiguration}
+ */
 public class HttpGatewayPeekingUpstreamRequest<D, U> {
     private final StreamPeekersFuture<D, U> streamPeekersFuture;
     private final HttpGatewayBytesStreamPeekingConfiguration.HttpGatewayBytesStreamPublisherConfiguration<HttpGatewayUpstreamResponse, U> upstreamBodyKeeperConfig;
@@ -40,7 +45,6 @@ public class HttpGatewayPeekingUpstreamRequest<D, U> {
     }
 
     // Delegate calls
-
 
     public HttpGatewayPeekingUpstreamRequest<D, U> withUrl(String url) {
         upstreamRequest.withUrl(url);

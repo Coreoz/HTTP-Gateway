@@ -2,6 +2,11 @@ package com.coreoz.http.upstream;
 
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * Contains the peeked streams and hold the reference to the corresponding {@code CompletableFuture} object.
+ * @param <D> See {@link HttpGatewayBytesStreamPeekingConfiguration}
+ * @param <U> See {@link HttpGatewayBytesStreamPeekingConfiguration}
+ */
 public class StreamPeekersFuture<D, U>  {
     private D downstreamBodyProcessed;
     private boolean isDownstreamBodyProcessed;
