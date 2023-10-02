@@ -1,18 +1,24 @@
 package com.coreoz.http;
 
-import com.coreoz.http.upstream.*;
 import com.coreoz.http.conf.HttpGatewayConfiguration;
 import com.coreoz.http.conf.HttpGatewayRouterConfiguration;
 import com.coreoz.http.config.HttpGatewayConfigAccessControl;
 import com.coreoz.http.config.HttpGatewayConfigLoader;
-import com.coreoz.http.play.HttpGatewayDownstreamResponses;
-import com.coreoz.http.remoteservices.HttpGatewayRemoteServicesIndex;
-import com.coreoz.http.router.HttpGatewayRouter;
 import com.coreoz.http.config.HttpGatewayConfigRemoteServices;
 import com.coreoz.http.config.HttpGatewayConfigRemoteServicesAuth;
-import com.coreoz.http.router.data.DestinationRoute;
+import com.coreoz.http.play.HttpGatewayDownstreamResponses;
 import com.coreoz.http.remoteservices.HttpGatewayRemoteServiceAuthenticator;
+import com.coreoz.http.remoteservices.HttpGatewayRemoteServicesIndex;
+import com.coreoz.http.router.HttpGatewayRouter;
+import com.coreoz.http.upstream.HttpGatewayPeekingUpstreamRequest;
+import com.coreoz.http.upstream.HttpGatewayUpstreamKeepingResponse;
+import com.coreoz.http.upstream.HttpGatewayUpstreamResponse;
+import com.coreoz.http.upstream.HttpGatewayUpstreamStringPeekerClient;
 import com.coreoz.http.upstream.publisher.PeekerPublishersConsumer;
+import com.coreoz.http.validation.HttpGatewayClientValidator;
+import com.coreoz.http.validation.HttpGatewayDestinationService;
+import com.coreoz.http.validation.HttpGatewayRouteValidator;
+import com.coreoz.http.validation.HttpGatewayValidation;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import lombok.extern.slf4j.Slf4j;
 
@@ -27,8 +33,9 @@ public class GatewayApplication {
         HttpGatewayRemoteServicesIndex servicesIndex = HttpGatewayConfigRemoteServices.readConfig(configLoader);
         HttpGatewayRemoteServiceAuthenticator remoteServiceAuthenticator = HttpGatewayConfigRemoteServicesAuth.readConfig(configLoader);
         HttpGatewayConfigAccessControl gatewayClients = HttpGatewayConfigAccessControl.readConfig(configLoader);
-
         HttpGatewayRouter httpRouter = new HttpGatewayRouter(servicesIndex.getRoutes());
+        HttpGatewayRouteValidator routeValidator = new HttpGatewayRouteValidator(httpRouter, servicesIndex);
+        HttpGatewayClientValidator clientValidator = new HttpGatewayClientValidator(routeValidator, gatewayClients);
 
         // HttpGatewayUpstreamClient httpGatewayUpstreamClient = new HttpGatewayUpstreamClient();
         HttpGatewayUpstreamStringPeekerClient httpGatewayUpstreamClient = new HttpGatewayUpstreamStringPeekerClient();
@@ -36,34 +43,26 @@ public class GatewayApplication {
         HttpGateway.start(new HttpGatewayConfiguration(
             HTTP_GATEWAY_PORT,
             HttpGatewayRouterConfiguration.asyncRouting(downstreamRequest -> {
-                // TODO how errors can be handled in a clean way?
-                //      => Create a HttpGatewayError type
-                //      => mate it easy to log and return it
-                //      => provide a way to monad it: firstMethod.ifSuccess((params) -> secondMethod(params))
-                // TODO make a class that gather clientAuthentication and routing resolution
-                // TODO add logs when error occurs
-                String clientId = gatewayClients.authenticate(downstreamRequest);
-                if (clientId == null) {
-                    return HttpGatewayDownstreamResponses.buildError(HttpResponseStatus.UNAUTHORIZED, "Client authentication failed");
+                // validation
+                HttpGatewayValidation<HttpGatewayDestinationService> destinationServiceValidation = clientValidator
+                    .validateClientIdentification(downstreamRequest)
+                    .then(clientId -> routeValidator
+                        .validate(downstreamRequest)
+                        .then(destinationRoute -> clientValidator.validateClientAccess(downstreamRequest, destinationRoute, clientId))
+                    );
+                // error management
+                if (destinationServiceValidation.isError()) {
+                    logger.warn(destinationServiceValidation.error().getMessage());
+                    return HttpGatewayDownstreamResponses.buildError(destinationServiceValidation.error());
                 }
-
-                DestinationRoute destinationRoute = httpRouter
-                    .searchRoute(downstreamRequest.method(), downstreamRequest.path())
-                    .map((matchingRoute) -> httpRouter.computeDestinationRoute(matchingRoute, servicesIndex.findServiceBaseUrl(matchingRoute)))
-                    .orElse(null);
-                if (destinationRoute == null) {
-                    return HttpGatewayDownstreamResponses.buildError(HttpResponseStatus.NOT_FOUND, "No route exists for " + downstreamRequest.method() + " " + downstreamRequest.path());
-                }
-
-                String remoteServiceId = servicesIndex.findService(destinationRoute.getRouteId()).getServiceId();
-                if (!gatewayClients.hasAccess(clientId, destinationRoute.getRouteId(), remoteServiceId)) {
-                    return HttpGatewayDownstreamResponses.buildError(HttpResponseStatus.UNAUTHORIZED, "Access denied to route " + downstreamRequest.method() + " " + downstreamRequest.path());
-                }
+                HttpGatewayDestinationService destinationService = destinationServiceValidation.value();
 
                 HttpGatewayPeekingUpstreamRequest<String, String> remoteRequest = httpGatewayUpstreamClient
                     .prepareRequest(downstreamRequest)
-                    .withUrl(destinationRoute.getDestinationUrl())
-                    .with(remoteServiceAuthenticator.forRoute(remoteServiceId, destinationRoute.getRouteId()))
+                    .withUrl(destinationService.getDestinationRoute().getDestinationUrl())
+                    .with(remoteServiceAuthenticator.forRoute(
+                        destinationService.getRemoteServiceId(), destinationService.getDestinationRoute().getRouteId()
+                    ))
                     .copyBasicHeaders()
                     .copyQueryParams();
                 CompletableFuture<HttpGatewayUpstreamKeepingResponse<String, String>> peekingUpstreamFutureResponse = httpGatewayUpstreamClient.executeUpstreamRequest(remoteRequest);

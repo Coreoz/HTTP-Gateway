@@ -30,6 +30,10 @@
             <groupId>com.coreoz</groupId>
             <artifactId>http-gateway-upstream-peeker</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.coreoz</groupId>
+            <artifactId>http-gateway-validation</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>ch.qos.logback</groupId>

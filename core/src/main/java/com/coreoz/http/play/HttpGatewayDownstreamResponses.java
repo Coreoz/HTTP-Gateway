@@ -3,6 +3,7 @@ package com.coreoz.http.play;
 import akka.NotUsed;
 import akka.stream.javadsl.Source;
 import akka.util.ByteString;
+import com.coreoz.http.play.responses.HttpGatewayDownstreamError;
 import com.coreoz.http.upstream.HttpGatewayUpstreamResponse;
 import com.coreoz.http.play.responses.JsonContent;
 import com.coreoz.http.play.responses.ResultError;
@@ -22,6 +23,10 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
 public class HttpGatewayDownstreamResponses {
+    public static CompletableFuture<Result> buildError(HttpGatewayDownstreamError error) {
+        return buildError(error.getStatus(), error.getMessage());
+    }
+
     public static CompletableFuture<Result> buildError(HttpResponseStatus status, String errorMessage) {
         return CompletableFuture.completedFuture(Results.status(
             status.code(),
