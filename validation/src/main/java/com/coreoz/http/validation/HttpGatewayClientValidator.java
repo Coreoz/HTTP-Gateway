@@ -29,6 +29,10 @@ public class HttpGatewayClientValidator {
         return HttpGatewayValidation.ofValue(clientId);
     }
 
+    /**
+     * Validate that a client has access to a route
+     * @return The validated route with the associated service, else an {@link HttpResponseStatus#UNAUTHORIZED} error
+     */
     public HttpGatewayValidation<HttpGatewayDestinationService> validateClientAccess(
         Http.Request downstreamRequest, DestinationRoute destinationRoute, String clientId
     ) {

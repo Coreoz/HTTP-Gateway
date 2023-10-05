@@ -61,7 +61,7 @@ public class GatewayApplication {
                     .prepareRequest(downstreamRequest)
                     .withUrl(destinationService.getDestinationRoute().getDestinationUrl())
                     .with(remoteServiceAuthenticator.forRoute(
-                        destinationService.getRemoteServiceId(), destinationService.getDestinationRoute().getRouteId()
+                        destinationService.getServiceId(), destinationService.getDestinationRoute().getRouteId()
                     ))
                     .copyBasicHeaders()
                     .copyQueryParams();

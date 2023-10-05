@@ -6,5 +6,5 @@ import lombok.Value;
 @Value
 public class HttpGatewayDestinationService {
     DestinationRoute destinationRoute;
-    String remoteServiceId;
+    String serviceId;
 }

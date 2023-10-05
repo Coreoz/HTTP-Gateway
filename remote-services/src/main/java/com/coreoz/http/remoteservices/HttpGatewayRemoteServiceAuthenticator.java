@@ -15,12 +15,12 @@ public class HttpGatewayRemoteServiceAuthenticator {
         this.routesAuthenticators = routesAuthenticators;
     }
 
-    public HttpGatewayUpstreamAuthenticator forRoute(String remoteServiceId, String routeId) {
+    public HttpGatewayUpstreamAuthenticator forRoute(String serviceId, String routeId) {
         HttpGatewayUpstreamAuthenticator routeAuthenticator = routesAuthenticators.get(routeId);
         if (routeAuthenticator != null) {
             return routeAuthenticator;
         }
-        return servicesAuthenticators.get(remoteServiceId);
+        return servicesAuthenticators.get(serviceId);
     }
 
     public static HttpGatewayRemoteServiceAuthenticator fromRemoteClientAuthentications(List<HttpGatewayRemoteServiceAuth> clientsAuth) {

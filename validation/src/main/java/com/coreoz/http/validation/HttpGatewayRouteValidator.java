@@ -6,6 +6,9 @@ import com.coreoz.http.router.data.DestinationRoute;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import play.mvc.Http;
 
+/**
+ * Validate that a route exists for an incoming downstream request
+ */
 public class HttpGatewayRouteValidator {
     private final HttpGatewayRouter httpRouter;
     private final HttpGatewayRemoteServicesIndex servicesIndex;
@@ -19,6 +22,10 @@ public class HttpGatewayRouteValidator {
         return servicesIndex;
     }
 
+    /**
+     * Validate and identify the target service route
+     * @return The validated target route, else an {@link HttpResponseStatus#NOT_FOUND} error
+     */
     public HttpGatewayValidation<DestinationRoute> validate(Http.Request downstreamRequest) {
         return httpRouter
             .searchRoute(downstreamRequest.method(), downstreamRequest.path())
