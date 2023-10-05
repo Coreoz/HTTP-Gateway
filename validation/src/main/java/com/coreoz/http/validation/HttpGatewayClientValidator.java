@@ -5,6 +5,9 @@ import com.coreoz.http.router.data.DestinationRoute;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import play.mvc.Http;
 
+/**
+ * Validate authorized clients from incoming downstream requests
+ */
 public class HttpGatewayClientValidator {
     private final HttpGatewayRouteValidator routeValidator;
     private final HttpGatewayConfigAccessControl gatewayClients;
@@ -14,6 +17,10 @@ public class HttpGatewayClientValidator {
         this.gatewayClients = gatewayClients;
     }
 
+    /**
+     * Identify a client.
+     * @return The validated clientId, else an {@link HttpResponseStatus#UNAUTHORIZED} error
+     */
     public HttpGatewayValidation<String> validateClientIdentification(Http.Request downstreamRequest) {
         String clientId = gatewayClients.authenticate(downstreamRequest);
         if (clientId == null) {
