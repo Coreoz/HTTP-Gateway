@@ -35,7 +35,7 @@ public class HttpGatewayConfigAuth {
                 String authType = baseAuthConfig.getString("type");
                 HttpGatewayAuthConfig<? extends HttpGatewayAuthObject> authConfig = indexedSupportedAuthConfigs.get(authType);
                 if (authConfig == null) {
-                    throw new IllegalArgumentException("Unrecognized authentication type '" + authType + "' for " + configObjectId + "=" + objectId);
+                    throw new HttpGatewayConfigException("Unrecognized authentication type '" + authType + "' for " + configObjectId + "=" + objectId);
                 }
                 HttpGatewayAuthObject authConfigObject = authConfig.authReader.apply(objectId, baseAuthConfig);
                 @SuppressWarnings("unchecked")
