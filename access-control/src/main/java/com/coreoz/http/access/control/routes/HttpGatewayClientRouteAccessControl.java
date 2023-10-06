@@ -30,7 +30,7 @@ public class HttpGatewayClientRouteAccessControl {
                         client
                             .getRestrictedRoutesGroups()
                             .stream()
-                            .flatMap(routesGroupId -> routesGroupsIndex.get(routesGroupId).stream())
+                            .flatMap(routesGroupId -> routesGroupsIndex.getOrDefault(routesGroupId, List.of()).stream())
                     )
                     .collect(Collectors.toSet())
             ));
@@ -41,6 +41,8 @@ public class HttpGatewayClientRouteAccessControl {
                 client -> Set.copyOf(client.getRestrictedServices())
             ));
     }
+
+    // TODO how to verify that referenced routeId and serviceId are correct?
 
     public boolean hasAccess(String clientId, String routeId, String serviceId) {
         return allowedRoutesByClient.getOrDefault(clientId, Set.of()).contains(routeId)
