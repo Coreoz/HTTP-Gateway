@@ -14,10 +14,25 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * Read authentication information in a list of objects in a config file.
+ * Objects can be services, clients, or anything else.
+ */
 public class HttpGatewayConfigAuth {
     public static final HttpGatewayAuthConfig<HttpGatewayAuthApiKey> KEY_AUTH = HttpGatewayAuthConfig.of("key", HttpGatewayConfigAuth::readAuthKey);
     public static final HttpGatewayAuthConfig<HttpGatewayAuthBasic> BASIC_AUTH = HttpGatewayAuthConfig.of("basic", HttpGatewayConfigAuth::readBasicAuth);
 
+    /**
+     * Read authentication from a list of objects
+     * @param configObjectId The config key that identify the ID of an object item
+     * @param objectsConfig The list of configs, each config item represents an object
+     * @param supportedAuthConfigs The list of supported authentication methods
+     * @return A {@code Map} containing auth object indexed by authentication method/type.
+     * So the {@code Map} key is the authentication method/type, and the authentication value is the {@code List}
+     * of read objects that matche this authentication. See {@link HttpGatewayAuthConfig} for how object are read.
+     * @throws HttpGatewayConfigException if the authentication type is not present in {@code supportedAuthConfigs}
+     * @throws ConfigException if a missing authentication key is absent in the objects or if the objectId key is missing
+     */
     public static Map<String, List<? extends HttpGatewayAuthObject>> readAuth(
         String configObjectId, List<? extends Config> objectsConfig, List<HttpGatewayAuthConfig<? extends HttpGatewayAuthObject>> supportedAuthConfigs
     ) {
