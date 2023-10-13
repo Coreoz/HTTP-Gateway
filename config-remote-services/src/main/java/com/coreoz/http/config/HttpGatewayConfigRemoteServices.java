@@ -39,7 +39,18 @@ public class HttpGatewayConfigRemoteServices {
                     routeConfig.getString("path")
                 )).collect(Collectors.toList())
             ))
+            .peek(HttpGatewayConfigRemoteServices::validatePathStartsWithSlash)
             .collect(Collectors.toList());
+    }
+
+    private static void validatePathStartsWithSlash(HttpGatewayRemoteService remoteService) {
+        for (HttpGatewayRemoteServiceRoute route : remoteService.getRoutes()) {
+            if (!route.getPath().startsWith("/")) {
+                throw new HttpGatewayConfigException(
+                    "Route path '" + route.getPath() + "' must start with a / in '" + route.getRouteId() + "' in service '" + remoteService.getServiceId() + "'"
+                );
+            }
+        }
     }
 
     public static List<HttpGatewayRewriteRoute> readRewriteRoutes(Config gatewayConfig) {
