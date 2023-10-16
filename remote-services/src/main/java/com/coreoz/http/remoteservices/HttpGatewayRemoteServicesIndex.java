@@ -43,8 +43,8 @@ public class HttpGatewayRemoteServicesIndex {
             .flatMap(service -> service.getRoutes().stream().map(route -> new HttpEndpoint(
                 route.getRouteId(),
                 route.getMethod(),
-                route.getPath(),
-                gatewayRewriteRoutes.getOrDefault(route.getRouteId(), route.getPath())
+                gatewayRewriteRoutes.getOrDefault(route.getRouteId(), route.getPath()),
+                route.getPath()
             )))
             ::iterator;
     }

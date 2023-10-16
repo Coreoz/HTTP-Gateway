@@ -2,6 +2,9 @@ package com.coreoz.http.config;
 
 import com.coreoz.http.remoteservices.HttpGatewayRemoteService;
 import com.coreoz.http.remoteservices.HttpGatewayRemoteServiceRoute;
+import com.coreoz.http.remoteservices.HttpGatewayRemoteServicesIndex;
+import com.coreoz.http.remoteservices.HttpGatewayRewriteRoute;
+import com.coreoz.http.router.data.HttpEndpoint;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigException;
 import com.typesafe.config.ConfigFactory;
@@ -9,6 +12,9 @@ import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 public class HttpGatewayConfigRemoteServicesTest {
     private static final Config config = ConfigFactory.load("test.conf");
@@ -39,5 +45,33 @@ public class HttpGatewayConfigRemoteServicesTest {
         HttpGatewayConfigRemoteServices.readRemoteServices(config.getConfig("remote-services-wrong-route-path"));
     }
 
-    // TODO test readRewriteRoutes and verify that routeIds must exist
+    // readRewriteRoutes
+
+    @Test
+    public void readRewriteRoutes__verify_that_rewrite_routes_are_read_correctly() {
+        List<HttpGatewayRewriteRoute> rewriteRoutes = HttpGatewayConfigRemoteServices.readRewriteRoutes(Set.of("route-a"), config.getConfig("gateway-rewrite-route-test"));
+        Assertions.assertThat(rewriteRoutes).containsExactly(new HttpGatewayRewriteRoute("/pets", "route-a"));
+    }
+
+    @Test(expected = HttpGatewayConfigException.class)
+    public void readRewriteRoutes__verify_that_unrecognized_route_raises_config_gateway_exception() {
+        HttpGatewayConfigRemoteServices.readRewriteRoutes(Set.of(), config.getConfig("gateway-rewrite-route-test"));
+    }
+
+    // readConfig
+
+    @Test
+    public void readConfig__verify_that_config_is_correctly_read() {
+        HttpGatewayRemoteServicesIndex remoteServiceIndex = HttpGatewayConfigRemoteServices.readConfig(config.getConfig("remote-services-ok"));
+        List<HttpEndpoint> routes = StreamSupport.stream(remoteServiceIndex.getRoutes().spliterator(), false).collect(Collectors.toList());
+        Assertions.assertThat(remoteServiceIndex.getServices()).hasSize(1);
+        Assertions.assertThat(routes)
+            .hasSize(2)
+            .contains(new HttpEndpoint("fetch-pet", "GET", "/custom-fetch-pet/{id}", "/pets/{id}"));
+    }
+
+    @Test(expected = HttpGatewayConfigException.class)
+    public void readConfig__verify_that_missing_route_in_rewrite_throws_gateway_config_exception() {
+        HttpGatewayConfigRemoteServices.readConfig(config.getConfig("gateway-rewrite-route-test"));
+    }
 }

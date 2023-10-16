@@ -7,6 +7,7 @@ import com.coreoz.http.remoteservices.HttpGatewayRewriteRoute;
 import com.typesafe.config.Config;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class HttpGatewayConfigRemoteServices {
@@ -17,9 +18,16 @@ public class HttpGatewayConfigRemoteServices {
     }
 
     public static HttpGatewayRemoteServicesIndex readConfig(Config gatewayConfig) {
+        List<HttpGatewayRemoteService> remoteServices = readRemoteServices(gatewayConfig);
         return new HttpGatewayRemoteServicesIndex(
-            readRemoteServices(gatewayConfig),
-            readRewriteRoutes(gatewayConfig)
+            remoteServices,
+            readRewriteRoutes(
+                remoteServices
+                    .stream()
+                    .flatMap(service -> service.getRoutes().stream().map(HttpGatewayRemoteServiceRoute::getRouteId))
+                    .collect(Collectors.toSet()),
+                gatewayConfig
+            )
         );
     }
 
@@ -53,7 +61,7 @@ public class HttpGatewayConfigRemoteServices {
         }
     }
 
-    public static List<HttpGatewayRewriteRoute> readRewriteRoutes(Config gatewayConfig) {
+    public static List<HttpGatewayRewriteRoute> readRewriteRoutes(Set<String> existingRoutesIds, Config gatewayConfig) {
         return gatewayConfig
             .getConfigList("gateway-rewrite-routes")
             .stream()
@@ -61,6 +69,13 @@ public class HttpGatewayConfigRemoteServices {
                 rewriteRouteConfig.getString("gateway-path"),
                 rewriteRouteConfig.getString("route-id")
             ))
+            .peek(routeConfig -> {
+                if(!existingRoutesIds.contains(routeConfig.getRouteId())) {
+                    throw new HttpGatewayConfigException(
+                        "Rewrite route with gateway-path=" + routeConfig.getGatewayPath() + " references a route-id that does not exist: " + routeConfig.getRouteId()
+                    );
+                }
+            })
             .collect(Collectors.toList());
     }
 }
