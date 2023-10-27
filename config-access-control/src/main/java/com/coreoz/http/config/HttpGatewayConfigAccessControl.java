@@ -7,6 +7,7 @@ import play.mvc.Http;
 
 import java.util.List;
 
+// TODO validate client config
 public class HttpGatewayConfigAccessControl {
     private final HttpGatewayClientAuthenticator authenticator;
     private final HttpGatewayClientRouteAccessControl routeAccessControl;
