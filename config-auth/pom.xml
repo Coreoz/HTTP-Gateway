@@ -22,6 +22,10 @@
             <groupId>com.coreoz</groupId>
             <artifactId>http-gateway-auth</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.coreoz</groupId>
+            <artifactId>http-gateway-config-validation</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>com.typesafe</groupId>
