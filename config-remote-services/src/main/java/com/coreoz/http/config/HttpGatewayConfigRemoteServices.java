@@ -18,6 +18,10 @@ public class HttpGatewayConfigRemoteServices {
     }
 
     public static HttpGatewayRemoteServicesIndex readConfig(Config gatewayConfig) {
+        return createRemoteServicesIndex(gatewayConfig);
+    }
+
+    private static HttpGatewayRemoteServicesIndex createRemoteServicesIndex(Config gatewayConfig) {
         List<HttpGatewayRemoteService> remoteServices = readRemoteServices(gatewayConfig);
         return new HttpGatewayRemoteServicesIndex(
             remoteServices,
@@ -47,18 +51,7 @@ public class HttpGatewayConfigRemoteServices {
                     routeConfig.getString("path")
                 )).collect(Collectors.toList())
             ))
-            .peek(HttpGatewayConfigRemoteServices::validatePathStartsWithSlash)
             .collect(Collectors.toList());
-    }
-
-    private static void validatePathStartsWithSlash(HttpGatewayRemoteService remoteService) {
-        for (HttpGatewayRemoteServiceRoute route : remoteService.getRoutes()) {
-            if (!route.getPath().startsWith("/")) {
-                throw new HttpGatewayConfigException(
-                    "Route path '" + route.getPath() + "' must start with a / in '" + route.getRouteId() + "' in service '" + remoteService.getServiceId() + "'"
-                );
-            }
-        }
     }
 
     public static List<HttpGatewayRewriteRoute> readRewriteRoutes(Set<String> existingRoutesIds, Config gatewayConfig) {
@@ -66,16 +59,9 @@ public class HttpGatewayConfigRemoteServices {
             .getConfigList("gateway-rewrite-routes")
             .stream()
             .map(rewriteRouteConfig -> new HttpGatewayRewriteRoute(
-                rewriteRouteConfig.getString("gateway-path"),
-                rewriteRouteConfig.getString("route-id")
-            ))
-            .peek(routeConfig -> {
-                if(!existingRoutesIds.contains(routeConfig.getRouteId())) {
-                    throw new HttpGatewayConfigException(
-                        "Rewrite route with gateway-path=" + routeConfig.getGatewayPath() + " references a route-id that does not exist: " + routeConfig.getRouteId()
-                    );
-                }
-            })
+                rewriteRouteConfig.getString("route-id"),
+                rewriteRouteConfig.getString("downstream-path")
+                ))
             .collect(Collectors.toList());
     }
 }

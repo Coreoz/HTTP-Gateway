@@ -5,11 +5,19 @@ import com.coreoz.http.router.data.*;
 import java.util.Map;
 import java.util.Optional;
 
+// TODO to comment and to put in a dedicated module
 public class HttpGatewayRouter {
     private final Map<String, IndexedEndpoints> routerIndex;
 
     public HttpGatewayRouter(Iterable<HttpEndpoint> endpoints) {
         this.routerIndex = SearchRouteIndexer.indexEndpoints(endpoints);
+    }
+
+    /**
+     * @param routerIndex The indexed endpoint by HTTP method: <code>{GET: IndexedEndpoints, POST: IndexedEndpoints, ...}</code>
+     */
+    public HttpGatewayRouter(Map<String, IndexedEndpoints> routerIndex) {
+        this.routerIndex = routerIndex;
     }
 
     /**

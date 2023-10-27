@@ -43,7 +43,7 @@ public class SearchRouteIndexer {
                     segment.substring(1, segment.length() - 1) :
                     segment;
                 if (name.isEmpty()) {
-                    logger.warn("Le endpoint '{}' contient un segment incorrect : vide ou avec un pattern vide", endpoint);
+                    logger.warn("The endpoint '{}' contains an incorrect segment: empty or with an empty pattern", endpoint);
                 }
                 return new ParsedSegment(name, isPattern);
             })
@@ -66,7 +66,7 @@ public class SearchRouteIndexer {
         ));
 
         // parser la route
-        List<ParsedSegment> segments = parseEndpoint(endpoint.getLocalPath());
+        List<ParsedSegment> segments = parseEndpoint(endpoint.getDownstreamPath());
         // initialise patterns map
         Map<String, Integer> patterns = new HashMap<>();
 
@@ -83,12 +83,13 @@ public class SearchRouteIndexer {
             if (segmentIndex == segments.size()) {
                 if (currentIndex.getLastEndpoint() != null) {
                     // cas possible /test/{bidule}/truc et /test/{machin}/truc
-                    logger.warn("Deux routes sont en conflit (la dernière ne sera pas ajoutée) : {} et {}", currentIndex.getLastEndpoint().getHttpEndpoint().getLocalPath(), endpoint.getLocalPath());
+                    // There is already an existing route for the current route
+                    // => The new route is not added and the existing route is returned
                     return currentIndex.getLastEndpoint();
                 }
                 EndpointParsedData newEndpoint = new EndpointParsedData(
                     patterns,
-                    parseEndpoint(endpoint.getDestinationPath()),
+                    parseEndpoint(endpoint.getUpstreamPath()),
                     endpoint
                 );
                 currentIndex.setLastEndpoint(newEndpoint);
@@ -96,7 +97,7 @@ public class SearchRouteIndexer {
             }
         }
 
-        logger.error("Cas normalement impossible avec l'ajout du endpoint vide {}", endpoint);
+        logger.error("The endpoint {} could not be added, this is a bug", endpoint);
         return null;
     }
 

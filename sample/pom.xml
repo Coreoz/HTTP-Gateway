@@ -32,7 +32,7 @@
         </dependency>
         <dependency>
             <groupId>com.coreoz</groupId>
-            <artifactId>http-gateway-validation</artifactId>
+            <artifactId>http-gateway-downstream-validation</artifactId>
         </dependency>
 
         <dependency>

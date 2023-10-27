@@ -18,6 +18,10 @@
 			<groupId>com.coreoz</groupId>
 			<artifactId>http-gateway-core</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.coreoz</groupId>
+			<artifactId>http-gateway-config-validation</artifactId>
+		</dependency>
         <dependency>
             <groupId>com.coreoz</groupId>
             <artifactId>http-gateway-upstream-auth</artifactId>
@@ -28,5 +32,12 @@
 			<artifactId>lombok</artifactId>
 			<scope>provided</scope>
 		</dependency>
+
+        <!-- unit testing -->
+        <dependency>
+            <groupId>com.coreoz</groupId>
+            <artifactId>http-gateway-test</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>

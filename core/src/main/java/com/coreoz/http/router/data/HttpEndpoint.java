@@ -6,6 +6,6 @@ import lombok.*;
 public class HttpEndpoint {
     String routeId;
 	String method;
-	String localPath;
-	String destinationPath;
+	String downstreamPath;
+	String upstreamPath;
 }

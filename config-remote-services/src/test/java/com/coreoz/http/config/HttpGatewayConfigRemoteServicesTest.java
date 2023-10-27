@@ -40,22 +40,12 @@ public class HttpGatewayConfigRemoteServicesTest {
         HttpGatewayConfigRemoteServices.readRemoteServices(config.getConfig("remote-services-missing-base-url"));
     }
 
-    @Test(expected = HttpGatewayConfigException.class)
-    public void readRemoteServices__verify_that_route_path_not_starting_with_slash_throws_gateway_config_exception() {
-        HttpGatewayConfigRemoteServices.readRemoteServices(config.getConfig("remote-services-wrong-route-path"));
-    }
-
     // readRewriteRoutes
 
     @Test
     public void readRewriteRoutes__verify_that_rewrite_routes_are_read_correctly() {
         List<HttpGatewayRewriteRoute> rewriteRoutes = HttpGatewayConfigRemoteServices.readRewriteRoutes(Set.of("route-a"), config.getConfig("gateway-rewrite-route-test"));
-        Assertions.assertThat(rewriteRoutes).containsExactly(new HttpGatewayRewriteRoute("/pets", "route-a"));
-    }
-
-    @Test(expected = HttpGatewayConfigException.class)
-    public void readRewriteRoutes__verify_that_unrecognized_route_raises_config_gateway_exception() {
-        HttpGatewayConfigRemoteServices.readRewriteRoutes(Set.of(), config.getConfig("gateway-rewrite-route-test"));
+        Assertions.assertThat(rewriteRoutes).containsExactly(new HttpGatewayRewriteRoute("route-a", "/pets"));
     }
 
     // readConfig
@@ -63,15 +53,10 @@ public class HttpGatewayConfigRemoteServicesTest {
     @Test
     public void readConfig__verify_that_config_is_correctly_read() {
         HttpGatewayRemoteServicesIndex remoteServiceIndex = HttpGatewayConfigRemoteServices.readConfig(config.getConfig("remote-services-ok"));
-        List<HttpEndpoint> routes = StreamSupport.stream(remoteServiceIndex.getRoutes().spliterator(), false).collect(Collectors.toList());
+        List<HttpEndpoint> routes = StreamSupport.stream(remoteServiceIndex.computeRoutes().spliterator(), false).collect(Collectors.toList());
         Assertions.assertThat(remoteServiceIndex.getServices()).hasSize(1);
         Assertions.assertThat(routes)
             .hasSize(2)
             .contains(new HttpEndpoint("fetch-pet", "GET", "/custom-fetch-pet/{id}", "/pets/{id}"));
-    }
-
-    @Test(expected = HttpGatewayConfigException.class)
-    public void readConfig__verify_that_missing_route_in_rewrite_throws_gateway_config_exception() {
-        HttpGatewayConfigRemoteServices.readConfig(config.getConfig("gateway-rewrite-route-test"));
     }
 }

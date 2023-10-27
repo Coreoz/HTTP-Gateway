@@ -1,4 +1,4 @@
-package com.coreoz.http.config;
+package com.coreoz.http.validation;
 
 /**
  * This exception is thrown when a config validation rule fails:<br>
