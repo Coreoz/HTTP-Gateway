@@ -3,6 +3,7 @@ package com.coreoz.http.config;
 import com.coreoz.http.access.control.auth.HttpGatewayAuthApiKey;
 import com.coreoz.http.access.control.auth.HttpGatewayAuthBasic;
 import com.coreoz.http.access.control.auth.HttpGatewayAuthObject;
+import com.coreoz.http.validation.HttpGatewayConfigException;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigException;
 import com.typesafe.config.ConfigFactory;
