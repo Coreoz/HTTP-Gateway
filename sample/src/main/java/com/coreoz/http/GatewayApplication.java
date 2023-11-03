@@ -29,6 +29,10 @@ public class GatewayApplication {
     static int HTTP_GATEWAY_PORT = 8080;
 
     public static void main(String[] args) {
+        startsGateway();
+    }
+
+    public static HttpGateway startsGateway() {
         HttpGatewayConfigLoader configLoader = new HttpGatewayConfigLoader();
         HttpGatewayRemoteServicesIndex servicesIndex = HttpGatewayConfigRemoteServices.readConfig(configLoader);
         HttpGatewayRemoteServiceAuthenticator remoteServiceAuthenticator = HttpGatewayConfigRemoteServicesAuth.readConfig(configLoader);
@@ -40,7 +44,7 @@ public class GatewayApplication {
         // HttpGatewayUpstreamClient httpGatewayUpstreamClient = new HttpGatewayUpstreamClient();
         HttpGatewayUpstreamStringPeekerClient httpGatewayUpstreamClient = new HttpGatewayUpstreamStringPeekerClient();
 
-        HttpGateway.start(new HttpGatewayConfiguration(
+        return HttpGateway.start(new HttpGatewayConfiguration(
             HTTP_GATEWAY_PORT,
             HttpGatewayRouterConfiguration.asyncRouting(downstreamRequest -> {
                 // validation
@@ -76,7 +80,7 @@ public class GatewayApplication {
                     }
 
                     peekingUpstreamResponse.getStreamsPeeked().thenAccept(peekedStreams -> {
-                       logger.debug("Proxied request: downstream={} upstream={}", peekedStreams.getDownstreamPeeking(), peekedStreams.getUpstreamPeeking());
+                        logger.debug("Proxied request: downstream={} upstream={}", peekedStreams.getDownstreamPeeking(), peekedStreams.getUpstreamPeeking());
                     });
 
                     return HttpGatewayDownstreamResponses.buildResult(upstreamResponse);
