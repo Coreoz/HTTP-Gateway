@@ -28,5 +28,16 @@
 			<artifactId>lombok</artifactId>
 			<scope>provided</scope>
 		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>com.coreoz</groupId>
+            <artifactId>http-gateway-remote-services</artifactId>
+        </dependency>
+
+        <!-- unit testing -->
+        <dependency>
+            <groupId>com.coreoz</groupId>
+            <artifactId>http-gateway-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 </project>

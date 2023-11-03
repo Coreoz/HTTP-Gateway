@@ -2,12 +2,12 @@ package com.coreoz.http.config;
 
 import com.coreoz.http.access.control.auth.HttpGatewayClientAuthenticator;
 import com.coreoz.http.access.control.routes.HttpGatewayClientRouteAccessControl;
+import com.coreoz.http.remoteservices.HttpGatewayRemoteServicesIndex;
 import com.typesafe.config.Config;
 import play.mvc.Http;
 
 import java.util.List;
 
-// TODO validate client config
 public class HttpGatewayConfigAccessControl {
     private final HttpGatewayClientAuthenticator authenticator;
     private final HttpGatewayClientRouteAccessControl routeAccessControl;
@@ -34,5 +34,10 @@ public class HttpGatewayConfigAccessControl {
 
     public boolean hasAccess(String clientId, String routeId, String serviceId) {
         return routeAccessControl.hasAccess(clientId, routeId, serviceId);
+    }
+
+    public HttpGatewayConfigAccessControl validateConfig(HttpGatewayRemoteServicesIndex remoteServicesIndex) {
+        routeAccessControl.validateConfig(remoteServicesIndex);
+        return this;
     }
 }

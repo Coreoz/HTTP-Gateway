@@ -19,6 +19,11 @@
             <artifactId>guava</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.coreoz</groupId>
+            <artifactId>http-gateway-config-validation</artifactId>
+        </dependency>
+
 		<!-- unit testing -->
 		<dependency>
 			<groupId>junit</groupId>

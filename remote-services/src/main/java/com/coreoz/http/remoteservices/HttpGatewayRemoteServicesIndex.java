@@ -135,6 +135,14 @@ public class HttpGatewayRemoteServicesIndex {
             .collect(Collectors.toSet());
     }
 
+    /**
+     * Verify if a route exists
+     * @return True if there is a route that matches the routeId
+     */
+    public boolean hasRoute(String routeId) {
+        return servicesByRouteId.containsKey(routeId);
+    }
+
     public HttpGatewayRemoteService findService(String routeId) {
         return servicesByRouteId.get(routeId);
     }

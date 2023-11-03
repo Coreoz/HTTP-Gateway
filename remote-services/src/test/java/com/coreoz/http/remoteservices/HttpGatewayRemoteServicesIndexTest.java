@@ -1,9 +1,10 @@
 package com.coreoz.http.remoteservices;
 
 import com.coreoz.http.router.data.IndexedEndpoints;
-import com.coreoz.http.validation.HttpGatewayConfigException;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
+
+import static com.coreoz.http.mock.ConfigExceptionValidation.validateConfigException;
 
 import java.util.List;
 import java.util.Map;
@@ -167,14 +168,5 @@ public class HttpGatewayRemoteServicesIndexTest {
             new HttpGatewayRemoteServiceRoute("route-f", "GET", "/other"),
             new HttpGatewayRemoteServiceRoute("route-g", "GET", "/test/specific-route")
         );
-    }
-
-    private void validateConfigException(Runnable testProcess, String partOfExceptionMessage) {
-        try {
-            testProcess.run();
-            Assertions.fail("HttpGatewayConfigException has not been raised");
-        } catch (HttpGatewayConfigException exception) {
-            Assertions.assertThat(exception).hasMessageContaining(partOfExceptionMessage);
-        }
     }
 }

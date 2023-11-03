@@ -32,7 +32,7 @@ public class GatewayApplication {
         HttpGatewayConfigLoader configLoader = new HttpGatewayConfigLoader();
         HttpGatewayRemoteServicesIndex servicesIndex = HttpGatewayConfigRemoteServices.readConfig(configLoader);
         HttpGatewayRemoteServiceAuthenticator remoteServiceAuthenticator = HttpGatewayConfigRemoteServicesAuth.readConfig(configLoader);
-        HttpGatewayConfigAccessControl gatewayClients = HttpGatewayConfigAccessControl.readConfig(configLoader);
+        HttpGatewayConfigAccessControl gatewayClients = HttpGatewayConfigAccessControl.readConfig(configLoader).validateConfig(servicesIndex);
         HttpGatewayRouter httpRouter = new HttpGatewayRouter(servicesIndex.computeValidatedIndexedRoutes());
         HttpGatewayRouteValidator routeValidator = new HttpGatewayRouteValidator(httpRouter, servicesIndex);
         HttpGatewayClientValidator clientValidator = new HttpGatewayClientValidator(routeValidator, gatewayClients);
