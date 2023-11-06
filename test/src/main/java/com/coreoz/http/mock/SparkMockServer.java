@@ -4,6 +4,9 @@ import com.google.common.net.HttpHeaders;
 import org.eclipse.jetty.http.HttpStatus;
 import spark.Spark;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+
 public class SparkMockServer {
     public static int SPARK_HTTP_PORT = 4567;
 
@@ -19,6 +22,14 @@ public class SparkMockServer {
     private static void initializeSpark() {
         Spark.port(SPARK_HTTP_PORT);
         Spark.get("/hello", (request, response) -> "World");
+        Spark.get("/pets", (request, response) -> {
+            String basicAuthHeader = "Basic " + Base64.getEncoder().encodeToString("test-auth:auth-password".getBytes(StandardCharsets.UTF_8));
+            if (!request.headers(HttpHeaders.AUTHORIZATION).equals(basicAuthHeader)) {
+                return "wrong auth";
+            }
+
+            return "Lots of pets :)";
+        });
         Spark.get("/echo/:param", (request, response) -> request.params("param")
             + "\n"
             + request.queryString()
