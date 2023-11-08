@@ -27,6 +27,8 @@ public class SparkMockServer {
             if (!request.headers(HttpHeaders.AUTHORIZATION).equals(basicAuthHeader)) {
                 return "wrong auth";
             }
+            // custom header for testing
+            response.header("X-Tenants", request.headers("X-Tenants"));
 
             return "Lots of pets :)";
         });
