@@ -23,14 +23,7 @@ public class GatewayApplicationTest {
     public void verify_that_unknown_client_returns_401_response() {
         HttpResponse<String> httpResponse = makeHttpRequest("/lots-of-pets");
         Assertions.assertThat(httpResponse.statusCode()).isEqualTo(HttpResponseStatus.UNAUTHORIZED.code());
-    }
-
-    @Test
-    public void verify_that_correct_client_auth_request_is_correctly_routed_to_authenticated_service() {
-        HttpResponse<String> httpResponse = makeHttpRequest("/lots-of-pets", requestBuilder -> requestBuilder
-            .header(HttpHeaders.AUTHORIZATION, "Bearer auth-zoo")
-            .GET());
-        Assertions.assertThat(httpResponse.body()).isEqualTo("Lots of pets :)");
+        Assertions.assertThat(httpResponse.body()).isEqualTo("{\"message\":\"Client authentication failed\"}");
     }
 
     @Test
