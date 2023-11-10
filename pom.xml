@@ -98,6 +98,7 @@
 		<module>config-access-control</module>
         <module>auth</module>
         <module>remote-services</module>
+        <module>router</module>
         <module>access-control</module>
         <module>upstream-auth</module>
         <module>upstream-peeker</module>
@@ -198,6 +199,11 @@
 			<dependency>
 				<groupId>com.coreoz</groupId>
 				<artifactId>http-gateway-core</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.coreoz</groupId>
+				<artifactId>http-gateway-router</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>

@@ -8,28 +8,16 @@
 		<version>1.0.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>http-gateway-remote-services</artifactId>
+	<artifactId>http-gateway-router</artifactId>
 	<packaging>jar</packaging>
-	<name>HTTP Gateway Remote Services</name>
-	<description>Provide HTTP Gateway remote services concept with routing for each services</description>
+	<name>HTTP Gateway Router</name>
+	<description>Provide HTTP Gateway routing resolving for downstream requests to upstream endpoints</description>
 
 	<dependencies>
 		<dependency>
 			<groupId>com.coreoz</groupId>
 			<artifactId>http-gateway-core</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>com.coreoz</groupId>
-			<artifactId>http-gateway-router</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.coreoz</groupId>
-			<artifactId>http-gateway-config-validation</artifactId>
-		</dependency>
-        <dependency>
-            <groupId>com.coreoz</groupId>
-            <artifactId>http-gateway-upstream-auth</artifactId>
-        </dependency>
 
 		<dependency>
 			<groupId>org.projectlombok</groupId>
