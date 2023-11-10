@@ -5,7 +5,13 @@ import com.coreoz.http.router.data.*;
 import java.util.Map;
 import java.util.Optional;
 
-// TODO to comment and to put in a dedicated module
+/**
+ * Handle routing resolving for a downstream path to an upstream route.
+ * This should be used:
+ * 1. To index the available routes (using constructor, and if necessary using @{link {@link #addEndpoint(HttpEndpoint)}})
+ * 2. To search for a route for a method and a path using {@link #searchRoute(String, String)}
+ * 3. To compute the full upstream destination URL using {@link #computeDestinationRoute(MatchingRoute, String)}
+ */
 public class HttpGatewayRouter {
     private final Map<String, IndexedEndpoints> routerIndex;
 
@@ -32,6 +38,12 @@ public class HttpGatewayRouter {
 
     // SEARCH
 
+    /**
+     * Search a route in the index
+     * @param method The HTTP method, like GET or POST
+     * @param requestPath The searched path, like /users
+     * @return The optional matching route
+     */
     public Optional<MatchingRoute> searchRoute(String method, String requestPath) {
         IndexedEndpoints methodIndex = routerIndex.get(method);
         if (methodIndex == null) {
@@ -40,6 +52,12 @@ public class HttpGatewayRouter {
         return SearchRouteEngine.searchRoute(methodIndex, requestPath);
     }
 
+    /**
+     * Compute the full upstream destination URL, like http://remote-service.com/users/123/payments
+     * @param matchingRoute A matching found using @{link {@link #searchRoute(String, String)}}
+     * @param destinationBaseUrl The base URL of the upstream destination, like http://remote-service.com (without a slash at the end)
+     * @return The full computed URL
+     */
     public DestinationRoute computeDestinationRoute(MatchingRoute matchingRoute, String destinationBaseUrl) {
         return SearchRouteEngine.computeDestinationRoute(matchingRoute, destinationBaseUrl);
     }
