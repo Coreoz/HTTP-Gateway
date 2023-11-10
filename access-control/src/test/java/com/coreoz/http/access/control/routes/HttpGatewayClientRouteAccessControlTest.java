@@ -39,7 +39,7 @@ public class HttpGatewayClientRouteAccessControlTest {
     }
 
     @Test
-    public void validateConfig__verify_that_valid_restricted_routes_and_services_and_route_groups_passes() {
+    public void validateConfig__verify_that_valid_allowed_routes_and_services_and_route_groups_passes() {
         new HttpGatewayClientRouteAccessControl(
             makeRoutesGroup(),
             makeClientRoutesControls(List.of("route-d"), List.of("route-group-a"), List.of("service-a"))
@@ -77,12 +77,12 @@ public class HttpGatewayClientRouteAccessControlTest {
         );
     }
 
-    private List<HttpGatewayClientRoutesControl> makeClientRoutesControls(List<String> restrictedRoutes, List<String> restrictedRoutesGroups, List<String> restrictedServices) {
+    private List<HttpGatewayClientRoutesControl> makeClientRoutesControls(List<String> allowedRoutes, List<String> allowedRoutesGroups, List<String> allowedServices) {
         return List.of(new HttpGatewayClientRoutesControl(
             "client-a",
-            MoreObjects.firstNonNull(restrictedRoutes, List.of()),
-            MoreObjects.firstNonNull(restrictedRoutesGroups, List.of()),
-            MoreObjects.firstNonNull(restrictedServices, List.of())
+            MoreObjects.firstNonNull(allowedRoutes, List.of()),
+            MoreObjects.firstNonNull(allowedRoutesGroups, List.of()),
+            MoreObjects.firstNonNull(allowedServices, List.of())
         ));
     }
 

@@ -32,9 +32,9 @@ public class HttpGatewayConfigClientRoutes {
             .stream()
             .map(clientConfig -> new HttpGatewayClientRoutesControl(
                 clientConfig.getString("client-id"),
-                clientConfig.getStringList("restricted-routes"),
-                clientConfig.getStringList("restricted-routes-groups"),
-                clientConfig.getStringList("restricted-services")
+                clientConfig.getStringList("allowed-routes"),
+                clientConfig.getStringList("allowed-routes-groups"),
+                clientConfig.getStringList("allowed-services")
             ))
             .collect(Collectors.toList());
     }

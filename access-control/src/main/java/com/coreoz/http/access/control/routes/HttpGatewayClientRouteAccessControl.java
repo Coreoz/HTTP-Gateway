@@ -31,9 +31,9 @@ public class HttpGatewayClientRouteAccessControl {
                 HttpGatewayClientRoutesControl::getClientId,
                 client -> Stream
                     .concat(
-                        client.getRestrictedRoutes().stream(),
+                        client.getAllowedRoutes().stream(),
                         client
-                            .getRestrictedRoutesGroups()
+                            .getAllowedRoutesGroups()
                             .stream()
                             .flatMap(routesGroupId -> Optional.ofNullable(routesGroupsIndex.get(routesGroupId))
                                 .map(List::stream)
@@ -48,7 +48,7 @@ public class HttpGatewayClientRouteAccessControl {
             .stream()
             .collect(Collectors.toMap(
                 HttpGatewayClientRoutesControl::getClientId,
-                client -> Set.copyOf(client.getRestrictedServices())
+                client -> Set.copyOf(client.getAllowedServices())
             ));
     }
 

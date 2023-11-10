@@ -7,7 +7,7 @@ import java.util.List;
 @Value
 public class HttpGatewayClientRoutesControl {
     String clientId;
-    List<String> restrictedRoutes;
-    List<String> restrictedRoutesGroups;
-    List<String> restrictedServices;
+    List<String> allowedRoutes;
+    List<String> allowedRoutesGroups;
+    List<String> allowedServices;
 }
