@@ -7,15 +7,14 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 import lombok.SneakyThrows;
 import org.assertj.core.api.Assertions;
 import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.function.Function;
 
-public class GatewayApplicationTest {
-    private static HttpGateway httpGateway = GatewayApplication.startsGateway();
+public class SampleCustomClientDimensionTest {
+    private static HttpGateway httpGateway = SampleCustomClientDimension.startsGateway();
 
     static {
         SparkMockServer.initialize();
@@ -37,7 +36,7 @@ public class GatewayApplicationTest {
     public void verify_that_invalid_custom_header_returns_error() {
         HttpResponse<String> httpResponse = makeHttpRequest("/lots-of-pets", requestBuilder -> requestBuilder
             .header(HttpHeaders.AUTHORIZATION, "Bearer auth-zoo")
-            .header(GatewayApplication.HTTP_HEADER_TENANTS, "unauthorized-tenant")
+            .header(SampleCustomClientDimension.HTTP_HEADER_TENANTS, "unauthorized-tenant")
             .GET());
         Assertions.assertThat(httpResponse.statusCode()).isEqualTo(HttpResponseStatus.UNAUTHORIZED.code());
         Assertions.assertThat(httpResponse.body()).isEqualTo(
@@ -49,10 +48,10 @@ public class GatewayApplicationTest {
     public void verify_that_custom_header_is_correctly_forwarded_to_service() {
         HttpResponse<String> httpResponse = makeHttpRequest("/lots-of-pets", requestBuilder -> requestBuilder
             .header(HttpHeaders.AUTHORIZATION, "Bearer auth-zoo")
-            .header(GatewayApplication.HTTP_HEADER_TENANTS, "site2")
+            .header(SampleCustomClientDimension.HTTP_HEADER_TENANTS, "site2")
             .GET());
         Assertions.assertThat(httpResponse.statusCode()).isEqualTo(HttpResponseStatus.OK.code());
-        Assertions.assertThat(httpResponse.headers().firstValue(GatewayApplication.HTTP_HEADER_TENANTS))
+        Assertions.assertThat(httpResponse.headers().firstValue(SampleCustomClientDimension.HTTP_HEADER_TENANTS))
             .isPresent()
             .hasValue("site2");
     }
@@ -64,6 +63,6 @@ public class GatewayApplicationTest {
 
     @SneakyThrows
     public static HttpResponse<String> makeHttpRequest(String path, Function<HttpRequest.Builder, HttpRequest.Builder> with) {
-        return LocalHttpClient.makeHttpRequest(GatewayApplication.HTTP_GATEWAY_PORT, path, with);
+        return LocalHttpClient.makeHttpRequest(SampleCustomClientDimension.HTTP_GATEWAY_PORT, path, with);
     }
 }

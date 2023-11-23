@@ -19,6 +19,7 @@ import com.coreoz.http.validation.HttpGatewayClientValidator;
 import com.coreoz.http.validation.HttpGatewayDestinationService;
 import com.coreoz.http.validation.HttpGatewayRouteValidator;
 import com.coreoz.http.validation.HttpGatewayValidation;
+import com.typesafe.config.ConfigFactory;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +32,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Slf4j
-public class GatewayApplication {
+public class SampleCustomClientDimension {
     static int HTTP_GATEWAY_PORT = 8080;
 
     // TODO make a basic sample without customization
@@ -40,7 +41,7 @@ public class GatewayApplication {
     }
 
     public static HttpGateway startsGateway() {
-        HttpGatewayConfigLoader configLoader = new HttpGatewayConfigLoader();
+        HttpGatewayConfigLoader configLoader = new HttpGatewayConfigLoader(ConfigFactory.load("custom-client-dimension.conf"));
         HttpGatewayRemoteServicesIndex servicesIndex = HttpGatewayConfigRemoteServices.readConfig(configLoader);
         HttpGatewayRemoteServiceAuthenticator remoteServiceAuthenticator = HttpGatewayConfigRemoteServicesAuth.readConfig(configLoader);
         HttpGatewayConfigAccessControl gatewayClients = HttpGatewayConfigAccessControl.readConfig(configLoader).validateConfig(servicesIndex);
