@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 public class GatewayApplication {
     static int HTTP_GATEWAY_PORT = 8080;
 
+    // TODO make a basic sample without customization
     public static void main(String[] args) {
         startsGateway();
     }
@@ -43,9 +44,9 @@ public class GatewayApplication {
         HttpGatewayRemoteServicesIndex servicesIndex = HttpGatewayConfigRemoteServices.readConfig(configLoader);
         HttpGatewayRemoteServiceAuthenticator remoteServiceAuthenticator = HttpGatewayConfigRemoteServicesAuth.readConfig(configLoader);
         HttpGatewayConfigAccessControl gatewayClients = HttpGatewayConfigAccessControl.readConfig(configLoader).validateConfig(servicesIndex);
+        HttpGatewayClientValidator clientValidator = new HttpGatewayClientValidator(servicesIndex, gatewayClients);
         HttpGatewayRouter httpRouter = new HttpGatewayRouter(servicesIndex.computeValidatedIndexedRoutes());
         HttpGatewayRouteValidator routeValidator = new HttpGatewayRouteValidator(httpRouter, servicesIndex);
-        HttpGatewayClientValidator clientValidator = new HttpGatewayClientValidator(routeValidator, gatewayClients);
         // custom validation
         Map<String, CustomClientAttributes> clientsCustomAttributes = readClientsCustomAttributes(configLoader);
 

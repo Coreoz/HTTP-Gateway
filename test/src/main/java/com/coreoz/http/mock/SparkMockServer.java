@@ -32,6 +32,9 @@ public class SparkMockServer {
 
             return "Lots of pets :)";
         });
+        Spark.get("/customer-a/other-route/:id", (request, response) -> "Customer A: " + request.params("id"));
+        Spark.get("/customer-a/custom-route", (request, response) -> "Customer A custom route");
+        Spark.get("/customer-b/other-route/:id", (request, response) -> "Customer B: " + request.params("id"));
         Spark.get("/echo/:param", (request, response) -> request.params("param")
             + "\n"
             + request.queryString()

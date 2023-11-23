@@ -6,6 +6,8 @@ import com.google.common.net.HttpHeaders;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import lombok.SneakyThrows;
 import org.assertj.core.api.Assertions;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.net.http.HttpRequest;
@@ -17,6 +19,11 @@ public class GatewayApplicationTest {
 
     static {
         SparkMockServer.initialize();
+    }
+
+    @AfterClass
+    public static void startsGateway() {
+        httpGateway.stop();
     }
 
     @Test

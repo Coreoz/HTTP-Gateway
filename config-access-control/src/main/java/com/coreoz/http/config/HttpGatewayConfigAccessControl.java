@@ -8,7 +8,10 @@ import play.mvc.Http;
 
 import java.util.List;
 
-public class HttpGatewayConfigAccessControl {
+/**
+ * Handle Gateway client authorization and access control verification
+ */
+public class HttpGatewayConfigAccessControl implements HttpGatewayClientAuthenticator {
     private final HttpGatewayClientAuthenticator authenticator;
     private final HttpGatewayClientRouteAccessControl routeAccessControl;
 

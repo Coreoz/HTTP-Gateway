@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 public class HttpGatewayConfigRemoteServices {
     static final String CONFIG_SERVICE_ID = "service-id";
+    static final String CONFIG_REWRITE_ROUTES = "gateway-rewrite-routes";
 
     public static HttpGatewayRemoteServicesIndex readConfig(HttpGatewayConfigLoader configLoader) {
         return readConfig(configLoader.getHttpGatewayConfig());
@@ -55,13 +56,16 @@ public class HttpGatewayConfigRemoteServices {
     }
 
     public static List<HttpGatewayRewriteRoute> readRewriteRoutes(Set<String> existingRoutesIds, Config gatewayConfig) {
-        return gatewayConfig
-            .getConfigList("gateway-rewrite-routes")
-            .stream()
-            .map(rewriteRouteConfig -> new HttpGatewayRewriteRoute(
-                rewriteRouteConfig.getString("route-id"),
-                rewriteRouteConfig.getString("downstream-path")
+        if (gatewayConfig.hasPath(CONFIG_REWRITE_ROUTES)) {
+            return gatewayConfig
+                .getConfigList("gateway-rewrite-routes")
+                .stream()
+                .map(rewriteRouteConfig -> new HttpGatewayRewriteRoute(
+                    rewriteRouteConfig.getString("route-id"),
+                    rewriteRouteConfig.getString("downstream-path")
                 ))
-            .collect(Collectors.toList());
+                .collect(Collectors.toList());
+        }
+        return List.of();
     }
 }

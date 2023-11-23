@@ -1,6 +1,7 @@
 package com.coreoz.http.validation;
 
 import com.coreoz.http.config.HttpGatewayConfigAccessControl;
+import com.coreoz.http.remoteservices.HttpGatewayRemoteServicesIndex;
 import com.coreoz.http.router.data.DestinationRoute;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import play.mvc.Http;
@@ -9,11 +10,11 @@ import play.mvc.Http;
  * Validate authorized clients from incoming downstream requests
  */
 public class HttpGatewayClientValidator {
-    private final HttpGatewayRouteValidator routeValidator;
+    private final HttpGatewayRemoteServicesIndex servicesIndex;
     private final HttpGatewayConfigAccessControl gatewayClients;
 
-    public HttpGatewayClientValidator(HttpGatewayRouteValidator routeValidator, HttpGatewayConfigAccessControl gatewayClients) {
-        this.routeValidator = routeValidator;
+    public HttpGatewayClientValidator(HttpGatewayRemoteServicesIndex servicesIndex, HttpGatewayConfigAccessControl gatewayClients) {
+        this.servicesIndex = servicesIndex;
         this.gatewayClients = gatewayClients;
     }
 
@@ -22,11 +23,7 @@ public class HttpGatewayClientValidator {
      * @return The validated clientId, else an {@link HttpResponseStatus#UNAUTHORIZED} error
      */
     public HttpGatewayValidation<String> validateClientIdentification(Http.Request downstreamRequest) {
-        String clientId = gatewayClients.authenticate(downstreamRequest);
-        if (clientId == null) {
-            return HttpGatewayValidation.ofError(HttpResponseStatus.UNAUTHORIZED, "Client authentication failed");
-        }
-        return HttpGatewayValidation.ofValue(clientId);
+        return HttpGatewayClientValidators.validateClientIdentification(gatewayClients, downstreamRequest);
     }
 
     /**
@@ -36,7 +33,7 @@ public class HttpGatewayClientValidator {
     public HttpGatewayValidation<HttpGatewayDestinationService> validateClientAccess(
         Http.Request downstreamRequest, DestinationRoute destinationRoute, String clientId
     ) {
-        String serviceId = routeValidator.getServicesIndex().findService(destinationRoute.getRouteId()).getServiceId();
+        String serviceId = servicesIndex.findService(destinationRoute.getRouteId()).getServiceId();
         if (!gatewayClients.hasAccess(clientId, destinationRoute.getRouteId(), serviceId)) {
             return HttpGatewayValidation.ofError(
                 HttpResponseStatus.UNAUTHORIZED,

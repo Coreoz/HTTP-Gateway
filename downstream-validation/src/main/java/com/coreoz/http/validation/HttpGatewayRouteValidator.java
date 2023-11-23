@@ -18,10 +18,6 @@ public class HttpGatewayRouteValidator {
         this.servicesIndex = servicesIndex;
     }
 
-    HttpGatewayRemoteServicesIndex getServicesIndex() {
-        return servicesIndex;
-    }
-
     /**
      * Validate and identify the target service route
      * @return The validated target route, else an {@link HttpResponseStatus#NOT_FOUND} error

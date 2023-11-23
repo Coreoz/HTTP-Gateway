@@ -48,6 +48,12 @@ public class HttpGatewayConfigRemoteServicesTest {
         Assertions.assertThat(rewriteRoutes).containsExactly(new HttpGatewayRewriteRoute("route-a", "/pets"));
     }
 
+    @Test
+    public void readRewriteRoutes__verify_that_missing_rewrite_route_config_return_empty_list() {
+        List<HttpGatewayRewriteRoute> emptyRewriteRoutes = HttpGatewayConfigRemoteServices.readRewriteRoutes(Set.of(), config.getConfig("remote-services-missing-base-url"));
+        Assertions.assertThat(emptyRewriteRoutes).isEmpty();
+    }
+
     // readConfig
 
     @Test
