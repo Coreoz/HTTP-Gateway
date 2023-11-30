@@ -21,7 +21,7 @@ public class SampleCustomClientDimensionTest {
     }
 
     @AfterClass
-    public static void startsGateway() {
+    public static void stopGateway() {
         httpGateway.stop();
     }
 

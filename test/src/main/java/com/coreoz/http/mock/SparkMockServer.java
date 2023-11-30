@@ -22,9 +22,9 @@ public class SparkMockServer {
     private static void initializeSpark() {
         Spark.port(SPARK_HTTP_PORT);
         Spark.get("/hello", (request, response) -> "World");
+        Spark.get("/pets/:id", (request, response) -> "Fetch pet " + request.params("id"));
         Spark.get("/pets", (request, response) -> {
-            String basicAuthHeader = "Basic " + Base64.getEncoder().encodeToString("test-auth:auth-password".getBytes(StandardCharsets.UTF_8));
-            if (!request.headers(HttpHeaders.AUTHORIZATION).equals(basicAuthHeader)) {
+            if (!isBasicAuthValid(request)) {
                 return "wrong auth";
             }
             // custom header for testing
@@ -32,9 +32,21 @@ public class SparkMockServer {
 
             return "Lots of pets :)";
         });
+        Spark.post("/pets", (request, response) -> {
+            if (!isBasicAuthValid(request)) {
+                return "wrong auth";
+            }
+            return "Addede " + request.body();
+        });
         Spark.get("/customer-a/other-route/:id", (request, response) -> "Customer A: " + request.params("id"));
         Spark.get("/customer-a/custom-route", (request, response) -> "Customer A custom route");
         Spark.get("/customer-b/other-route/:id", (request, response) -> "Customer B: " + request.params("id"));
+        Spark.get("/other-service/route-sample", (request, response) -> {
+            if (request.headers(HttpHeaders.AUTHORIZATION) != null) {
+                return "Received authorization header";
+            }
+            return "Another route";
+        });
         Spark.get("/echo/:param", (request, response) -> request.params("param")
             + "\n"
             + request.queryString()
@@ -69,5 +81,10 @@ public class SparkMockServer {
             response.status(400);
             return "Data validation failed";
         });
+    }
+
+    static boolean isBasicAuthValid(spark.Request request) {
+        String basicAuthHeader = "Basic " + Base64.getEncoder().encodeToString("test-auth:auth-password".getBytes(StandardCharsets.UTF_8));
+        return request.headers(HttpHeaders.AUTHORIZATION).equals(basicAuthHeader);
     }
 }

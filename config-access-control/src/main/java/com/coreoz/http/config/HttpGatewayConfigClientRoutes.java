@@ -32,10 +32,17 @@ public class HttpGatewayConfigClientRoutes {
             .stream()
             .map(clientConfig -> new HttpGatewayClientRoutesControl(
                 clientConfig.getString("client-id"),
-                clientConfig.getStringList("allowed-routes"),
-                clientConfig.getStringList("allowed-routes-groups"),
-                clientConfig.getStringList("allowed-services")
+                getConfigStringListOrEmpty(clientConfig, "allowed-routes"),
+                getConfigStringListOrEmpty(clientConfig, "allowed-routes-groups"),
+                getConfigStringListOrEmpty(clientConfig, "allowed-services")
             ))
             .collect(Collectors.toList());
+    }
+
+    private static List<String> getConfigStringListOrEmpty(Config config, String configPath) {
+        if (config.hasPath(configPath)) {
+            return config.getStringList(configPath);
+        }
+        return List.of();
     }
 }

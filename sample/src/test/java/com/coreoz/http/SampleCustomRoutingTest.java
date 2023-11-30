@@ -25,7 +25,7 @@ public class SampleCustomRoutingTest {
     }
 
     @AfterClass
-    public static void startsGateway() {
+    public static void stopGateway() {
         httpGateway.stop();
     }
 
