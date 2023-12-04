@@ -35,6 +35,8 @@ public class HttpGatewayUpstreamClient {
         this(Duration.ofMinutes(5), Duration.ofMinutes(5));
     }
 
+    // TODO provide a way to create a new upstream request, but without automatic initialization
+
     /**
      * Create a new remote request from an incoming HTTP Gateway request.
      * The request body along with the request content-length header will be forwarded to the remote request.
