@@ -16,7 +16,7 @@ HTTP Gateway relies on other high performance Open Source libraries, especially:
 
 Core concepts
 -------------
-TODO diagrams & description
+![HTTP Gateway](docs/http-gateway-concepts.svg?raw=true&sanitize=true)
 
 Core concepts are important to correctly use and understand HTTP Gateway:
 - **Downstream request**: An incoming HTTP request to the HTTP Gateway, made by a client

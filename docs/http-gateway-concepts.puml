@@ -1,0 +1,36 @@
+@startuml
+!theme sketchy-outline
+skinparam BackgroundColor transparent
+skinparam handwritten false
+skinparam defaultFontName "Roboto"
+skinparam componentStyle rectangle
+
+<style>
+	arrow {
+		LineColor #666666
+		LineThickness 2.0
+	}
+</style>
+
+component "HTTP API Gateway" #99caff {
+    [Proxy]
+}
+
+component "Clients" #fbb1cc {
+    [App A]
+    [App B]
+}
+
+component "Services" #fcfcd4 {
+    [Service A]
+    [Service B]
+    [Service C]
+}
+
+[App A] --> [Proxy] : Downstream requests
+[App B] --> [Proxy]
+[Proxy] --> [Service A] : Upstream requests
+[Proxy] --> [Service B]
+[Proxy] --> [Service C]
+
+@enduml
