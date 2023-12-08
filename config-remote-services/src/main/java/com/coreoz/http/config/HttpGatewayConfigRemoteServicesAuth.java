@@ -15,21 +15,41 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * Handle remote service authentication configuration
+ */
 public class HttpGatewayConfigRemoteServicesAuth {
     public static final HttpGatewayServiceAuthConfig<HttpGatewayAuthBasic> BASIC_AUTH = HttpGatewayServiceAuthConfig.of(HttpGatewayConfigAuth.BASIC_AUTH, HttpGatewayRemoteServiceBasicAuthenticator::new);
 
+    /**
+     * Available remote services authenticators
+     */
     private final static List<HttpGatewayServiceAuthConfig<? extends HttpGatewayAuthObject>> supportedAuthConfigs = List.of(
         BASIC_AUTH
     );
 
+    /**
+     * Read remote services authentication config to create a {@link HttpGatewayRemoteServiceAuthenticator}
+     * using {@link #supportedAuthConfigs}
+     */
     public static HttpGatewayRemoteServiceAuthenticator readConfig(HttpGatewayConfigLoader configLoader) {
         return readConfig(configLoader.getHttpGatewayConfig());
     }
 
+    /**
+     * Read remote services authentication config to create a {@link HttpGatewayRemoteServiceAuthenticator}
+     * using {@link #supportedAuthConfigs}
+     */
     public static HttpGatewayRemoteServiceAuthenticator readConfig(Config gatewayConfig) {
         return readConfig(gatewayConfig, supportedAuthConfigs);
     }
 
+    /**
+     * Read remote services authentication config to create a {@link HttpGatewayRemoteServiceAuthenticator}
+     * and enable to use custom authenticators.<br>
+     * <br>
+     * See {@link #readConfig(Config)} to use default available authenticators.
+     */
     public static HttpGatewayRemoteServiceAuthenticator readConfig(Config gatewayConfig, List<HttpGatewayServiceAuthConfig<? extends HttpGatewayAuthObject>> supportedAuthConfigs) {
         Map<String, List<? extends HttpGatewayAuthObject>> authReadConfigs = HttpGatewayConfigAuth.readAuth(
             HttpGatewayConfigRemoteServices.CONFIG_SERVICE_ID,
@@ -42,35 +62,44 @@ public class HttpGatewayConfigRemoteServicesAuth {
 
     @VisibleForTesting
     static List<HttpGatewayRemoteServiceAuth> createServiceAuthentications(List<HttpGatewayServiceAuthConfig<? extends HttpGatewayAuthObject>> supportedAuthConfigs, Map<String, List<? extends HttpGatewayAuthObject>> authReadConfigs) {
-        Map<String, Function<? extends HttpGatewayAuthObject, HttpGatewayUpstreamAuthenticator>> indexedAuthenticatorCreator = supportedAuthConfigs
+        Map<String, HttpGatewayUpstreamAuthenticatorCreator<? extends HttpGatewayAuthObject>> indexedAuthenticatorCreator = supportedAuthConfigs
             .stream()
             .collect(Collectors.toMap(
                 authConfig -> authConfig.getAuthConfig().getAuthType(),
                 HttpGatewayServiceAuthConfig::getAuthenticatorCreator
             ));
 
+        //noinspection unchecked
         return authReadConfigs
             .entrySet()
             .stream()
             .flatMap(serviceAuthByType -> serviceAuthByType.getValue().stream().map(serviceAuth -> new HttpGatewayRemoteServiceAuth(
                 serviceAuth.getObjectId(),
-                createAuthenticator(serviceAuthByType.getKey(), serviceAuth, indexedAuthenticatorCreator)
+                (
+                    (HttpGatewayUpstreamAuthenticatorCreator<HttpGatewayAuthObject>) indexedAuthenticatorCreator.get(serviceAuthByType.getKey())
+                )
+                    .createAuthenticator(serviceAuth)
             )))
             .collect(Collectors.toList());
     }
 
-    private static HttpGatewayUpstreamAuthenticator createAuthenticator(
-        String authType,
-        HttpGatewayAuthObject serviceAuth,
-        Map<String, Function<? extends HttpGatewayAuthObject, HttpGatewayUpstreamAuthenticator>> indexedAuthenticatorCreator
-    ) {
-        //noinspection unchecked
-        return ((Function<HttpGatewayAuthObject, HttpGatewayUpstreamAuthenticator>) indexedAuthenticatorCreator.get(authType)).apply(serviceAuth);
-    }
-
+    /**
+     * A service authenticator configuration
+     * @param <T> The type of the object that represents the authentication. See <code>HttpGatewayAuthBasic</code> for an example
+     */
     @Value(staticConstructor = "of")
     public static class HttpGatewayServiceAuthConfig<T extends HttpGatewayAuthObject> {
         HttpGatewayConfigAuth.HttpGatewayAuthConfig<T> authConfig;
-        Function<T, HttpGatewayUpstreamAuthenticator> authenticatorCreator;
+        // TODO rempalcer les types function un peu partout par des vraies interfaces
+        HttpGatewayUpstreamAuthenticatorCreator<T> authenticatorCreator;
+    }
+
+    /**
+     * Function that creates an {@link HttpGatewayUpstreamAuthenticator} from an authentication object
+     * @param <T> See {@link HttpGatewayServiceAuthConfig}
+     */
+    @FunctionalInterface
+    public interface HttpGatewayUpstreamAuthenticatorCreator<T extends HttpGatewayAuthObject> {
+        HttpGatewayUpstreamAuthenticator createAuthenticator(T authObject);
     }
 }

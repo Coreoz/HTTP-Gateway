@@ -19,19 +19,48 @@ Core concepts
 TODO diagrams & description
 
 Core concepts are important to correctly use and understand HTTP Gateway:
-- **Downstream request**:
-- **Upstream request**:
-- **Client**:
-- **Service**: 
+- **Downstream request**: An incoming HTTP request to the HTTP Gateway, made by a client
+- **Upstream request**: An HTTP made from the HTTP Gateway to a service, in response to a downstream request
+- **Client**: A system that will make HTTP requests to the HTTP Gateway
+- **Service**: A system that will be made available through and on the HTTP Gateway
 
 Getting started and samples
 ---------------------------
-To build a new HTTP gateway, it is best to start looking at the samples HTTP Gateways so see how it all works.
+To build a new HTTP gateway, it is best to start looking at the [samples HTTP Gateways](samples/) so see how it all works.
 
 Then the steps are:
-1. Create a Java project
-2. Dependencies
-3. Using the toolkit
+1. Create a Java project, for example using the [Plume archetype](https://github.com/Coreoz/Plume-archetpes)
+2. Make sure to use at least Java 11
+3. Add the HTTP Gateway Maven dependencies, in doubt it is possible to copy the ones from the [sample HTTP Gateways pom.xml file](samples/pom.xml) 
+4. Create the Gateway entry point class, it is generally easier to copy/paste a [sample gateway class](samples/src/main/java/com/coreoz/http)
+5. Use and configure available [HTTP Gateway modules](#available-modules)
+6. Add the configuration file, it is generally easier to copy/paste a [sample gateway config](samples/src/main/resources)
+
+Available modules
+-----------------
+### Core
+The base module of HTTP Gateway that enables to proxy incoming downstream requests to upstream services.
+
+### Router
+This provides routing capabilities by:
+- Indexing available routes with their downstream path and their matching upstream path 
+- Enabling to search in the available routes
+- Computing the upstream destination route while resolving correctly route patterns
+
+### Auth
+Defines objects used to store authentication data.
+
+### Remote services
+
+
+### Upstream authentication
+### Upstream peeker
+### Client access control
+### Downstream validation
+### Config
+### Test
+
+Modules dependency tree:
 
 TODO
 ----

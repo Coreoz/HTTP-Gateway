@@ -60,8 +60,7 @@ public class HttpGatewayTest {
             HttpGatewayRouterConfiguration.asyncRouting(request -> {
                 HttpGatewayUpstreamRequest upstreamRequest = httpGatewayUpstreamClient
                     .prepareRequest(request)
-                    .withUrl("http://localhost:" + SparkMockServer.SPARK_HTTP_PORT + "/hello")
-                    .with((downstreamRequest, upstreamRawRequest) -> upstreamRawRequest.setMethod("GET"));
+                    .withUrl("http://localhost:" + SparkMockServer.SPARK_HTTP_PORT + request.path());
                 CompletableFuture<HttpGatewayUpstreamResponse> upstreamFutureResponse = httpGatewayUpstreamClient.executeUpstreamRequest(upstreamRequest);
                 return upstreamFutureResponse.thenApply(upstreamResponse -> {
                     if (upstreamResponse.getStatusCode() > HttpResponseStatus.INTERNAL_SERVER_ERROR.code()) {
@@ -75,10 +74,10 @@ public class HttpGatewayTest {
             })
         ));
 
-        HttpResponse<String> httpResponse = makeHttpRequest("/endpoint-not-used-here");
+        HttpResponse<String> httpResponse = makeHttpRequest("/long-body");
 
         Assertions.assertThat(httpResponse.statusCode()).isEqualTo(HttpResponseStatus.OK.code());
-        Assertions.assertThat(httpResponse.body()).isEqualTo("World");
+        Assertions.assertThat(httpResponse.body()).isEqualTo("This is a loooooooooooooooooong body");
 
         httpGateway.stop();
     }

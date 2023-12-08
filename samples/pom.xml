@@ -8,10 +8,10 @@
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-	<artifactId>http-gateway-sample</artifactId>
+	<artifactId>http-gateway-samples</artifactId>
 	<packaging>jar</packaging>
 	<name>HTTP Gateway Router Config</name>
-	<description>Sample projet that uses most of the Gateway components</description>
+	<description>Sample projets that uses most of the Gateway components</description>
 
 	<dependencies>
         <dependency>

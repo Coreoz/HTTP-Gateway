@@ -90,7 +90,7 @@
 	<modules>
 		<module>core</module>
 		<module>test</module>
-		<module>sample</module>
+		<module>samples</module>
 		<module>config</module>
 		<module>config-validation</module>
 		<module>config-auth</module>
@@ -99,7 +99,7 @@
         <module>auth</module>
         <module>remote-services</module>
         <module>router</module>
-        <module>access-control</module>
+        <module>client-access-control</module>
         <module>upstream-auth</module>
         <module>upstream-peeker</module>
         <module>downstream-validation</module>
@@ -228,7 +228,7 @@
             </dependency>
             <dependency>
                 <groupId>com.coreoz</groupId>
-                <artifactId>http-gateway-access-control</artifactId>
+                <artifactId>http-gateway-client-access-control</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

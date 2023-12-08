@@ -1,15 +1,14 @@
 package com.coreoz.http.config;
 
-import com.coreoz.http.access.control.auth.HttpGatewayAuthObject;
-import com.coreoz.http.access.control.auth.HttpGatewayClientAuthenticator;
-import com.coreoz.http.access.control.auth.HttpGatewayClientApiKeyAuthenticator;
 import com.coreoz.http.access.control.auth.HttpGatewayAuthApiKey;
+import com.coreoz.http.access.control.auth.HttpGatewayAuthObject;
+import com.coreoz.http.access.control.auth.HttpGatewayClientApiKeyAuthenticator;
+import com.coreoz.http.access.control.auth.HttpGatewayClientAuthenticator;
 import com.typesafe.config.Config;
 import lombok.Value;
 
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class HttpGatewayConfigClientAuth {
@@ -30,7 +29,7 @@ public class HttpGatewayConfigClientAuth {
             supportedAuthConfigs.stream().map(HttpGatewayClientAuthConfig::getAuthConfig).collect(Collectors.toList())
         );
 
-        Map<String, Function<? extends List<? extends HttpGatewayAuthObject>, HttpGatewayClientAuthenticator>> indexedAuthenticatorCreator = supportedAuthConfigs
+        Map<String, HttpGatewayClientAuthenticatorCreator<? extends HttpGatewayAuthObject>> indexedAuthenticatorCreator = supportedAuthConfigs
             .stream()
             .collect(Collectors.toMap(
                 availableAuthConfig -> availableAuthConfig.authConfig.getAuthType(),
@@ -40,16 +39,17 @@ public class HttpGatewayConfigClientAuth {
     }
 
     private static HttpGatewayClientAuthenticator makeAuthenticator(
-        Map<String, Function<? extends List<? extends HttpGatewayAuthObject>, HttpGatewayClientAuthenticator>> indexedAuthenticatorCreator,
+        Map<String, HttpGatewayClientAuthenticatorCreator<? extends HttpGatewayAuthObject>> indexedAuthenticatorCreator,
         Map<String, List<? extends HttpGatewayAuthObject>> authReadConfigs
         ) {
         return HttpGatewayClientAuthenticator.merge(authReadConfigs
             .entrySet()
             .stream()
             .map((authConfig) -> {
-                @SuppressWarnings("unchecked")
-                Function<List<? extends HttpGatewayAuthObject>, HttpGatewayClientAuthenticator> clientAuthenticatorCreator = (Function<List<? extends HttpGatewayAuthObject>, HttpGatewayClientAuthenticator>) indexedAuthenticatorCreator.get(authConfig.getKey());
-                return clientAuthenticatorCreator.apply(authConfig.getValue());
+                //noinspection unchecked
+                HttpGatewayClientAuthenticatorCreator<HttpGatewayAuthObject> creator = (HttpGatewayClientAuthenticatorCreator<HttpGatewayAuthObject>) indexedAuthenticatorCreator.get(authConfig.getKey());
+                //noinspection unchecked
+                return creator.createAuthenticator((List<HttpGatewayAuthObject>) authConfig.getValue());
             })
             .collect(Collectors.toList()));
     }
@@ -58,9 +58,23 @@ public class HttpGatewayConfigClientAuth {
         return supportedAuthConfigs;
     }
 
+    /**
+     * A client authenticator configuration
+     * @param <T> The type of the object that represents the authentication. See <code>HttpGatewayAuthBasic</code> for an example
+     */
     @Value(staticConstructor = "of")
-    public static class HttpGatewayClientAuthConfig<T> {
+    public static class HttpGatewayClientAuthConfig<T extends HttpGatewayAuthObject> {
         HttpGatewayConfigAuth.HttpGatewayAuthConfig<T> authConfig;
-        Function<List<T>, HttpGatewayClientAuthenticator> authenticatorCreator;
+        HttpGatewayClientAuthenticatorCreator<T> authenticatorCreator;
+    }
+
+    /**
+     * Function that creates an {@link HttpGatewayClientAuthenticator} from a list of authentication objects.
+     * See {@link HttpGatewayClientApiKeyAuthenticator#HttpGatewayClientApiKeyAuthenticator(List)} for an example
+     * @param <T> See {@link HttpGatewayClientAuthConfig}
+     */
+    @FunctionalInterface
+    public interface HttpGatewayClientAuthenticatorCreator<T extends HttpGatewayAuthObject> {
+        HttpGatewayClientAuthenticator createAuthenticator(List<T> authObjects);
     }
 }

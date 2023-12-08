@@ -14,13 +14,19 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Index remote services routes so it can be used in a HttpGatewayRouter
+ * Index remote services routes, so it can be used in a HttpGatewayRouter
  */
 public class HttpGatewayRemoteServicesIndex {
     private final Map<String, HttpGatewayRemoteService> servicesByRouteId;
     private final List<HttpGatewayRemoteService> services;
     private final Map<String, String> gatewayRewriteRoutes;
 
+    /**
+     * Create the route index
+     * @param services The available services
+     * @param rewriteRoutes The routes for which the HTTP Gateway path is different from the service route
+     * @throws HttpGatewayConfigException If the same routeId is used in multiple routes
+     */
     public HttpGatewayRemoteServicesIndex(List<HttpGatewayRemoteService> services, List<HttpGatewayRewriteRoute> rewriteRoutes) {
         this.services = services;
         this.servicesByRouteId = services
@@ -44,6 +50,9 @@ public class HttpGatewayRemoteServicesIndex {
             ));
     }
 
+    /**
+     * Returns the available services
+     */
     public List<HttpGatewayRemoteService> getServices() {
         return services;
     }
@@ -59,10 +68,18 @@ public class HttpGatewayRemoteServicesIndex {
             )));
     }
 
+    /**
+     * Computes the route as a <code>Iterable<HttpEndpoint></code> object that can be used
+     * in the router <code>HttpGatewayRouter</code> class
+     */
     public Iterable<HttpEndpoint> computeRoutes() {
         return routesStream()::iterator;
     }
 
+    /**
+     * Does the same as {@link #computeRoutes()} but validate the routes consistency at the same time.
+     * @throws HttpGatewayConfigException If there is an inconsistency detected
+     */
     public Map<String, IndexedEndpoints> computeValidatedIndexedRoutes() {
         validateRewriteRoutes();
 
@@ -143,10 +160,17 @@ public class HttpGatewayRemoteServicesIndex {
         return servicesByRouteId.containsKey(routeId);
     }
 
+    /**
+     * Find the corresponding service for a routeId
+     */
     public HttpGatewayRemoteService findService(String routeId) {
         return servicesByRouteId.get(routeId);
     }
 
+    /**
+     * Find the corresponding service of a <code>MatchingRoute</code> object that is returned
+     * by the router service: <code>HttpGatewayRouter</code>
+     */
     public String findServiceBaseUrl(MatchingRoute matchingRoute) {
         HttpGatewayRemoteService remoteService = findService(matchingRoute.getMatchingEndpoint().getHttpEndpoint().getRouteId());
         if (remoteService != null) {

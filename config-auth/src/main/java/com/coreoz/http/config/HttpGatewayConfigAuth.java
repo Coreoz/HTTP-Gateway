@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -53,7 +52,7 @@ public class HttpGatewayConfigAuth {
                 if (authConfig == null) {
                     throw new HttpGatewayConfigException("Unrecognized authentication type '" + authType + "' for " + configObjectId + "=" + objectId);
                 }
-                HttpGatewayAuthObject authConfigObject = authConfig.authReader.apply(objectId, baseAuthConfig);
+                HttpGatewayAuthObject authConfigObject = authConfig.authReader.readAuthConfig(objectId, baseAuthConfig);
                 @SuppressWarnings("unchecked")
                 List<HttpGatewayAuthObject> authConfigObjects = (List<HttpGatewayAuthObject>) authReadConfigs.computeIfAbsent(authType, authTypeLambda -> new ArrayList<>());
                 authConfigObjects.add(authConfigObject);
@@ -75,8 +74,22 @@ public class HttpGatewayConfigAuth {
     }
 
     @Value(staticConstructor = "of")
-    public static class HttpGatewayAuthConfig<T> {
+    public static class HttpGatewayAuthConfig<T extends HttpGatewayAuthObject> {
         String authType;
-        BiFunction<String, Config, T> authReader;
+        HttpGatewayAuthReader<T> authReader;
+    }
+
+    /**
+     * The function that will read authentication data in a config object.
+     * @param <T> The authentication object type that will contain all the necessary data to perform the authentication
+     */
+    @FunctionalInterface
+    public interface HttpGatewayAuthReader<T extends HttpGatewayAuthObject> {
+        /**
+         * @param objectId The referenced object for the authentication. It can be a clientId or a serviceId. It will be used by <code>HttpGatewayRemoteServiceAuthenticator</code> and <code>HttpGatewayClientAuthenticator</code> to either guess which authenticator to use (for a service), or to either know which client has been authenticated
+         * @param authConfig The authentication {@link Config} object for the current objectId. For a key auth, the object will be <code>{type = "key", value = "sample-api-kay"}</code>
+         * @return The authentication object that will contain all the necessary data to perform the authentication
+         */
+        T readAuthConfig(String objectId, Config authConfig);
     }
 }
