@@ -3,8 +3,6 @@ package com.coreoz.http.upstream;
 import org.asynchttpclient.RequestBuilder;
 import play.mvc.Http;
 
-import java.util.function.BiConsumer;
-
 /**
  * A wrapper for {@link HttpGatewayUpstreamRequest} to use {@link HttpGatewayUpstreamBytesPeekerClient}
  * @param <D> See {@link HttpGatewayBytesStreamPeekingConfiguration}
@@ -66,7 +64,7 @@ public class HttpGatewayPeekingUpstreamRequest<D, U> {
         return this;
     }
 
-    public HttpGatewayPeekingUpstreamRequest<D, U> with(BiConsumer<Http.Request, RequestBuilder> customizer) {
+    public HttpGatewayPeekingUpstreamRequest<D, U> with(HttpGatewayUpstreamRequest.HttpGatewayRequestCustomizer customizer) {
         upstreamRequest.with(customizer);
         return this;
     }

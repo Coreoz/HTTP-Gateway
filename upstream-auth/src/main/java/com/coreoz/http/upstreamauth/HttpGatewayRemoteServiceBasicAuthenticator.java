@@ -26,7 +26,7 @@ public class HttpGatewayRemoteServiceBasicAuthenticator implements HttpGatewayUp
     }
 
     @Override
-    public void addUpstreamAuthentication(Http.Request request, RequestBuilder requestBuilder) {
+    public void customize(Http.Request request, RequestBuilder requestBuilder) {
         requestBuilder.setHeader(
             HttpHeaders.AUTHORIZATION,
             authorizationBasic

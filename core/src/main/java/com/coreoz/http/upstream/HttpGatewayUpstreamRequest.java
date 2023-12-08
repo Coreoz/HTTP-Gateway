@@ -6,7 +6,6 @@ import org.asynchttpclient.RequestBuilder;
 import play.mvc.Http;
 
 import java.util.Arrays;
-import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 public class HttpGatewayUpstreamRequest {
@@ -58,9 +57,9 @@ public class HttpGatewayUpstreamRequest {
         return this;
     }
 
-    public HttpGatewayUpstreamRequest with(BiConsumer<Http.Request, RequestBuilder> customizer) {
+    public HttpGatewayUpstreamRequest with(HttpGatewayRequestCustomizer customizer) {
         if (customizer != null) {
-            customizer.accept(downstreamRequest, upstreamRequest);
+            customizer.customize(downstreamRequest, upstreamRequest);
         }
         return this;
     }
@@ -71,5 +70,16 @@ public class HttpGatewayUpstreamRequest {
 
     public RequestBuilder getUpstreamRequest() {
         return upstreamRequest;
+    }
+
+    /**
+     * Function provided to {@link #with(HttpGatewayRequestCustomizer)}
+     */
+    @FunctionalInterface
+    public interface HttpGatewayRequestCustomizer {
+        /**
+         * Change the upstream request, using optionally the values of the incoming downstream request
+         */
+        void customize(Http.Request downstreamRequest, RequestBuilder upstreamRequest);
     }
 }

@@ -2,9 +2,9 @@ package com.coreoz.http.config;
 
 import com.coreoz.http.access.control.auth.HttpGatewayAuthBasic;
 import com.coreoz.http.access.control.auth.HttpGatewayAuthObject;
-import com.coreoz.http.upstreamauth.HttpGatewayRemoteServiceBasicAuthenticator;
 import com.coreoz.http.remoteservices.HttpGatewayRemoteServiceAuth;
 import com.coreoz.http.remoteservices.HttpGatewayRemoteServiceAuthenticator;
+import com.coreoz.http.upstreamauth.HttpGatewayRemoteServiceBasicAuthenticator;
 import com.coreoz.http.upstreamauth.HttpGatewayUpstreamAuthenticator;
 import com.google.common.annotations.VisibleForTesting;
 import com.typesafe.config.Config;
@@ -12,7 +12,6 @@ import lombok.Value;
 
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
