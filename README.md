@@ -31,7 +31,7 @@ To build a new HTTP gateway, it is best to start looking at the [samples HTTP Ga
 Then the steps are:
 1. Create a Java project, for example using the [Plume archetype](https://github.com/Coreoz/Plume-archetpes)
 2. Make sure to use at least Java 11
-3. Add the HTTP Gateway Maven dependencies, in doubt it is possible to copy the ones from the [sample HTTP Gateways pom.xml file](samples/pom.xml) 
+3. Add the HTTP Gateway Maven dependencies, in doubt, it is possible to copy the ones from the [sample HTTP Gateways pom.xml file](samples/pom.xml) 
 4. Create the Gateway entry point class, it is generally easier to copy/paste a [sample gateway class](samples/src/main/java/com/coreoz/http)
 5. Use and configure available [HTTP Gateway modules](#available-modules)
 6. Add the configuration file, it is generally easier to copy/paste a [sample gateway config](samples/src/main/resources)
@@ -50,6 +50,14 @@ This provides routing capabilities by:
 ### Auth
 Defines objects used to store authentication data.
 
+Available authentications are:
+- API key:
+  - This can be used in configuration for clients and services using `{type = "key", value = "api-key-value"}`
+  - This is used by providing the HTTP header `Authorization` the value `Bearer api-key-value` (with the correct API key value)
+- Basic:
+  - This can be used in configuration for clients and services using `auth = { type = "basic", userId = "userId-value", password = "password-value"}`
+  - This is used by providing the HTTP header `Authorization` the value `Basic base64(userId-value:password-value)` (with the correct values)
+
 ### Remote services
 
 
@@ -58,6 +66,7 @@ Defines objects used to store authentication data.
 ### Client access control
 ### Downstream validation
 ### Config
+TODO HOCOON
 ### Test
 
 Modules dependency tree:
@@ -65,5 +74,6 @@ Modules dependency tree:
 TODO
 ----
 - [ ]: add readme docs about modules, how to get started, the project motivation, use cases with custom auth, custom validation, add logging
+- [ ]: Implement both key and basic auth for clients and services
 - [ ]: upgrade play and java versions
 - [ ]: provide a way to easily validate downstream request body
