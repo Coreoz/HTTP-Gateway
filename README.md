@@ -14,6 +14,9 @@ HTTP Gateway relies on other powerful open source libraries, in particular:
 - [Async HTTP Client](https://github.com/AsyncHttpClient/async-http-client)
 - [Config](https://github.com/lightbend/config)
 
+HTTP Gateway is maintained by [Coreoz](http://coreoz.com/)
+and licensed under [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0).
+
 Core concepts
 -------------
 ![HTTP Gateway](docs/http-gateway-concepts.svg?raw=true&sanitize=true)
