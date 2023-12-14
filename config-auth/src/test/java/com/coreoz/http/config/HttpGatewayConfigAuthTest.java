@@ -3,7 +3,7 @@ package com.coreoz.http.config;
 import com.coreoz.http.access.control.auth.HttpGatewayAuthApiKey;
 import com.coreoz.http.access.control.auth.HttpGatewayAuthBasic;
 import com.coreoz.http.access.control.auth.HttpGatewayAuthObject;
-import com.coreoz.http.validation.HttpGatewayConfigException;
+import com.coreoz.http.exception.HttpGatewayException;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigException;
 import com.typesafe.config.ConfigFactory;
@@ -37,7 +37,7 @@ public class HttpGatewayConfigAuthTest {
             .isEqualTo(new HttpGatewayAuthApiKey("2", "apikey"));
     }
 
-    @Test(expected = HttpGatewayConfigException.class)
+    @Test(expected = HttpGatewayException.class)
     public void readAuth__wrong_auth_key_must_raise_a_gateway_config_exception() {
         HttpGatewayConfigAuth.readAuth(
             "id",

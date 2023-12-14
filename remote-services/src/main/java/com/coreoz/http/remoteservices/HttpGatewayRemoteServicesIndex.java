@@ -2,7 +2,7 @@ package com.coreoz.http.remoteservices;
 
 import com.coreoz.http.router.SearchRouteIndexer;
 import com.coreoz.http.router.data.*;
-import com.coreoz.http.validation.HttpGatewayConfigException;
+import com.coreoz.http.exception.HttpGatewayException;
 
 import java.util.HashMap;
 import java.util.List;
@@ -25,7 +25,7 @@ public class HttpGatewayRemoteServicesIndex {
      * Create the route index
      * @param services The available services
      * @param rewriteRoutes The routes for which the HTTP Gateway path is different from the service route
-     * @throws HttpGatewayConfigException If the same routeId is used in multiple routes
+     * @throws HttpGatewayException If the same routeId is used in multiple routes
      */
     public HttpGatewayRemoteServicesIndex(List<HttpGatewayRemoteService> services, List<HttpGatewayRewriteRoute> rewriteRoutes) {
         this.services = services;
@@ -36,7 +36,7 @@ public class HttpGatewayRemoteServicesIndex {
                 HashMap::new,
                 (map, routeEntry) -> {
                     if (map.put(routeEntry.getKey(), routeEntry.getValue()) != null) {
-                        throw new HttpGatewayConfigException("Duplicate route-id for route '"+routeEntry.getKey()+"'");
+                        throw new HttpGatewayException("Duplicate route-id for route '"+routeEntry.getKey()+"'");
                     }
                 },
                 (mapA, mapB) -> { throw new UnsupportedOperationException("Should not run concurrently"); },
@@ -78,7 +78,7 @@ public class HttpGatewayRemoteServicesIndex {
 
     /**
      * Does the same as {@link #computeRoutes()} but validate the routes consistency at the same time.
-     * @throws HttpGatewayConfigException If there is an inconsistency detected
+     * @throws HttpGatewayException If there is an inconsistency detected
      */
     public Map<String, IndexedEndpoints> computeValidatedIndexedRoutes() {
         validateRewriteRoutes();
@@ -86,26 +86,26 @@ public class HttpGatewayRemoteServicesIndex {
         Map<String, IndexedEndpoints> indexedEndpoints = new HashMap<>();
         routesStream().forEach(endpoint -> {
             if (endpoint.getDownstreamPath() == null) {
-                throw new HttpGatewayConfigException(
+                throw new HttpGatewayException(
                     "Downstream path cannot be null for route '" + endpoint.getRouteId() + "'"
                 );
             }
             if (!endpoint.getDownstreamPath().startsWith("/")) {
-                throw new HttpGatewayConfigException(
+                throw new HttpGatewayException(
                     "Downstream path '" + endpoint.getDownstreamPath() + "' must start with a / for route '" + endpoint.getRouteId() + "'"
                 );
             }
 
             if (endpoint.getUpstreamPath() == null) {
-                throw new HttpGatewayConfigException("Upstream path must not be null for route '" + endpoint.getRouteId());
+                throw new HttpGatewayException("Upstream path must not be null for route '" + endpoint.getRouteId());
             }
 
             EndpointParsedData addedEndpoint = SearchRouteIndexer.addEndpointToIndex(indexedEndpoints, endpoint);
             if (addedEndpoint == null) {
-                throw new HttpGatewayConfigException("Error reading endpoint " + endpoint);
+                throw new HttpGatewayException("Error reading endpoint " + endpoint);
             }
             if (addedEndpoint.getHttpEndpoint() != endpoint) {
-                throw new HttpGatewayConfigException(
+                throw new HttpGatewayException(
                     "Duplicate downstream path for routes '"
                     + addedEndpoint.getHttpEndpoint().getRouteId()
                     + "' and 'route-b': the endpoint "
@@ -127,12 +127,12 @@ public class HttpGatewayRemoteServicesIndex {
         for (String routeId : gatewayRewriteRoutes.keySet()) {
             HttpGatewayRemoteServiceRoute initialRoute = indexedRoutesById.get(routeId);
             if (initialRoute == null) {
-                throw new HttpGatewayConfigException("Incorrect rewrite route that references a non existing routeId: " + routeId);
+                throw new HttpGatewayException("Incorrect rewrite route that references a non existing routeId: " + routeId);
             }
 
             String rewriteRoutePath = gatewayRewriteRoutes.get(routeId);
             if (!areRouteCompatible(initialRoute.getPath(), rewriteRoutePath)) {
-                throw new HttpGatewayConfigException("Incorrect rewrite route for routeId='" + routeId +
+                throw new HttpGatewayException("Incorrect rewrite route for routeId='" + routeId +
                     "', rewrite route path does not match initial route path, the paths pattern (e.g. {pattern}) names must be identical. Received: "
                     + initialRoute.getPath() + " (initial) != " + rewriteRoutePath + " (rewrite)");
             }

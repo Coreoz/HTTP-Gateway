@@ -21,7 +21,7 @@
 
         <dependency>
             <groupId>com.coreoz</groupId>
-            <artifactId>http-gateway-config-validation</artifactId>
+            <artifactId>http-gateway-exception</artifactId>
         </dependency>
 
 		<!-- unit testing -->

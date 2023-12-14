@@ -8,7 +8,7 @@
 		<version>1.0.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>http-gateway-config-validation</artifactId>
+	<artifactId>http-gateway-exception</artifactId>
 	<packaging>jar</packaging>
 	<name>HTTP Gateway Config Validation</name>
 	<description>Provide validation exception for configuration validation</description>

@@ -92,7 +92,7 @@
 		<module>test</module>
 		<module>samples</module>
 		<module>config</module>
-		<module>config-validation</module>
+		<module>exception</module>
 		<module>config-auth</module>
 		<module>config-remote-services</module>
 		<module>config-access-control</module>
@@ -238,7 +238,7 @@
             </dependency>
             <dependency>
                 <groupId>com.coreoz</groupId>
-                <artifactId>http-gateway-config-validation</artifactId>
+                <artifactId>http-gateway-exception</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

@@ -3,7 +3,7 @@ package com.coreoz.http.config;
 import com.coreoz.http.access.control.auth.HttpGatewayAuthApiKey;
 import com.coreoz.http.access.control.auth.HttpGatewayAuthBasic;
 import com.coreoz.http.access.control.auth.HttpGatewayAuthObject;
-import com.coreoz.http.validation.HttpGatewayConfigException;
+import com.coreoz.http.exception.HttpGatewayException;
 import com.typesafe.config.Config;
 import lombok.Value;
 
@@ -30,7 +30,7 @@ public class HttpGatewayConfigAuth {
      * @return A {@code Map} containing auth object indexed by authentication method/type.
      * So the {@code Map} key is the authentication method/type, and the authentication value is the {@code List}
      * of read objects that matche this authentication. See {@link HttpGatewayAuthConfig} for how object are read.
-     * @throws HttpGatewayConfigException if the authentication type is not present in {@code supportedAuthConfigs}
+     * @throws HttpGatewayException if the authentication type is not present in {@code supportedAuthConfigs}
      * @throws ConfigException if a missing authentication key is absent in the objects or if the objectId key is missing
      */
     public static Map<String, List<? extends HttpGatewayAuthObject>> readAuth(
@@ -50,7 +50,7 @@ public class HttpGatewayConfigAuth {
                 String authType = baseAuthConfig.getString("type");
                 HttpGatewayAuthConfig<? extends HttpGatewayAuthObject> authConfig = indexedSupportedAuthConfigs.get(authType);
                 if (authConfig == null) {
-                    throw new HttpGatewayConfigException("Unrecognized authentication type '" + authType + "' for " + configObjectId + "=" + objectId);
+                    throw new HttpGatewayException("Unrecognized authentication type '" + authType + "' for " + configObjectId + "=" + objectId);
                 }
                 HttpGatewayAuthObject authConfigObject = authConfig.authReader.readAuthConfig(objectId, baseAuthConfig);
                 @SuppressWarnings("unchecked")
