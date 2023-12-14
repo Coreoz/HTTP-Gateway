@@ -2,7 +2,7 @@ package com.coreoz.http.access.control.routes;
 
 import com.coreoz.http.remoteservices.HttpGatewayRemoteService;
 import com.coreoz.http.remoteservices.HttpGatewayRemoteServicesIndex;
-import com.coreoz.http.exception.HttpGatewayException;
+import com.coreoz.http.exception.HttpGatewayValidationException;
 
 import java.util.List;
 import java.util.Map;
@@ -37,7 +37,7 @@ public class HttpGatewayClientRouteAccessControl implements HttpGatewayClientRou
                             .stream()
                             .flatMap(routesGroupId -> Optional.ofNullable(routesGroupsIndex.get(routesGroupId))
                                 .map(List::stream)
-                                .orElseThrow(() -> new HttpGatewayException(
+                                .orElseThrow(() -> new HttpGatewayValidationException(
                                     "Route group '"+routesGroupId +"' does not exist in available routes groups: " + routesGroupsIndex.keySet()
                                 ))
                             )
@@ -61,7 +61,7 @@ public class HttpGatewayClientRouteAccessControl implements HttpGatewayClientRou
         for (Map.Entry<String, Set<String>> routesByClient : allowedRoutesByClient.entrySet()) {
             for (String routeId : routesByClient.getValue()) {
                 if (!remoteServicesIndex.hasRoute(routeId)) {
-                    throw new HttpGatewayException(
+                    throw new HttpGatewayValidationException(
                         "Route ID '" + routeId + "' is not recognized in client ID '" + routesByClient.getKey() + "'."
                     );
                 }
@@ -78,7 +78,7 @@ public class HttpGatewayClientRouteAccessControl implements HttpGatewayClientRou
         for (Map.Entry<String, Set<String>> serviceByClient : allowedServicesByClient.entrySet()) {
             for (String serviceId : serviceByClient.getValue()) {
                 if (!remoteServiceIds.contains(serviceId)) {
-                    throw new HttpGatewayException(
+                    throw new HttpGatewayValidationException(
                         "Service ID '" + serviceId + "' is not recognized in client ID '" + serviceByClient.getKey()
                         + "'. Available service ID: " + remoteServiceIds
                     );

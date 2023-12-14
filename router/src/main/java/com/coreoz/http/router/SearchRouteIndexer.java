@@ -102,7 +102,7 @@ public class SearchRouteIndexer {
     }
 
     private static  IndexedEndpoints computeSegmentIndex(IndexedEndpoints currentIndex, String segmentName, int segmentIndex) {
-        return currentIndex.getSegments().computeIfAbsent(segmentName, (segmentNameToAdd) -> new IndexedEndpoints(
+        return currentIndex.getSegments().computeIfAbsent(segmentName, segmentNameToAdd -> new IndexedEndpoints(
             null,
             currentIndex.getRating() | 1L << (MAX_LONG_OFFSET_FOR_POSITIVE_NUMBERS - segmentIndex),
             segmentIndex,

@@ -25,7 +25,7 @@ public class HttpGatewayRouteValidator {
     public HttpGatewayValidation<DestinationRoute> validate(Http.Request downstreamRequest) {
         return httpRouter
             .searchRoute(downstreamRequest.method(), downstreamRequest.path())
-            .map((matchingRoute) -> httpRouter.computeDestinationRoute(matchingRoute, servicesIndex.findServiceBaseUrl(matchingRoute)))
+            .map(matchingRoute -> httpRouter.computeDestinationRoute(matchingRoute, servicesIndex.findServiceBaseUrl(matchingRoute)))
             .map(HttpGatewayValidation::ofValue)
             .orElseGet(() -> HttpGatewayValidation.ofError(
                 HttpResponseStatus.NOT_FOUND,

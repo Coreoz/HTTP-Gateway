@@ -10,9 +10,9 @@ import play.mvc.Http;
  */
 @Value
 public class HttpGatewayBytesStreamPeekingConfiguration<D, U> {
-    private final static HttpGatewayBytesStreamPublisherConfiguration<Object, Void> IDLE_PEEKING_PUBLISHER = new HttpGatewayBytesStreamPublisherConfiguration<>(0, (httpFrame, bytes) -> null);
+    private static final HttpGatewayBytesStreamPublisherConfiguration<Object, Void> IDLE_PEEKING_PUBLISHER = new HttpGatewayBytesStreamPublisherConfiguration<>(0, (httpFrame, bytes) -> null);
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private final static HttpGatewayBytesStreamPeekingConfiguration<Void, Void> IDLE_PEEKING_CONFIGURATION = new HttpGatewayBytesStreamPeekingConfiguration<>(
+    private static final HttpGatewayBytesStreamPeekingConfiguration<Void, Void> IDLE_PEEKING_CONFIGURATION = new HttpGatewayBytesStreamPeekingConfiguration<>(
         (HttpGatewayBytesStreamPublisherConfiguration) IDLE_PEEKING_PUBLISHER,
         (HttpGatewayBytesStreamPublisherConfiguration) IDLE_PEEKING_PUBLISHER
     );

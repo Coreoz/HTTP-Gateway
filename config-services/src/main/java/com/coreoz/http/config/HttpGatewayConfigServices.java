@@ -7,7 +7,6 @@ import com.coreoz.http.remoteservices.HttpGatewayRewriteRoute;
 import com.typesafe.config.Config;
 
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public class HttpGatewayConfigServices {
@@ -26,13 +25,7 @@ public class HttpGatewayConfigServices {
         List<HttpGatewayRemoteService> remoteServices = readRemoteServices(gatewayConfig);
         return new HttpGatewayRemoteServicesIndex(
             remoteServices,
-            readRewriteRoutes(
-                remoteServices
-                    .stream()
-                    .flatMap(service -> service.getRoutes().stream().map(HttpGatewayRemoteServiceRoute::getRouteId))
-                    .collect(Collectors.toSet()),
-                gatewayConfig
-            )
+            readRewriteRoutes(gatewayConfig)
         );
     }
 
@@ -55,10 +48,10 @@ public class HttpGatewayConfigServices {
             .collect(Collectors.toList());
     }
 
-    public static List<HttpGatewayRewriteRoute> readRewriteRoutes(Set<String> existingRoutesIds, Config gatewayConfig) {
+    public static List<HttpGatewayRewriteRoute> readRewriteRoutes(Config gatewayConfig) {
         if (gatewayConfig.hasPath(CONFIG_REWRITE_ROUTES)) {
             return gatewayConfig
-                .getConfigList("gateway-rewrite-routes")
+                .getConfigList(CONFIG_REWRITE_ROUTES)
                 .stream()
                 .map(rewriteRouteConfig -> new HttpGatewayRewriteRoute(
                     rewriteRouteConfig.getString("route-id"),

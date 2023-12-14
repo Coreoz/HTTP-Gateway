@@ -46,10 +46,10 @@ public class HttpGatewayClientApiKeyAuthenticator implements HttpGatewayClientAu
     }
 
     private static String extractApiKeyFromRequest(String authorizationHeaderValue) {
-        if(authorizationHeaderValue != null) {
-            if(authorizationHeaderValue.startsWith(HttpGatewayAuthApiKey.AUTHORIZATION_BEARER_PREFIX)) {
-                return authorizationHeaderValue.substring(HttpGatewayAuthApiKey.AUTHORIZATION_BEARER_PREFIX.length());
-            }
+        if(authorizationHeaderValue != null
+            && authorizationHeaderValue.startsWith(HttpGatewayAuthApiKey.AUTHORIZATION_BEARER_PREFIX)
+        ) {
+            return authorizationHeaderValue.substring(HttpGatewayAuthApiKey.AUTHORIZATION_BEARER_PREFIX.length());
         }
 
         return null;

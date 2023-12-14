@@ -23,7 +23,7 @@ public class SearchRouteIndexerTest {
         EndpointParsedData addedEndpoint = SearchRouteIndexer.addEndpointToIndex(index, new HttpEndpoint("1", "GET", "/test", "/test"));
         Assertions.assertThat(addedEndpoint).isNotNull();
         Assertions.assertThat(addedEndpoint.getHttpEndpoint().getRouteId()).isEqualTo("1");
-        Assertions.assertThat(index.size()).isEqualTo(1);
+        Assertions.assertThat(index).hasSize(1);
     }
 
     @Test
@@ -34,6 +34,6 @@ public class SearchRouteIndexerTest {
 
         Assertions.assertThat(existingEndpoint).isNotNull();
         Assertions.assertThat(existingEndpoint.getHttpEndpoint().getRouteId()).isEqualTo("1");
-        Assertions.assertThat(index.size()).isEqualTo(1);
+        Assertions.assertThat(index).hasSize(1);
     }
 }

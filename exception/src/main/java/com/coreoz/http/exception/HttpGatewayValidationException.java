@@ -9,8 +9,8 @@ package com.coreoz.http.exception;
  * so for example, within the config modules, if a wrong key is used,
  * then a {@code ConfigException} is thrown.
  */
-public class HttpGatewayException extends RuntimeException {
-    public HttpGatewayException(String message) {
+public class HttpGatewayValidationException extends RuntimeException {
+    public HttpGatewayValidationException(String message) {
         super(message);
     }
 }

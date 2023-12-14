@@ -1,6 +1,6 @@
 package com.coreoz.http.mock;
 
-import com.coreoz.http.exception.HttpGatewayException;
+import com.coreoz.http.exception.HttpGatewayValidationException;
 import org.assertj.core.api.Assertions;
 
 public class ConfigExceptionValidation {
@@ -8,7 +8,7 @@ public class ConfigExceptionValidation {
         try {
             testProcess.run();
             Assertions.fail("HttpGatewayException has not been raised");
-        } catch (HttpGatewayException exception) {
+        } catch (HttpGatewayValidationException exception) {
             Assertions.assertThat(exception).hasMessageContaining(partOfExceptionMessage);
         }
     }

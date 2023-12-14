@@ -44,13 +44,13 @@ public class HttpGatewayConfigServicesTest {
 
     @Test
     public void readRewriteRoutes__verify_that_rewrite_routes_are_read_correctly() {
-        List<HttpGatewayRewriteRoute> rewriteRoutes = HttpGatewayConfigServices.readRewriteRoutes(Set.of("route-a"), config.getConfig("gateway-rewrite-route-test"));
+        List<HttpGatewayRewriteRoute> rewriteRoutes = HttpGatewayConfigServices.readRewriteRoutes(config.getConfig("gateway-rewrite-route-test"));
         Assertions.assertThat(rewriteRoutes).containsExactly(new HttpGatewayRewriteRoute("route-a", "/pets"));
     }
 
     @Test
     public void readRewriteRoutes__verify_that_missing_rewrite_route_config_return_empty_list() {
-        List<HttpGatewayRewriteRoute> emptyRewriteRoutes = HttpGatewayConfigServices.readRewriteRoutes(Set.of(), config.getConfig("remote-services-missing-base-url"));
+        List<HttpGatewayRewriteRoute> emptyRewriteRoutes = HttpGatewayConfigServices.readRewriteRoutes(config.getConfig("remote-services-missing-base-url"));
         Assertions.assertThat(emptyRewriteRoutes).isEmpty();
     }
 

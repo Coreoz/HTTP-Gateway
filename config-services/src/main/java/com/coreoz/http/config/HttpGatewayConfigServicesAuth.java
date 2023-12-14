@@ -89,7 +89,6 @@ public class HttpGatewayConfigServicesAuth {
     @Value(staticConstructor = "of")
     public static class HttpGatewayServiceAuthConfig<T extends HttpGatewayAuthObject> {
         HttpGatewayConfigAuth.HttpGatewayAuthConfig<T> authConfig;
-        // TODO rempalcer les types function un peu partout par des vraies interfaces
         HttpGatewayUpstreamAuthenticatorCreator<T> authenticatorCreator;
     }
 

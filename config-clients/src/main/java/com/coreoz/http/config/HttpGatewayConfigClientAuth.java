@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 public class HttpGatewayConfigClientAuth {
     public static final HttpGatewayClientAuthConfig<HttpGatewayAuthApiKey> KEY_AUTH = HttpGatewayClientAuthConfig.of(HttpGatewayConfigAuth.KEY_AUTH, HttpGatewayClientApiKeyAuthenticator::new);
 
-    private final static List<HttpGatewayClientAuthConfig<? extends HttpGatewayAuthObject>> supportedAuthConfigs = List.of(
+    private static final List<HttpGatewayClientAuthConfig<? extends HttpGatewayAuthObject>> supportedAuthConfigs = List.of(
         KEY_AUTH
     );
 
@@ -45,7 +45,7 @@ public class HttpGatewayConfigClientAuth {
         return HttpGatewayClientAuthenticator.merge(authReadConfigs
             .entrySet()
             .stream()
-            .map((authConfig) -> {
+            .map(authConfig -> {
                 //noinspection unchecked
                 HttpGatewayClientAuthenticatorCreator<HttpGatewayAuthObject> creator = (HttpGatewayClientAuthenticatorCreator<HttpGatewayAuthObject>) indexedAuthenticatorCreator.get(authConfig.getKey());
                 //noinspection unchecked
