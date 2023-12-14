@@ -2,10 +2,10 @@ package com.coreoz.http;
 
 import com.coreoz.http.conf.HttpGatewayConfiguration;
 import com.coreoz.http.conf.HttpGatewayRouterConfiguration;
-import com.coreoz.http.config.HttpGatewayConfigAccessControl;
+import com.coreoz.http.config.HttpGatewayConfigClientAccessControl;
 import com.coreoz.http.config.HttpGatewayConfigLoader;
-import com.coreoz.http.config.HttpGatewayConfigRemoteServices;
-import com.coreoz.http.config.HttpGatewayConfigRemoteServicesAuth;
+import com.coreoz.http.config.HttpGatewayConfigServices;
+import com.coreoz.http.config.HttpGatewayConfigServicesAuth;
 import com.coreoz.http.play.HttpGatewayDownstreamResponses;
 import com.coreoz.http.remoteservices.HttpGatewayRemoteServiceAuthenticator;
 import com.coreoz.http.remoteservices.HttpGatewayRemoteServicesIndex;
@@ -41,9 +41,9 @@ public class SampleCustomClientDimension {
 
     public static HttpGateway startsGateway() {
         HttpGatewayConfigLoader configLoader = new HttpGatewayConfigLoader(ConfigFactory.load("custom-client-dimension.conf"));
-        HttpGatewayRemoteServicesIndex servicesIndex = HttpGatewayConfigRemoteServices.readConfig(configLoader);
-        HttpGatewayRemoteServiceAuthenticator remoteServiceAuthenticator = HttpGatewayConfigRemoteServicesAuth.readConfig(configLoader);
-        HttpGatewayConfigAccessControl gatewayClients = HttpGatewayConfigAccessControl.readConfig(configLoader).validateConfig(servicesIndex);
+        HttpGatewayRemoteServicesIndex servicesIndex = HttpGatewayConfigServices.readConfig(configLoader);
+        HttpGatewayRemoteServiceAuthenticator remoteServiceAuthenticator = HttpGatewayConfigServicesAuth.readConfig(configLoader);
+        HttpGatewayConfigClientAccessControl gatewayClients = HttpGatewayConfigClientAccessControl.readConfig(configLoader).validateConfig(servicesIndex);
         HttpGatewayClientValidator clientValidator = new HttpGatewayClientValidator(servicesIndex, gatewayClients);
         HttpGatewayRouter httpRouter = new HttpGatewayRouter(servicesIndex.computeValidatedIndexedRoutes());
         HttpGatewayRouteValidator routeValidator = new HttpGatewayRouteValidator(httpRouter, servicesIndex);

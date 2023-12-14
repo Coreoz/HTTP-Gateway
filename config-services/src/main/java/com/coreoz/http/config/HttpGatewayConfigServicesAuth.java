@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 /**
  * Handle remote service authentication configuration
  */
-public class HttpGatewayConfigRemoteServicesAuth {
+public class HttpGatewayConfigServicesAuth {
     public static final HttpGatewayServiceAuthConfig<HttpGatewayAuthBasic> BASIC_AUTH = HttpGatewayServiceAuthConfig.of(HttpGatewayConfigAuth.BASIC_AUTH, HttpGatewayRemoteServiceBasicAuthenticator::new);
 
     /**
@@ -51,8 +51,8 @@ public class HttpGatewayConfigRemoteServicesAuth {
      */
     public static HttpGatewayRemoteServiceAuthenticator readConfig(Config gatewayConfig, List<HttpGatewayServiceAuthConfig<? extends HttpGatewayAuthObject>> supportedAuthConfigs) {
         Map<String, List<? extends HttpGatewayAuthObject>> authReadConfigs = HttpGatewayConfigAuth.readAuth(
-            HttpGatewayConfigRemoteServices.CONFIG_SERVICE_ID,
-            HttpGatewayConfigRemoteServices.readRemoteServicesConfig(gatewayConfig),
+            HttpGatewayConfigServices.CONFIG_SERVICE_ID,
+            HttpGatewayConfigServices.readRemoteServicesConfig(gatewayConfig),
             supportedAuthConfigs.stream().map(HttpGatewayServiceAuthConfig::getAuthConfig).collect(Collectors.toList())
         );
         List<HttpGatewayRemoteServiceAuth> serviceAuthentications = createServiceAuthentications(supportedAuthConfigs, authReadConfigs);

@@ -20,11 +20,11 @@
         </dependency>
         <dependency>
             <groupId>com.coreoz</groupId>
-            <artifactId>http-gateway-config-remote-services</artifactId>
+            <artifactId>http-gateway-config-services</artifactId>
         </dependency>
         <dependency>
             <groupId>com.coreoz</groupId>
-            <artifactId>http-gateway-config-access-control</artifactId>
+            <artifactId>http-gateway-config-clients</artifactId>
         </dependency>
         <dependency>
             <groupId>com.coreoz</groupId>

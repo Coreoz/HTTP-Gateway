@@ -39,16 +39,16 @@ Then the steps are:
 Available modules
 -----------------
 ### Core
-The base module of HTTP Gateway that enables to proxy incoming downstream requests to upstream services.
+The [base module of HTTP Gateway](core/) that enables to proxy incoming downstream requests to upstream services.
 
 ### Router
-This provides routing capabilities by:
+This [router module](router/) provides routing capabilities by:
 - Indexing available routes with their downstream path and their matching upstream path 
 - Enabling to search in the available routes
 - Computing the upstream destination route while resolving correctly route patterns
 
-### Auth
-Defines objects used to store authentication data.
+### Authentication
+This [authentication module](auth) defines objects used to store authentication data.
 
 Available authentications are:
 - API key:
@@ -59,37 +59,51 @@ Available authentications are:
   - This is used by providing the HTTP header `Authorization` the value `Basic base64(userId-value:password-value)` (with the correct values)
 
 ### Remote services
-This module provides upstream services routing and authentication. This module relies on the [router module](#router).
+This [remote services module](remote-services/) provides upstream services routing and authentication. This module relies on the [router module](#router).
 
 #### Upstream authentication
-This module provides connectors for authentication. Currently, supported authentication are:
+This [upstream authentication module](upstream-auth/) provides connectors for upstream authentication. Currently, supported authentication are:
 - Basic
 - Key
 
 ### Upstream peeker
-This provides the ability to peek upstream request and response:
+This [upstream peeker module](upstream-peeker/) provides the ability to peek upstream request and response:
 - Headers
 - Body
 
 This is used by default in all [HTTP Gateway samples](samples/).
 
 ### Client access control
-This provides client authorization and route access control: so a client can only access routes that has been allowed. 
+This [client access control module](client-access-control/) provides client authorization and route access control: so a client can only access routes that has been allowed. 
 
 ### Downstream validation
+This [downstream validation module](downstream-validation/) provides a validation system to unify the downstream validation process.
 
 ### Config
-TODO HOCOON
-### Test
+This provides file config based HTTP Gateway setup where clients and services are described in a file.
+Configuration files are formatted using the [HOCON syntax](https://github.com/lightbend/config/blob/main/HOCON.md).
 
-Modules dependency graph:
+Modules available for configuration are:
+- [Config](config/) for the base dependency and config loading.
+- [Config Authentication](config-auth/) to help read authentication parts for clients and services.
+- [Config Services](config-services/) to read [remote services](#remote-services) configuration.
+- [Config Clients](config-clients/) to read [clients access control](#client-access-control) configuration.
+
+### Test
+The [test module](test) provides a testing mock server and some utilities to facilitate:
+- Writing integration tests
+- Live testing an HTTP Gateway
+
+Modules dependency graph
+------------------------
 ![HTTP Gateway](docs/dependency-graph.png)
 
 The graph can be generated using the command: `mvn com.github.ferstl:depgraph-maven-plugin:aggregate -DcreateImage=true -DreduceEdges=false -Dscope=compile "-Dincludes=com.coreoz:*" "-Dexcludes=com.coreoz:http-gateway-samples"`
+This will generate the `dependency-graph.png` file in the `target` directory.
 
 TODO
 ----
-- [ ]: add readme docs about modules, how to get started, the project motivation, use cases with custom auth, custom validation, add logging
+- [ ]: Review documentation
 - [ ]: Implement both key and basic auth for clients and services
 - [ ]: upgrade play and java versions
 - [ ]: provide a way to easily validate downstream request body

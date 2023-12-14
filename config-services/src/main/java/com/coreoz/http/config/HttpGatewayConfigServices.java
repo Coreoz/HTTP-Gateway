@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class HttpGatewayConfigRemoteServices {
+public class HttpGatewayConfigServices {
     static final String CONFIG_SERVICE_ID = "service-id";
     static final String CONFIG_REWRITE_ROUTES = "gateway-rewrite-routes";
 

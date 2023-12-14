@@ -10,13 +10,13 @@ import org.junit.Test;
 import java.util.List;
 import java.util.Map;
 
-public class HttpGatewayConfigRemoteServicesAuthTest {
+public class HttpGatewayConfigServicesAuthTest {
     @Test
     public void createServiceAuthentications__check_that_authentication_is_correctly_created() {
-        List<HttpGatewayRemoteServiceAuth> serviceAuthentications = HttpGatewayConfigRemoteServicesAuth.createServiceAuthentications(
-            List.of(HttpGatewayConfigRemoteServicesAuth.BASIC_AUTH),
+        List<HttpGatewayRemoteServiceAuth> serviceAuthentications = HttpGatewayConfigServicesAuth.createServiceAuthentications(
+            List.of(HttpGatewayConfigServicesAuth.BASIC_AUTH),
             Map.of(
-                HttpGatewayConfigRemoteServicesAuth.BASIC_AUTH.getAuthConfig().getAuthType(),
+                HttpGatewayConfigServicesAuth.BASIC_AUTH.getAuthConfig().getAuthType(),
                 List.of(new HttpGatewayAuthBasic("service-id-test", "user-test", "user-password"))
             )
         );

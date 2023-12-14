@@ -4,8 +4,8 @@ import com.coreoz.http.access.control.auth.HttpGatewayClientAuthenticator;
 import com.coreoz.http.conf.HttpGatewayConfiguration;
 import com.coreoz.http.conf.HttpGatewayRouterConfiguration;
 import com.coreoz.http.config.HttpGatewayConfigClientAuth;
-import com.coreoz.http.config.HttpGatewayConfigRemoteServices;
-import com.coreoz.http.config.HttpGatewayConfigRemoteServicesAuth;
+import com.coreoz.http.config.HttpGatewayConfigServices;
+import com.coreoz.http.config.HttpGatewayConfigServicesAuth;
 import com.coreoz.http.play.HttpGatewayDownstreamResponses;
 import com.coreoz.http.remoteservices.HttpGatewayRemoteService;
 import com.coreoz.http.remoteservices.HttpGatewayRemoteServiceAuthenticator;
@@ -135,9 +135,9 @@ public class SampleCustomRouting {
                 Map.Entry::getKey,
                 customerEntry -> {
                     Config customerConfig = baseCustomersRouting.getConfig(customerEntry.getKey());
-                    HttpGatewayRemoteServicesIndex servicesIndex = HttpGatewayConfigRemoteServices.readConfig(customerConfig);
+                    HttpGatewayRemoteServicesIndex servicesIndex = HttpGatewayConfigServices.readConfig(customerConfig);
                     HttpGatewayRouter httpRouter = new HttpGatewayRouter(servicesIndex.computeValidatedIndexedRoutes());
-                    HttpGatewayRemoteServiceAuthenticator remoteServiceAuthenticator = HttpGatewayConfigRemoteServicesAuth.readConfig(customerConfig);
+                    HttpGatewayRemoteServiceAuthenticator remoteServiceAuthenticator = HttpGatewayConfigServicesAuth.readConfig(customerConfig);
                     return new RoutingPerCustomer(
                         servicesIndex,
                         httpRouter,

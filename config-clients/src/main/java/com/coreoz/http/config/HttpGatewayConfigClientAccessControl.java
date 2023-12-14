@@ -12,24 +12,24 @@ import java.util.List;
 /**
  * Handle Gateway client authorization and access control verification
  */
-public class HttpGatewayConfigAccessControl implements HttpGatewayClientAccessController {
+public class HttpGatewayConfigClientAccessControl implements HttpGatewayClientAccessController {
     private final HttpGatewayClientAuthenticator authenticator;
     private final HttpGatewayClientRouteAccessControl routeAccessControl;
 
-    private HttpGatewayConfigAccessControl(HttpGatewayClientAuthenticator authenticator, HttpGatewayClientRouteAccessControl routeAccessControl) {
+    private HttpGatewayConfigClientAccessControl(HttpGatewayClientAuthenticator authenticator, HttpGatewayClientRouteAccessControl routeAccessControl) {
         this.authenticator = authenticator;
         this.routeAccessControl = routeAccessControl;
     }
 
-    public static HttpGatewayConfigAccessControl readConfig(HttpGatewayConfigLoader configLoader) {
+    public static HttpGatewayConfigClientAccessControl readConfig(HttpGatewayConfigLoader configLoader) {
         return readConfig(configLoader.getHttpGatewayConfig());
     }
 
-    public static HttpGatewayConfigAccessControl readConfig(Config gatewayConfig) {
+    public static HttpGatewayConfigClientAccessControl readConfig(Config gatewayConfig) {
         List<? extends Config> clientConfigs = gatewayConfig.getConfigList("clients");
         HttpGatewayClientAuthenticator authenticator = HttpGatewayConfigClientAuth.readAuth(clientConfigs);
         HttpGatewayClientRouteAccessControl routeAccessControl = HttpGatewayConfigClientRoutes.readClientsRoutes(gatewayConfig, clientConfigs);
-        return new HttpGatewayConfigAccessControl(authenticator, routeAccessControl);
+        return new HttpGatewayConfigClientAccessControl(authenticator, routeAccessControl);
     }
 
     @Override
@@ -41,7 +41,7 @@ public class HttpGatewayConfigAccessControl implements HttpGatewayClientAccessCo
         return routeAccessControl.hasAccess(clientId, routeId, serviceId);
     }
 
-    public HttpGatewayConfigAccessControl validateConfig(HttpGatewayRemoteServicesIndex remoteServicesIndex) {
+    public HttpGatewayConfigClientAccessControl validateConfig(HttpGatewayRemoteServicesIndex remoteServicesIndex) {
         routeAccessControl.validateConfig(remoteServicesIndex);
         return this;
     }

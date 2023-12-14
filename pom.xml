@@ -94,8 +94,8 @@
 		<module>config</module>
 		<module>exception</module>
 		<module>config-auth</module>
-		<module>config-remote-services</module>
-		<module>config-access-control</module>
+		<module>config-services</module>
+		<module>config-clients</module>
         <module>auth</module>
         <module>remote-services</module>
         <module>router</module>
@@ -248,12 +248,12 @@
             </dependency>
             <dependency>
                 <groupId>com.coreoz</groupId>
-                <artifactId>http-gateway-config-remote-services</artifactId>
+                <artifactId>http-gateway-config-services</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.coreoz</groupId>
-                <artifactId>http-gateway-config-access-control</artifactId>
+                <artifactId>http-gateway-config-clients</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
