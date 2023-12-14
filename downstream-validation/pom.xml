@@ -24,7 +24,7 @@
         </dependency>
         <dependency>
             <groupId>com.coreoz</groupId>
-            <artifactId>http-gateway-config-access-control</artifactId>
+            <artifactId>http-gateway-client-access-control</artifactId>
         </dependency>
 
 		<dependency>

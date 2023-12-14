@@ -1,5 +1,6 @@
 package com.coreoz.http.config;
 
+import com.coreoz.http.access.control.HttpGatewayClientAccessController;
 import com.coreoz.http.access.control.auth.HttpGatewayClientAuthenticator;
 import com.coreoz.http.access.control.routes.HttpGatewayClientRouteAccessControl;
 import com.coreoz.http.remoteservices.HttpGatewayRemoteServicesIndex;
@@ -11,7 +12,7 @@ import java.util.List;
 /**
  * Handle Gateway client authorization and access control verification
  */
-public class HttpGatewayConfigAccessControl implements HttpGatewayClientAuthenticator {
+public class HttpGatewayConfigAccessControl implements HttpGatewayClientAccessController {
     private final HttpGatewayClientAuthenticator authenticator;
     private final HttpGatewayClientRouteAccessControl routeAccessControl;
 
@@ -31,6 +32,7 @@ public class HttpGatewayConfigAccessControl implements HttpGatewayClientAuthenti
         return new HttpGatewayConfigAccessControl(authenticator, routeAccessControl);
     }
 
+    @Override
     public String authenticate(Http.Request downstreamRequest) {
         return authenticator.authenticate(downstreamRequest);
     }

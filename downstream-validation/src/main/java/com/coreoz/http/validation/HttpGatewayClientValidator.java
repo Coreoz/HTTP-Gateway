@@ -1,6 +1,8 @@
 package com.coreoz.http.validation;
 
-import com.coreoz.http.config.HttpGatewayConfigAccessControl;
+import com.coreoz.http.access.control.HttpGatewayClientAccessController;
+import com.coreoz.http.access.control.auth.HttpGatewayClientAuthenticator;
+import com.coreoz.http.access.control.routes.HttpGatewayClientRouteAccessController;
 import com.coreoz.http.remoteservices.HttpGatewayRemoteServicesIndex;
 import com.coreoz.http.router.data.DestinationRoute;
 import io.netty.handler.codec.http.HttpResponseStatus;
@@ -11,11 +13,21 @@ import play.mvc.Http;
  */
 public class HttpGatewayClientValidator {
     private final HttpGatewayRemoteServicesIndex servicesIndex;
-    private final HttpGatewayConfigAccessControl gatewayClients;
+    private final HttpGatewayClientAuthenticator clientAuthenticator;
+    private final HttpGatewayClientRouteAccessController clientRouteAccessController;
 
-    public HttpGatewayClientValidator(HttpGatewayRemoteServicesIndex servicesIndex, HttpGatewayConfigAccessControl gatewayClients) {
+    public HttpGatewayClientValidator(
+        HttpGatewayRemoteServicesIndex servicesIndex,
+        HttpGatewayClientAuthenticator clientAuthenticator,
+        HttpGatewayClientRouteAccessController clientRouteAccessController
+    ) {
         this.servicesIndex = servicesIndex;
-        this.gatewayClients = gatewayClients;
+        this.clientAuthenticator = clientAuthenticator;
+        this.clientRouteAccessController = clientRouteAccessController;
+    }
+
+    public HttpGatewayClientValidator(HttpGatewayRemoteServicesIndex servicesIndex, HttpGatewayClientAccessController clientRouteAccessController) {
+        this(servicesIndex, clientRouteAccessController, clientRouteAccessController);
     }
 
     /**
@@ -23,7 +35,7 @@ public class HttpGatewayClientValidator {
      * @return The validated clientId, else an {@link HttpResponseStatus#UNAUTHORIZED} error
      */
     public HttpGatewayValidation<String> validateClientIdentification(Http.Request downstreamRequest) {
-        return HttpGatewayClientValidators.validateClientIdentification(gatewayClients, downstreamRequest);
+        return HttpGatewayClientValidators.validateClientIdentification(clientAuthenticator, downstreamRequest);
     }
 
     /**
@@ -34,7 +46,7 @@ public class HttpGatewayClientValidator {
         Http.Request downstreamRequest, DestinationRoute destinationRoute, String clientId
     ) {
         String serviceId = servicesIndex.findService(destinationRoute.getRouteId()).getServiceId();
-        if (!gatewayClients.hasAccess(clientId, destinationRoute.getRouteId(), serviceId)) {
+        if (!clientRouteAccessController.hasAccess(clientId, destinationRoute.getRouteId(), serviceId)) {
             return HttpGatewayValidation.ofError(
                 HttpResponseStatus.UNAUTHORIZED,
                 "Access denied to route " + downstreamRequest.method() + " " + downstreamRequest.path() + " for clientId " + clientId

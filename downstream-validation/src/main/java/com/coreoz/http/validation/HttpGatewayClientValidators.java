@@ -1,7 +1,6 @@
 package com.coreoz.http.validation;
 
 import com.coreoz.http.access.control.auth.HttpGatewayClientAuthenticator;
-import com.coreoz.http.config.HttpGatewayConfigAccessControl;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import play.mvc.Http;
 

@@ -26,7 +26,7 @@ Core concepts are important to correctly use and understand HTTP Gateway:
 
 Getting started and samples
 ---------------------------
-To build a new HTTP gateway, it is best to start looking at the [samples HTTP Gateways](samples/) so see how it all works.
+To build a new HTTP gateway, it is best to start looking at the [HTTP Gateway samples](samples/) so see how it all works.
 
 Then the steps are:
 1. Create a Java project, for example using the [Plume archetype](https://github.com/Coreoz/Plume-archetpes)
@@ -59,12 +59,26 @@ Available authentications are:
   - This is used by providing the HTTP header `Authorization` the value `Basic base64(userId-value:password-value)` (with the correct values)
 
 ### Remote services
+This module provides upstream services routing and authentication. This module relies on the [router module](#router).
 
+#### Upstream authentication
+This module provides connectors for authentication. Currently, supported authentication are:
+- Basic
+- Key
 
-### Upstream authentication
 ### Upstream peeker
+This provides the ability to peek upstream request and response:
+- Headers
+- Body
+
+This is used by default in all [HTTP Gateway samples](samples/).
+
 ### Client access control
+This provides client authorization and route access control: so a client can only access routes that has been allowed. 
+
 ### Downstream validation
+
+
 ### Config
 TODO HOCOON
 ### Test

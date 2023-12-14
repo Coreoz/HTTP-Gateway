@@ -11,7 +11,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class HttpGatewayClientRouteAccessControl {
+public class HttpGatewayClientRouteAccessControl implements HttpGatewayClientRouteAccessController {
     private final Map<String, Set<String>> allowedRoutesByClient;
     private final Map<String, Set<String>> allowedServicesByClient;
 
