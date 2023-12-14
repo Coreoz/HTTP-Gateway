@@ -28,7 +28,7 @@ public class HttpGatewayRouter {
 
     /**
      * Add a new endpoint to the indexed routes.
-     * @return The endpoint passed as an argument if it the new route was added. If there were an already existing route
+     * @return The endpoint passed as an argument if it is the new route was added. If there were an already existing route
      * for the specified path, then the new endpoint is NOT added and the existing endpoint is returned.
      */
     public HttpEndpoint addEndpoint(HttpEndpoint endpoint) {

@@ -14,11 +14,10 @@
 	<description>Provide HTTP Gateway routing resolving for downstream requests to upstream endpoints</description>
 
 	<dependencies>
-		<dependency>
-			<groupId>com.coreoz</groupId>
-			<artifactId>http-gateway-core</artifactId>
-		</dependency>
-
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
@@ -29,6 +28,11 @@
         <dependency>
             <groupId>com.coreoz</groupId>
             <artifactId>http-gateway-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.coreoz</groupId>
+            <artifactId>http-gateway-core</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
