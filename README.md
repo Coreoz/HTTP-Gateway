@@ -78,12 +78,14 @@ This provides client authorization and route access control: so a client can onl
 
 ### Downstream validation
 
-
 ### Config
 TODO HOCOON
 ### Test
 
-Modules dependency tree:
+Modules dependency graph:
+![HTTP Gateway](docs/dependency-graph.png)
+
+The graph can be generated using the command: `mvn com.github.ferstl:depgraph-maven-plugin:aggregate -DcreateImage=true -DreduceEdges=false -Dscope=compile "-Dincludes=com.coreoz:*" "-Dexcludes=com.coreoz:http-gateway-samples"`
 
 TODO
 ----
