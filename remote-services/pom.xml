@@ -16,10 +16,6 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.coreoz</groupId>
-			<artifactId>http-gateway-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.coreoz</groupId>
 			<artifactId>http-gateway-router</artifactId>
 		</dependency>
 		<dependency>

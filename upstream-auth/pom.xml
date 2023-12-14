@@ -14,10 +14,6 @@
 	<description>Provide HTTP Gateway upstream services authentication</description>
 
 	<dependencies>
-		<dependency>
-			<groupId>com.coreoz</groupId>
-			<artifactId>http-gateway-core</artifactId>
-		</dependency>
         <dependency>
             <groupId>com.coreoz</groupId>
             <artifactId>http-gateway-auth</artifactId>

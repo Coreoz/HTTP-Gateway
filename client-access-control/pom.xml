@@ -14,24 +14,16 @@
 	<description>Provide HTTP Gateway access control concept</description>
 
 	<dependencies>
-		<dependency>
-			<groupId>com.coreoz</groupId>
-			<artifactId>http-gateway-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.coreoz</groupId>
-			<artifactId>http-gateway-auth</artifactId>
-		</dependency>
+        <dependency>
+            <groupId>com.coreoz</groupId>
+            <artifactId>http-gateway-remote-services</artifactId>
+        </dependency>
 
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<scope>provided</scope>
 		</dependency>
-        <dependency>
-            <groupId>com.coreoz</groupId>
-            <artifactId>http-gateway-remote-services</artifactId>
-        </dependency>
 
         <!-- unit testing -->
         <dependency>

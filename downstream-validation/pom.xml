@@ -14,14 +14,6 @@
 	<description>Provide HTTP Gateway incoming downstream requests validation tooling</description>
 
 	<dependencies>
-		<dependency>
-			<groupId>com.coreoz</groupId>
-			<artifactId>http-gateway-core</artifactId>
-		</dependency>
-        <dependency>
-            <groupId>com.coreoz</groupId>
-            <artifactId>http-gateway-remote-services</artifactId>
-        </dependency>
         <dependency>
             <groupId>com.coreoz</groupId>
             <artifactId>http-gateway-client-access-control</artifactId>
