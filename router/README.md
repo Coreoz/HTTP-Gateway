@@ -1,6 +1,6 @@
 HTTP Gateway Router
 ===================
-This module provide an indexed routing system for an endpoint defined by:
+This module provides an indexed routing system for an endpoint defined by:
 ```java
 public class HttpEndpoint {
     String routeId;
@@ -10,7 +10,7 @@ public class HttpEndpoint {
 }
 ```
 
-This router function with path pattern with the form of `{pattern}`.
+This router functions with path pattern with the form of `{pattern}`.
 A pattern cannot contain slash: `/`.
 Some example of valid path:
 - `/resources/{id}`
