@@ -17,6 +17,10 @@ public class HttpGatewayUpstreamRequest {
         this.upstreamRequest = upstreamRequest;
     }
 
+    /**
+     * Set the URL of the upstream request
+     * @see RequestBuilder#setUrl(String)
+     */
     public HttpGatewayUpstreamRequest withUrl(String url) {
         upstreamRequest.setUrl(url);
         return this;
@@ -33,6 +37,7 @@ public class HttpGatewayUpstreamRequest {
 
     /**
      * Copy basic headers from the downstream request to the upstream request
+     * @see HttpGatewayDownstreamRequests#copyBasicHeaders(Http.Request, RequestBuilder)
      */
     public HttpGatewayUpstreamRequest copyBasicHeaders() {
         HttpGatewayDownstreamRequests.copyBasicHeaders(downstreamRequest, upstreamRequest);
@@ -57,6 +62,9 @@ public class HttpGatewayUpstreamRequest {
         return this;
     }
 
+    /**
+     * Change the upstream request, using optionally the values of the incoming downstream request
+     */
     public HttpGatewayUpstreamRequest with(HttpGatewayRequestCustomizer customizer) {
         if (customizer != null) {
             customizer.customize(downstreamRequest, upstreamRequest);

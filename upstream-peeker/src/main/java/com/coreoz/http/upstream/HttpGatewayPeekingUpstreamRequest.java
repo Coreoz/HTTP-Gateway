@@ -44,26 +44,41 @@ public class HttpGatewayPeekingUpstreamRequest<D, U> {
 
     // Delegate calls
 
+    /**
+     * @see HttpGatewayUpstreamRequest#withUrl(String)
+     */
     public HttpGatewayPeekingUpstreamRequest<D, U> withUrl(String url) {
         upstreamRequest.withUrl(url);
         return this;
     }
 
+    /**
+     * @see HttpGatewayUpstreamRequest#copyHeader(String)
+     */
     public HttpGatewayPeekingUpstreamRequest<D, U> copyHeader(String httpHeaderName) {
         upstreamRequest.copyHeader(httpHeaderName);
         return this;
     }
 
+    /**
+     * @see HttpGatewayUpstreamRequest#copyBasicHeaders()
+     */
     public HttpGatewayPeekingUpstreamRequest<D, U> copyBasicHeaders() {
         upstreamRequest.copyBasicHeaders();
         return this;
     }
 
+    /**
+     * @see HttpGatewayUpstreamRequest#copyQueryParams()
+     */
     public HttpGatewayPeekingUpstreamRequest<D, U> copyQueryParams() {
         upstreamRequest.copyQueryParams();
         return this;
     }
 
+    /**
+     * @see HttpGatewayUpstreamRequest#with(HttpGatewayUpstreamRequest.HttpGatewayRequestCustomizer)
+     */
     public HttpGatewayPeekingUpstreamRequest<D, U> with(HttpGatewayUpstreamRequest.HttpGatewayRequestCustomizer customizer) {
         upstreamRequest.with(customizer);
         return this;
