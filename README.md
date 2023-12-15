@@ -106,7 +106,10 @@ This will generate the `dependency-graph.png` file in the `target` directory.
 
 TODO
 ----
-- [ ]: Review documentation
-- [ ]: Implement both key and basic auth for clients and services
-- [ ]: upgrade play and java versions
-- [ ]: provide a way to easily validate downstream request body
+- [ ] Review documentation and add copyBasicHeader documentation
+- [ ] Document the config module and how route path are used by default for upstream and downstream path <= reference this documentation in the router documentation
+- [ ] See how to use configuration to provide headers to copy  
+- [ ] Implement both key and basic auth for clients and services
+- [ ] upgrade play and java versions
+- [ ] provide a way to easily validate downstream request body
+- [ ] Add Gateway archetype

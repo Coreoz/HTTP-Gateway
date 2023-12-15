@@ -20,6 +20,65 @@ The example is composed of:
 - The configuration file `application.conf`, which is the default configuration file used
 - The integration test class (with a mock server): `SampleBasicTest`
 
+Note that it is possible to override config property per environment. For example to override the base URL of a service depending on the environment, it is possible to have:
+- The base config file `application.conf` containing:
+```hocon
+test-service = {
+  service-id = "test-service"
+  base-url = "http://localhost:4567"
+  auth = {
+    type = "basic"
+    userId = "test-auth"
+    password = "auth-password"
+  }
+  routes = [
+    {route-id = "fetch-pets", method = "GET", path = "/pets"}
+    {route-id = "fetch-pet", method = "GET", path = "/pets/{id}"}
+    {route-id = "fetch-pet-friends", method = "GET", path = "/pets/{id}/friends"}
+    {route-id = "add-pet", method = "POST", path = "/pets"}
+  ]
+}
+
+http-gateway = {
+    remote-services = [
+        ${test-service}
+        {
+            service-id = "other-service"
+            base-url = "http://localhost:4567/other-service"
+            routes = [
+                {route-id = "route-sample", method = "GET", path = "/route-sample"}
+            ]
+        }
+    ]
+    # ...
+}
+```
+- The staging config file `staging.conf` containing:
+```hocon
+include classpath("application.conf")
+
+http-gateway = {
+    remote-services = [
+        ${test-service} {
+            base-url = "https://staging.test-service.com"
+        }
+    ]
+}
+```
+
+For more information about config loading, see the [Config library file loading behavior documentation](https://github.com/lightbend/config#standard-behavior).
+
+Moreover, config resolution can be debugged this way:
+```java
+ConfigRenderOptions options = ConfigRenderOptions
+  .defaults()
+  .setJson(false)           // false: HOCON, true: JSON
+  .setOriginComments(false) // true: add comment showing the origin of a value
+  .setComments(true)        // true: keep original comment
+  .setFormatted(true);       // true: pretty-print result
+System.out.println(configLoader.getHttpGatewayConfig().root().render(options));
+```
+
 Custom client dimension
 -----------------------
 This example has everything from the [basic sample](#basic-http-gateway) and shows how to restrict clients by a custom dimension.
