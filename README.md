@@ -108,6 +108,7 @@ TODO
 ----
 - [ ] Review documentation and add copyBasicHeader documentation
 - [ ] Document the config module and how route path are used by default for upstream and downstream path <= reference this documentation in the router documentation
+- [ ] Provide documentation about logging and good practices
 - [ ] See how to use configuration to provide headers to copy  
 - [ ] Implement both key and basic auth for clients and services
 - [ ] upgrade play and java versions
