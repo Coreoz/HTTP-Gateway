@@ -13,6 +13,10 @@
 	<name>HTTP Gateway Router Config</name>
 	<description>Sample projets that uses most of the Gateway components</description>
 
+    <properties>
+        <maven.deploy.skip>true</maven.deploy.skip>
+    </properties>
+
 	<dependencies>
         <dependency>
             <groupId>com.coreoz</groupId>
