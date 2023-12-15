@@ -32,7 +32,7 @@ Getting started and samples
 To build a new HTTP gateway, it is best to start looking at the [HTTP Gateway samples](samples/) to see how it all works.
 
 Then the steps are:
-1. Create a Java project, for example using the [Plume archetype](https://github.com/Coreoz/Plume-archetpes)
+1. Create a Java project, for example using the [Plume archetype](https://github.com/Coreoz/Plume-archetypes)
 2. Make sure you are using at least Java 11
 3. Add the HTTP Gateway Maven dependencies, in doubt, it is possible to copy the ones from the [sample HTTP Gateways pom.xml file](samples/pom.xml) 
 4. Create the Gateway entry point class, it is usually easier to copy/paste a [sample gateway class](samples/src/main/java/com/coreoz/http)
