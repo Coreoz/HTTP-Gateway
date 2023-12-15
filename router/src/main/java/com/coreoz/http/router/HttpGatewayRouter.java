@@ -41,15 +41,15 @@ public class HttpGatewayRouter {
     /**
      * Search a route in the index
      * @param method The HTTP method, like GET or POST
-     * @param requestPath The searched path, like /users
+     * @param downstreamPath The searched path, like /users
      * @return The optional matching route
      */
-    public Optional<MatchingRoute> searchRoute(String method, String requestPath) {
+    public Optional<MatchingRoute> searchRoute(String method, String downstreamPath) {
         IndexedEndpoints methodIndex = routerIndex.get(method);
         if (methodIndex == null) {
             return Optional.empty();
         }
-        return SearchRouteEngine.searchRoute(methodIndex, requestPath);
+        return SearchRouteEngine.searchRoute(methodIndex, downstreamPath);
     }
 
     /**
