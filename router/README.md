@@ -3,10 +3,10 @@ HTTP Gateway Router
 This module provides an indexed routing system for an endpoint defined by:
 ```java
 public class HttpEndpoint {
-    String routeId;
-	String method;
-	String downstreamPath;
-	String upstreamPath;
+  String routeId;
+  String method;
+  String downstreamPath;
+  String upstreamPath;
 }
 ```
 
