@@ -88,9 +88,9 @@ Configuration files are formatted using the [HOCON syntax](https://github.com/li
 
 The modules available for configuration are:
 - [Config](config/) for configuration loading.
-- [Config Authentication](config-auth/) for reading authentication parts for clients and services.
 - [Config Services](config-services/) for reading the [remote services](#remote-services) configuration.
 - [Config Clients](config-clients/) for reading the [clients access control](#client-access-control) configuration.
+- [Config Authentication](config-auth/) technical module for reading authentication parts for clients and services.
 
 ### Test
 The [test module](test) provides a testing mock server and some utilities to make it easier:
@@ -106,7 +106,7 @@ This will generate the `dependency-graph.png` file in the `target` directory.
 
 TODO
 ----
-- [ ] Review documentation and add copyBasicHeader documentation
+- [ ] Review documentation
 - [ ] Document the config module and how route path are used by default for upstream and downstream path <= reference this documentation in the router documentation
 - [ ] Provide documentation about logging and good practices
 - [ ] See how to use configuration to provide headers to copy  

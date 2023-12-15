@@ -10,8 +10,8 @@
 
 	<artifactId>http-gateway-config-clients</artifactId>
 	<packaging>jar</packaging>
-	<name>HTTP Gateway Router Config</name>
-	<description>Provide HTTP Gateway access control configuration through configuration file</description>
+	<name>HTTP Gateway Config Clients</name>
+	<description>Provide HTTP Gateway clients configuration through configuration file</description>
 
 	<dependencies>
         <dependency>
