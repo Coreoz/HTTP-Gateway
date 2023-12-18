@@ -82,6 +82,8 @@ This [client access control module](client-access-control/) provides client auth
 ### Downstream validation
 This [downstream validation module](downstream-validation/) provides a validation system to unify the downstream validation process.
 
+TODO show example to explain how to use custom values
+
 ### Config
 These modules provide the HTTP Gateway setup capability where clients and services are configured in a file.
 Configuration files are formatted using the [HOCON syntax](https://github.com/lightbend/config/blob/main/HOCON.md).
