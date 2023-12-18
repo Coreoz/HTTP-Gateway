@@ -37,6 +37,7 @@ public class HttpGatewayConfigClientAccessControl implements HttpGatewayClientAc
         return authenticator.authenticate(downstreamRequest);
     }
 
+    @Override
     public boolean hasAccess(String clientId, String routeId, String serviceId) {
         return routeAccessControl.hasAccess(clientId, routeId, serviceId);
     }
