@@ -13,7 +13,7 @@ HttpGatewayConfigClientAccessControl gatewayClients = HttpGatewayConfigClientAcc
     .validateConfig(servicesIndex); // validate clients configuration with actual services available
 ```
 
-See [client access control documentation]()(../#client-access-control/) for more information about the Java objects created.
+See [client access control documentation]()(../client-access-control/) for more information about the Java objects created.
 
 Sample clients configuration
 ----------------------------
