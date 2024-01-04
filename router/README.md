@@ -12,6 +12,7 @@ public class HttpEndpoint {
 
 This router functions with path pattern with the form of `{pattern}`.
 A pattern cannot contain slash: `/`.
+A pattern takes the place of a full path segment: `/resources/{id}` is ok, but `/resources/{id}.json` or `/resources/123-{id}/details` are not. 
 Some example of valid path:
 - `/resources/{id}`
 - `/resources/{id}/{other-pattern}`
