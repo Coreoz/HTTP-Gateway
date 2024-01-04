@@ -10,7 +10,7 @@
 
 	<artifactId>http-gateway-downstream-validation</artifactId>
 	<packaging>jar</packaging>
-	<name>HTTP Gateway Validation</name>
+	<name>HTTP Gateway Downstream Validation</name>
 	<description>Provide HTTP Gateway incoming downstream requests validation tooling</description>
 
 	<dependencies>
