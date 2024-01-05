@@ -10,7 +10,7 @@
 
 	<artifactId>http-gateway-exception</artifactId>
 	<packaging>jar</packaging>
-	<name>HTTP Gateway Config Validation</name>
+	<name>HTTP Gateway Exception</name>
 	<description>Provide validation exception for configuration validation</description>
 
 	<dependencies>
