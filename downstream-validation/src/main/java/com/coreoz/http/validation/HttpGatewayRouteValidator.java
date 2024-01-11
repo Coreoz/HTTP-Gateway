@@ -1,6 +1,6 @@
 package com.coreoz.http.validation;
 
-import com.coreoz.http.remoteservices.HttpGatewayRemoteServicesIndex;
+import com.coreoz.http.services.HttpGatewayRemoteServicesIndex;
 import com.coreoz.http.router.HttpGatewayRouter;
 import com.coreoz.http.router.data.DestinationRoute;
 import io.netty.handler.codec.http.HttpResponseStatus;

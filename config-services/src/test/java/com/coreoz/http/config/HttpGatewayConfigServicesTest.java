@@ -1,9 +1,9 @@
 package com.coreoz.http.config;
 
-import com.coreoz.http.remoteservices.HttpGatewayRemoteService;
-import com.coreoz.http.remoteservices.HttpGatewayRemoteServiceRoute;
-import com.coreoz.http.remoteservices.HttpGatewayRemoteServicesIndex;
-import com.coreoz.http.remoteservices.HttpGatewayRewriteRoute;
+import com.coreoz.http.services.HttpGatewayRemoteService;
+import com.coreoz.http.services.HttpGatewayRemoteServiceRoute;
+import com.coreoz.http.services.HttpGatewayRemoteServicesIndex;
+import com.coreoz.http.services.HttpGatewayRewriteRoute;
 import com.coreoz.http.router.data.HttpEndpoint;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigException;
@@ -12,7 +12,6 @@ import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 

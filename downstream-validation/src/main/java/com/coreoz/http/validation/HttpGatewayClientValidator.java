@@ -3,7 +3,7 @@ package com.coreoz.http.validation;
 import com.coreoz.http.access.control.HttpGatewayClientAccessController;
 import com.coreoz.http.access.control.auth.HttpGatewayClientAuthenticator;
 import com.coreoz.http.access.control.routes.HttpGatewayClientRouteAccessController;
-import com.coreoz.http.remoteservices.HttpGatewayRemoteServicesIndex;
+import com.coreoz.http.services.HttpGatewayRemoteServicesIndex;
 import com.coreoz.http.router.data.DestinationRoute;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import play.mvc.Http;

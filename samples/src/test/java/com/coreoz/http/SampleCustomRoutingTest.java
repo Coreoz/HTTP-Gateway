@@ -2,7 +2,7 @@ package com.coreoz.http;
 
 import com.coreoz.http.mock.LocalHttpClient;
 import com.coreoz.http.mock.SparkMockServer;
-import com.coreoz.http.remoteservices.HttpGatewayRemoteService;
+import com.coreoz.http.services.HttpGatewayRemoteService;
 import com.google.common.net.HttpHeaders;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;

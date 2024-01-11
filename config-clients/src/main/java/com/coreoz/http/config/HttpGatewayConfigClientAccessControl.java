@@ -3,7 +3,7 @@ package com.coreoz.http.config;
 import com.coreoz.http.access.control.HttpGatewayClientAccessController;
 import com.coreoz.http.access.control.auth.HttpGatewayClientAuthenticator;
 import com.coreoz.http.access.control.routes.HttpGatewayClientRouteAccessControl;
-import com.coreoz.http.remoteservices.HttpGatewayRemoteServicesIndex;
+import com.coreoz.http.services.HttpGatewayRemoteServicesIndex;
 import com.typesafe.config.Config;
 import play.mvc.Http;
 

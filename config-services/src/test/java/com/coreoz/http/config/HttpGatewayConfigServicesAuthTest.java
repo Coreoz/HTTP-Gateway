@@ -2,7 +2,7 @@ package com.coreoz.http.config;
 
 
 import com.coreoz.http.access.control.auth.HttpGatewayAuthBasic;
-import com.coreoz.http.remoteservices.HttpGatewayRemoteServiceAuth;
+import com.coreoz.http.services.auth.HttpGatewayRemoteServiceAuth;
 import com.coreoz.http.upstreamauth.HttpGatewayRemoteServiceBasicAuthenticator;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;

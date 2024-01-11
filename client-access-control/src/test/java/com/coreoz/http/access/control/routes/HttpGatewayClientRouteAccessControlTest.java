@@ -1,8 +1,8 @@
 package com.coreoz.http.access.control.routes;
 
-import com.coreoz.http.remoteservices.HttpGatewayRemoteService;
-import com.coreoz.http.remoteservices.HttpGatewayRemoteServiceRoute;
-import com.coreoz.http.remoteservices.HttpGatewayRemoteServicesIndex;
+import com.coreoz.http.services.HttpGatewayRemoteService;
+import com.coreoz.http.services.HttpGatewayRemoteServiceRoute;
+import com.coreoz.http.services.HttpGatewayRemoteServicesIndex;
 import com.google.common.base.MoreObjects;
 import org.junit.Test;
 

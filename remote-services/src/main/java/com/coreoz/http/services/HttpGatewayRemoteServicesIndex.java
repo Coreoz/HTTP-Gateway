@@ -1,4 +1,4 @@
-package com.coreoz.http.remoteservices;
+package com.coreoz.http.services;
 
 import com.coreoz.http.router.SearchRouteIndexer;
 import com.coreoz.http.router.data.*;

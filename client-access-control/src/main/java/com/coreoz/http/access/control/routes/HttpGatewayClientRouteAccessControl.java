@@ -1,7 +1,7 @@
 package com.coreoz.http.access.control.routes;
 
-import com.coreoz.http.remoteservices.HttpGatewayRemoteService;
-import com.coreoz.http.remoteservices.HttpGatewayRemoteServicesIndex;
+import com.coreoz.http.services.HttpGatewayRemoteService;
+import com.coreoz.http.services.HttpGatewayRemoteServicesIndex;
 import com.coreoz.http.exception.HttpGatewayValidationException;
 
 import java.util.List;

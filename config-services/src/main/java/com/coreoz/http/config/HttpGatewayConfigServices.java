@@ -1,9 +1,9 @@
 package com.coreoz.http.config;
 
-import com.coreoz.http.remoteservices.HttpGatewayRemoteService;
-import com.coreoz.http.remoteservices.HttpGatewayRemoteServiceRoute;
-import com.coreoz.http.remoteservices.HttpGatewayRemoteServicesIndex;
-import com.coreoz.http.remoteservices.HttpGatewayRewriteRoute;
+import com.coreoz.http.services.HttpGatewayRemoteService;
+import com.coreoz.http.services.HttpGatewayRemoteServiceRoute;
+import com.coreoz.http.services.HttpGatewayRemoteServicesIndex;
+import com.coreoz.http.services.HttpGatewayRewriteRoute;
 import com.typesafe.config.Config;
 
 import java.util.List;
