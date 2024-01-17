@@ -11,7 +11,7 @@
 	<artifactId>http-gateway-upstream-peeker</artifactId>
 	<packaging>jar</packaging>
 	<name>HTTP Gateway Upstream Peeker</name>
-	<description>Provide an HTTP Gateway interceptor to view downstream request body and upstream response body</description>
+	<description>This module provides an HTTP Gateway interceptor to view downstream request body and upstream response body</description>
 
 	<dependencies>
 		<dependency>

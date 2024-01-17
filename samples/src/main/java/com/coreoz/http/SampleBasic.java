@@ -81,6 +81,7 @@ public class SampleBasic {
                         // Do not forward the response body if the upstream server returns an internal error
                         // => this enables to avoid forwarding sensitive information
                         PeekerPublishersConsumer.consume(upstreamResponse.getPublisher());
+                        // Set an empty body response
                         upstreamResponse.setPublisher(null);
                     }
 

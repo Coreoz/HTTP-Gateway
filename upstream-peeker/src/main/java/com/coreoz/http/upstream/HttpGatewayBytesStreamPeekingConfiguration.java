@@ -36,7 +36,7 @@ public class HttpGatewayBytesStreamPeekingConfiguration<D, U> {
     @FunctionalInterface
     public interface PeekingFunction<S, T> {
         /**
-         * @param bodyContainer This parameter value will never be null.
+         * @param bodyContainer The request or response object. This parameter value will never be null.
          * @param bytesPeeked This parameter value can be null if there is no bytes peeked (but a non-empty publisher)
          * @return The converted body, it could be for instance a {@link String}, see {@link HttpGatewayUpstreamStringPeekerClient}
          */
