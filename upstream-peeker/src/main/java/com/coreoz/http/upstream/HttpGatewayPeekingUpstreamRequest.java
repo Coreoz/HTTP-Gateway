@@ -61,6 +61,14 @@ public class HttpGatewayPeekingUpstreamRequest<D, U> {
     }
 
     /**
+     * @see HttpGatewayUpstreamRequest#copyHeaders(String...)
+     */
+    public HttpGatewayPeekingUpstreamRequest<D, U> copyHeaders(String ...httpHeaderNames) {
+        upstreamRequest.copyHeaders(httpHeaderNames);
+        return this;
+    }
+
+    /**
      * @see HttpGatewayUpstreamRequest#copyBasicHeaders()
      */
     public HttpGatewayPeekingUpstreamRequest<D, U> copyBasicHeaders() {

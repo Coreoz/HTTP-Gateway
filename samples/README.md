@@ -104,3 +104,32 @@ The example is composed of:
 - The HTTP Gateway class: `SampleCustomRouting`
 - The configuration file `custom-routing.conf`
 - The integration test class (with a mock server): `SampleCustomRoutingTest`
+
+Header forwarding using config
+------------------------------
+A common use case is to forward some headers from downstream requests to upstream services.
+This can be done easily. For example:
+In the config file, define the headers to be forwarded:
+```hocon
+http-gateway = {
+    // ...
+    headers-to-forward = ["Cookie", "X-Custom-Header"]
+    // ...
+}
+```
+
+In the API Gateway client, custom config values can be read using the `configLoader` object (or directly the `config` object if available): `configLoader.getHttpGatewayConfig().getStringList("headers-to-forward")`
+
+So the complete request call will be written this way:
+```java
+HttpGatewayPeekingUpstreamRequest<String, String> remoteRequest = httpGatewayUpstreamClient
+    .prepareRequest(downstreamRequest)
+    .withUrl(destinationService.getDestinationRoute().getDestinationUrl())
+    .with(remoteServiceAuthenticator.forRoute(
+    destinationService.getServiceId(), destinationService.getDestinationRoute().getRouteId()
+    ))
+    .copyBasicHeaders()
+    // Forward config based headers
+    .copyHeaders(configLoader.getHttpGatewayConfig().getStringList("headers-to-forward").toArray(String[]::new))
+    .copyQueryParams();
+```

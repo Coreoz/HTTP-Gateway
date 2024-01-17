@@ -31,7 +31,17 @@ public class HttpGatewayUpstreamRequest {
      * @param httpHeaderName The header name to copy
      */
     public HttpGatewayUpstreamRequest copyHeader(String httpHeaderName) {
-        HttpGatewayDownstreamRequests.copyHeader(downstreamRequest, upstreamRequest, httpHeaderName);
+        return copyHeaders(httpHeaderName);
+    }
+
+    /**
+     * Copy a header from the downstream request to the upstream request
+     * @param httpHeaderNames The header names to copy
+     */
+    public HttpGatewayUpstreamRequest copyHeaders(String ...httpHeaderNames) {
+        for (String httpHeaderName : httpHeaderNames) {
+            HttpGatewayDownstreamRequests.copyHeader(downstreamRequest, upstreamRequest, httpHeaderName);
+        }
         return this;
     }
 
