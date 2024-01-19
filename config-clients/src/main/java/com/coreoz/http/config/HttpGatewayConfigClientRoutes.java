@@ -6,7 +6,6 @@ import com.coreoz.http.access.control.routes.HttpGatewayRoutesGroup;
 import com.typesafe.config.Config;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class HttpGatewayConfigClientRoutes {
     public static HttpGatewayClientRouteAccessControl readClientsRoutes(Config gatewayConfig, List<? extends Config> clientConfigs) {
@@ -24,7 +23,7 @@ public class HttpGatewayConfigClientRoutes {
                 routeGroupConfig.getString("routes-group-id"),
                 routeGroupConfig.getStringList("routes")
             ))
-            .collect(Collectors.toList());
+            .toList();
     }
 
     public static List<HttpGatewayClientRoutesControl> readClientRoutesControls(List<? extends Config> clientConfigs) {
@@ -36,7 +35,7 @@ public class HttpGatewayConfigClientRoutes {
                 getConfigStringListOrEmpty(clientConfig, "allowed-routes-groups"),
                 getConfigStringListOrEmpty(clientConfig, "allowed-services")
             ))
-            .collect(Collectors.toList());
+            .toList();
     }
 
     private static List<String> getConfigStringListOrEmpty(Config config, String configPath) {

@@ -6,7 +6,6 @@ import org.asynchttpclient.RequestBuilder;
 import play.mvc.Http;
 
 import java.util.Arrays;
-import java.util.stream.Collectors;
 
 public class HttpGatewayUpstreamRequest {
     private final Http.Request downstreamRequest;
@@ -67,7 +66,7 @@ public class HttpGatewayUpstreamRequest {
                         .stream(entry.getValue())
                         .map(value -> new Param(entry.getKey(), value))
                 )
-                .collect(Collectors.toList())
+                .toList()
         );
         return this;
     }

@@ -7,7 +7,6 @@ import com.coreoz.http.services.HttpGatewayRewriteRoute;
 import com.typesafe.config.Config;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class HttpGatewayConfigServices {
     static final String CONFIG_SERVICE_ID = "service-id";
@@ -43,9 +42,9 @@ public class HttpGatewayConfigServices {
                     routeConfig.getString("route-id"),
                     routeConfig.getString("method"),
                     routeConfig.getString("path")
-                )).collect(Collectors.toList())
-            ))
-            .collect(Collectors.toList());
+                )).toList())
+            )
+            .toList();
     }
 
     public static List<HttpGatewayRewriteRoute> readRewriteRoutes(Config gatewayConfig) {
@@ -57,7 +56,7 @@ public class HttpGatewayConfigServices {
                     rewriteRouteConfig.getString("route-id"),
                     rewriteRouteConfig.getString("downstream-path")
                 ))
-                .collect(Collectors.toList());
+                .toList();
         }
         return List.of();
     }

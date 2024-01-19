@@ -1,10 +1,10 @@
 package com.coreoz.http.config;
 
+import com.coreoz.http.router.data.HttpEndpoint;
 import com.coreoz.http.services.HttpGatewayRemoteService;
 import com.coreoz.http.services.HttpGatewayRemoteServiceRoute;
 import com.coreoz.http.services.HttpGatewayRemoteServicesIndex;
 import com.coreoz.http.services.HttpGatewayRewriteRoute;
-import com.coreoz.http.router.data.HttpEndpoint;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigException;
 import com.typesafe.config.ConfigFactory;
@@ -12,7 +12,6 @@ import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 public class HttpGatewayConfigServicesTest {
@@ -25,7 +24,7 @@ public class HttpGatewayConfigServicesTest {
             .assertThat(remoteServices)
             .isNotEmpty()
             .hasSize(1);
-        HttpGatewayRemoteService serviceTest = remoteServices.get(0);
+        HttpGatewayRemoteService serviceTest = remoteServices.getFirst();
         Assertions.assertThat(serviceTest.getServiceId()).isEqualTo("test-service");
         Assertions.assertThat(serviceTest.getBaseUrl()).isEqualTo("http://localhost:45678");
         Assertions.assertThat(serviceTest.getRoutes()).containsExactly(
@@ -58,7 +57,7 @@ public class HttpGatewayConfigServicesTest {
     @Test
     public void readConfig__verify_that_config_is_correctly_read() {
         HttpGatewayRemoteServicesIndex remoteServiceIndex = HttpGatewayConfigServices.readConfig(config.getConfig("remote-services-ok"));
-        List<HttpEndpoint> routes = StreamSupport.stream(remoteServiceIndex.computeRoutes().spliterator(), false).collect(Collectors.toList());
+        List<HttpEndpoint> routes = StreamSupport.stream(remoteServiceIndex.computeRoutes().spliterator(), false).toList();
         Assertions.assertThat(remoteServiceIndex.getServices()).hasSize(1);
         Assertions.assertThat(routes)
             .hasSize(2)

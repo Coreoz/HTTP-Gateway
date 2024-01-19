@@ -8,7 +8,6 @@ import play.mvc.Http;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class HttpGatewayDownstreamRequests {
     public static void copyHeader(Http.Request incomingRequest, RequestBuilder remoteRequest, String httpHeader) {
@@ -62,6 +61,6 @@ public class HttpGatewayDownstreamRequests {
                     .stream(entry.getValue())
                     .map(value -> new Param(entry.getKey(), value))
             )
-            .collect(Collectors.toList());
+            .toList();
     }
 }

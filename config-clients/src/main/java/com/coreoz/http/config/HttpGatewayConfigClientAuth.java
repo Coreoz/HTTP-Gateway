@@ -51,7 +51,7 @@ public class HttpGatewayConfigClientAuth {
                 //noinspection unchecked
                 return creator.createAuthenticator((List<HttpGatewayAuthObject>) authConfig.getValue());
             })
-            .collect(Collectors.toList()));
+            .toList());
     }
 
     public static List<HttpGatewayClientAuthConfig<? extends HttpGatewayAuthObject>> supportedAuthConfigs() {

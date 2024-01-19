@@ -83,7 +83,7 @@ public class HttpGatewayConfigServicesAuth {
                 )
                     .createAuthenticator(serviceAuth)
             )))
-            .collect(Collectors.toList());
+            .toList();
     }
 
     /**

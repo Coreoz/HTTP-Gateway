@@ -1,7 +1,7 @@
 package com.coreoz.http.router;
 
-import com.coreoz.http.router.data.HttpEndpoint;
 import com.coreoz.http.router.data.EndpointParsedData;
+import com.coreoz.http.router.data.HttpEndpoint;
 import com.coreoz.http.router.data.IndexedEndpoints;
 import com.coreoz.http.router.data.ParsedSegment;
 import org.slf4j.Logger;
@@ -11,7 +11,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Gère l'indexation des motifs de routes. Par exemple :
@@ -47,7 +46,7 @@ public class SearchRouteIndexer {
                 }
                 return new ParsedSegment(name, isPattern);
             })
-            .collect(Collectors.toList());
+            .toList();
     }
 
     /**
