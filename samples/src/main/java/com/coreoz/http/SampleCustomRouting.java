@@ -8,7 +8,7 @@ import com.coreoz.http.config.HttpGatewayConfigServices;
 import com.coreoz.http.config.HttpGatewayConfigServicesAuth;
 import com.coreoz.http.play.HttpGatewayDownstreamResponses;
 import com.coreoz.http.services.HttpGatewayRemoteService;
-import com.coreoz.http.services.auth.HttpGatewayRemoteServiceAuthenticator;
+import com.coreoz.http.services.auth.HttpGatewayRemoteServicesAuthenticator;
 import com.coreoz.http.services.HttpGatewayRemoteServicesIndex;
 import com.coreoz.http.router.HttpGatewayRouter;
 import com.coreoz.http.router.data.DestinationRoute;
@@ -61,7 +61,7 @@ public class SampleCustomRouting {
                             .validate(downstreamRequest)
                             .then(destinationRoute -> HttpGatewayValidation.ofValue(new ValidationResult(
                                 destinationRoute,
-                                clientRoutingConfiguration.getRemoteServiceAuthenticator(),
+                                clientRoutingConfiguration.getRemoteServicesAuthenticator(),
                                 clientRoutingConfiguration.getServicesIndex()
                             )));
                     });
@@ -76,7 +76,7 @@ public class SampleCustomRouting {
                 HttpGatewayPeekingUpstreamRequest<String, String> remoteRequest = httpGatewayUpstreamClient
                     .prepareRequest(downstreamRequest)
                     .withUrl(destinationRoute.getDestinationUrl())
-                    .with(validation.value().getRemoteServiceAuthenticator().forRoute(
+                    .with(validation.value().getRemoteServicesAuthenticator().forRoute(
                         destinationService.getServiceId(), destinationRoute.getRouteId()
                     ))
                     .copyBasicHeaders()
@@ -113,7 +113,7 @@ public class SampleCustomRouting {
     @Value
     static class ValidationResult {
         DestinationRoute destinationRoute;
-        HttpGatewayRemoteServiceAuthenticator remoteServiceAuthenticator;
+        HttpGatewayRemoteServicesAuthenticator remoteServicesAuthenticator;
         HttpGatewayRemoteServicesIndex servicesIndex;
     }
 
@@ -122,7 +122,7 @@ public class SampleCustomRouting {
         HttpGatewayRemoteServicesIndex servicesIndex;
         HttpGatewayRouter httpRouter;
         HttpGatewayRouteValidator routeValidator;
-        HttpGatewayRemoteServiceAuthenticator remoteServiceAuthenticator;
+        HttpGatewayRemoteServicesAuthenticator remoteServicesAuthenticator;
     }
 
     static Map<String, RoutingPerCustomer> indexServicesByCustomer(Config config) {
@@ -137,12 +137,12 @@ public class SampleCustomRouting {
                     Config customerConfig = baseCustomersRouting.getConfig(customerEntry.getKey());
                     HttpGatewayRemoteServicesIndex servicesIndex = HttpGatewayConfigServices.readConfig(customerConfig);
                     HttpGatewayRouter httpRouter = new HttpGatewayRouter(servicesIndex.computeValidatedIndexedRoutes());
-                    HttpGatewayRemoteServiceAuthenticator remoteServiceAuthenticator = HttpGatewayConfigServicesAuth.readConfig(customerConfig);
+                    HttpGatewayRemoteServicesAuthenticator remoteServicesAuthenticator = HttpGatewayConfigServicesAuth.readConfig(customerConfig);
                     return new RoutingPerCustomer(
                         servicesIndex,
                         httpRouter,
                         new HttpGatewayRouteValidator(httpRouter, servicesIndex),
-                        remoteServiceAuthenticator
+                        remoteServicesAuthenticator
                     );
                 }
             ));

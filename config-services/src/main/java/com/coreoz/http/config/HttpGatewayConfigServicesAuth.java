@@ -1,10 +1,12 @@
 package com.coreoz.http.config;
 
+import com.coreoz.http.access.control.auth.HttpGatewayAuthApiKey;
 import com.coreoz.http.access.control.auth.HttpGatewayAuthBasic;
 import com.coreoz.http.access.control.auth.HttpGatewayAuthObject;
 import com.coreoz.http.services.auth.HttpGatewayRemoteServiceAuth;
-import com.coreoz.http.services.auth.HttpGatewayRemoteServiceAuthenticator;
+import com.coreoz.http.services.auth.HttpGatewayRemoteServicesAuthenticator;
 import com.coreoz.http.upstreamauth.HttpGatewayRemoteServiceBasicAuthenticator;
+import com.coreoz.http.upstreamauth.HttpGatewayRemoteServiceKeyAuthenticator;
 import com.coreoz.http.upstreamauth.HttpGatewayUpstreamAuthenticator;
 import com.google.common.annotations.VisibleForTesting;
 import com.typesafe.config.Config;
@@ -19,44 +21,46 @@ import java.util.stream.Collectors;
  */
 public class HttpGatewayConfigServicesAuth {
     public static final HttpGatewayServiceAuthConfig<HttpGatewayAuthBasic> BASIC_AUTH = HttpGatewayServiceAuthConfig.of(HttpGatewayConfigAuth.BASIC_AUTH, HttpGatewayRemoteServiceBasicAuthenticator::new);
+    public static final HttpGatewayServiceAuthConfig<HttpGatewayAuthApiKey> KEY_AUTH = HttpGatewayServiceAuthConfig.of(HttpGatewayConfigAuth.KEY_AUTH, HttpGatewayRemoteServiceKeyAuthenticator::new);
 
     /**
      * Available remote services authenticators
      */
     private final static List<HttpGatewayServiceAuthConfig<? extends HttpGatewayAuthObject>> supportedAuthConfigs = List.of(
-        BASIC_AUTH
+        BASIC_AUTH,
+        KEY_AUTH
     );
 
     /**
-     * Read remote services authentication config to create a {@link HttpGatewayRemoteServiceAuthenticator}
+     * Read remote services authentication config to create a {@link HttpGatewayRemoteServicesAuthenticator}
      * using {@link #supportedAuthConfigs}
      */
-    public static HttpGatewayRemoteServiceAuthenticator readConfig(HttpGatewayConfigLoader configLoader) {
+    public static HttpGatewayRemoteServicesAuthenticator readConfig(HttpGatewayConfigLoader configLoader) {
         return readConfig(configLoader.getHttpGatewayConfig());
     }
 
     /**
-     * Read remote services authentication config to create a {@link HttpGatewayRemoteServiceAuthenticator}
+     * Read remote services authentication config to create a {@link HttpGatewayRemoteServicesAuthenticator}
      * using {@link #supportedAuthConfigs}
      */
-    public static HttpGatewayRemoteServiceAuthenticator readConfig(Config gatewayConfig) {
+    public static HttpGatewayRemoteServicesAuthenticator readConfig(Config gatewayConfig) {
         return readConfig(gatewayConfig, supportedAuthConfigs);
     }
 
     /**
-     * Read remote services authentication config to create a {@link HttpGatewayRemoteServiceAuthenticator}
+     * Read remote services authentication config to create a {@link HttpGatewayRemoteServicesAuthenticator}
      * and enable to use custom authenticators.<br>
      * <br>
      * See {@link #readConfig(Config)} to use default available authenticators.
      */
-    public static HttpGatewayRemoteServiceAuthenticator readConfig(Config gatewayConfig, List<HttpGatewayServiceAuthConfig<? extends HttpGatewayAuthObject>> supportedAuthConfigs) {
+    public static HttpGatewayRemoteServicesAuthenticator readConfig(Config gatewayConfig, List<HttpGatewayServiceAuthConfig<? extends HttpGatewayAuthObject>> supportedAuthConfigs) {
         Map<String, List<? extends HttpGatewayAuthObject>> authReadConfigs = HttpGatewayConfigAuth.readAuth(
             HttpGatewayConfigServices.CONFIG_SERVICE_ID,
             HttpGatewayConfigServices.readRemoteServicesConfig(gatewayConfig),
             supportedAuthConfigs.stream().map(HttpGatewayServiceAuthConfig::getAuthConfig).collect(Collectors.toList())
         );
         List<HttpGatewayRemoteServiceAuth> serviceAuthentications = createServiceAuthentications(supportedAuthConfigs, authReadConfigs);
-        return HttpGatewayRemoteServiceAuthenticator.fromRemoteClientAuthentications(serviceAuthentications);
+        return HttpGatewayRemoteServicesAuthenticator.fromRemoteClientAuthentications(serviceAuthentications);
     }
 
     @VisibleForTesting

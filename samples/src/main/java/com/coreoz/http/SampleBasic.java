@@ -7,7 +7,7 @@ import com.coreoz.http.config.HttpGatewayConfigLoader;
 import com.coreoz.http.config.HttpGatewayConfigServices;
 import com.coreoz.http.config.HttpGatewayConfigServicesAuth;
 import com.coreoz.http.play.HttpGatewayDownstreamResponses;
-import com.coreoz.http.services.auth.HttpGatewayRemoteServiceAuthenticator;
+import com.coreoz.http.services.auth.HttpGatewayRemoteServicesAuthenticator;
 import com.coreoz.http.services.HttpGatewayRemoteServicesIndex;
 import com.coreoz.http.router.HttpGatewayRouter;
 import com.coreoz.http.upstream.HttpGatewayPeekingUpstreamRequest;
@@ -41,7 +41,7 @@ public class SampleBasic {
     public static HttpGateway startsGateway() {
         HttpGatewayConfigLoader configLoader = new HttpGatewayConfigLoader();
         HttpGatewayRemoteServicesIndex servicesIndex = HttpGatewayConfigServices.readConfig(configLoader);
-        HttpGatewayRemoteServiceAuthenticator remoteServiceAuthenticator = HttpGatewayConfigServicesAuth.readConfig(configLoader);
+        HttpGatewayRemoteServicesAuthenticator remoteServicesAuthenticator = HttpGatewayConfigServicesAuth.readConfig(configLoader);
         HttpGatewayConfigClientAccessControl gatewayClients = HttpGatewayConfigClientAccessControl.readConfig(configLoader).validateConfig(servicesIndex);
         HttpGatewayClientValidator clientValidator = new HttpGatewayClientValidator(servicesIndex, gatewayClients);
         HttpGatewayRouter httpRouter = new HttpGatewayRouter(servicesIndex.computeValidatedIndexedRoutes());
@@ -69,7 +69,7 @@ public class SampleBasic {
                 HttpGatewayPeekingUpstreamRequest<String, String> remoteRequest = httpGatewayUpstreamClient
                     .prepareRequest(downstreamRequest)
                     .withUrl(destinationService.getDestinationRoute().getDestinationUrl())
-                    .with(remoteServiceAuthenticator.forRoute(
+                    .with(remoteServicesAuthenticator.forRoute(
                         destinationService.getServiceId(), destinationService.getDestinationRoute().getRouteId()
                     ))
                     .copyBasicHeaders()

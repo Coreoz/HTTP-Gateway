@@ -9,11 +9,11 @@ import java.util.stream.Collectors;
 /**
  * Index and expose service and route authenticator for upstream services
  */
-public class HttpGatewayRemoteServiceAuthenticator {
+public class HttpGatewayRemoteServicesAuthenticator {
     private final Map<String, HttpGatewayUpstreamAuthenticator> servicesAuthenticators;
     private final Map<String, HttpGatewayUpstreamAuthenticator> routesAuthenticators;
 
-    public HttpGatewayRemoteServiceAuthenticator(
+    public HttpGatewayRemoteServicesAuthenticator(
         Map<String, HttpGatewayUpstreamAuthenticator> servicesAuthenticators,
         Map<String, HttpGatewayUpstreamAuthenticator> routesAuthenticators
     ) {
@@ -35,8 +35,8 @@ public class HttpGatewayRemoteServiceAuthenticator {
     /**
      * Index services authenticators
      */
-    public static HttpGatewayRemoteServiceAuthenticator fromRemoteClientAuthentications(List<HttpGatewayRemoteServiceAuth> servicesAuth) {
-        return new HttpGatewayRemoteServiceAuthenticator(
+    public static HttpGatewayRemoteServicesAuthenticator fromRemoteClientAuthentications(List<HttpGatewayRemoteServiceAuth> servicesAuth) {
+        return new HttpGatewayRemoteServicesAuthenticator(
             servicesAuth.stream().collect(Collectors.toMap(
                 HttpGatewayRemoteServiceAuth::getServiceId,
                 HttpGatewayRemoteServiceAuth::getAuthenticator
