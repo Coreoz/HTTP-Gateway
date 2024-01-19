@@ -24,22 +24,22 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com.typesafe.play</groupId>
-			<artifactId>play-server_2.13</artifactId>
+			<groupId>org.playframework</groupId>
+			<artifactId>play-server_3</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.typesafe.play</groupId>
-			<artifactId>play-netty-server_2.13</artifactId>
+			<groupId>org.playframework</groupId>
+			<artifactId>play-netty-server_3</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.typesafe.play</groupId>
-			<artifactId>play-java_2.13</artifactId>
+			<groupId>org.playframework</groupId>
+			<artifactId>play-java_3</artifactId>
 		</dependency>
 
 		<!-- Pour avoir les mêmes versions de Jackson dans Play et Plume Framework -->
 		<dependency>
 			<groupId>com.fasterxml.jackson.module</groupId>
-			<artifactId>jackson-module-scala_2.13</artifactId>
+			<artifactId>jackson-module-scala_3</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.module</groupId>

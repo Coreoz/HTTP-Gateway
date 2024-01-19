@@ -63,15 +63,16 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.source>11</maven.compiler.source>
-		<maven.compiler.target>11</maven.compiler.target>
+		<maven.compiler.source>21</maven.compiler.source>
+		<maven.compiler.target>21</maven.compiler.target>
 		<javadoc.java-version>8</javadoc.java-version>
 		<additionalparam>-Xdoclint:none</additionalparam>
         <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/samples/target/site/ jacoco-aggregate/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
 
         <!-- dependencies -->
         <config-version>1.4.2</config-version>
-        <play-version>2.8.19</play-version>
+        <play-version>3.0.1</play-version>
+        <!-- TODO à mettre à jour après la mise à jour de AHC -->
         <netty-version>4.1.87.Final</netty-version>
         <!-- TODO à mettre à jour en v3 pour corriger https://github.com/AsyncHttpClient/async-http-client/issues/1660 -->
         <async-http-client-version>2.12.3</async-http-client-version>
@@ -303,25 +304,25 @@
             </dependency>
 
             <dependency>
-                <groupId>com.typesafe.play</groupId>
-                <artifactId>play-server_2.13</artifactId>
+                <groupId>org.playframework</groupId>
+                <artifactId>play-server_3</artifactId>
                 <version>${play-version}</version>
             </dependency>
             <dependency>
-                <groupId>com.typesafe.play</groupId>
-                <artifactId>play-netty-server_2.13</artifactId>
+                <groupId>org.playframework</groupId>
+                <artifactId>play-netty-server_3</artifactId>
                 <version>${play-version}</version>
             </dependency>
             <dependency>
-                <groupId>com.typesafe.play</groupId>
-                <artifactId>play-java_2.13</artifactId>
+                <groupId>org.playframework</groupId>
+                <artifactId>play-java_3</artifactId>
                 <version>${play-version}</version>
             </dependency>
 
             <!-- Pour avoir les mêmes versions de Jackson dans Play et Plume Framework -->
             <dependency>
                 <groupId>com.fasterxml.jackson.module</groupId>
-                <artifactId>jackson-module-scala_2.13</artifactId>
+                <artifactId>jackson-module-scala_3</artifactId>
                 <version>${jackson.version}</version>
             </dependency>
             <dependency>

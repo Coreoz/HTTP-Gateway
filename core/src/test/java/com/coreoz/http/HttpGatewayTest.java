@@ -21,6 +21,10 @@ import java.util.concurrent.CompletableFuture;
 public class HttpGatewayTest {
     static int HTTP_GATEWAY_PORT = 9876;
 
+    static {
+        SparkMockServer.initialize();
+    }
+
     @Test
     public void integration_test__verify_that_server_starts_and_is_working() throws IOException, InterruptedException {
         HttpGateway httpGateway = HttpGateway.start(new HttpGatewayConfiguration(
@@ -54,7 +58,6 @@ public class HttpGatewayTest {
     @Test
     public void integration_test__verify_that_upstream_request_is_correctly_proxied() throws IOException, InterruptedException {
         HttpGatewayUpstreamClient httpGatewayUpstreamClient = new HttpGatewayUpstreamClient();
-        SparkMockServer.initialize();
         HttpGateway httpGateway = HttpGateway.start(new HttpGatewayConfiguration(
             HTTP_GATEWAY_PORT,
             HttpGatewayRouterConfiguration.asyncRouting(request -> {

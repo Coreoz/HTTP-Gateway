@@ -1,10 +1,10 @@
 package com.coreoz.http.play;
 
-import akka.stream.Materializer;
-import akka.stream.javadsl.AsPublisher;
-import akka.stream.javadsl.Sink;
-import akka.util.ByteString;
 import io.netty.buffer.Unpooled;
+import org.apache.pekko.stream.Materializer;
+import org.apache.pekko.stream.javadsl.AsPublisher;
+import org.apache.pekko.stream.javadsl.Sink;
+import org.apache.pekko.util.ByteString;
 import play.libs.F;
 import play.libs.streams.Accumulator;
 import play.mvc.BodyParser;

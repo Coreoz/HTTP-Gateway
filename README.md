@@ -33,7 +33,7 @@ To build a new HTTP gateway, it is best to start looking at the [HTTP Gateway sa
 
 Then the steps are:
 1. Create a Java project, for example using the [Plume archetype](https://github.com/Coreoz/Plume-archetypes)
-2. Make sure you are using at least Java 11
+2. Make sure you are using at least Java 21
 3. Add the HTTP Gateway Maven dependencies, in doubt, it is possible to copy the ones from the [sample HTTP Gateways pom.xml file](samples/pom.xml) 
 4. Create the Gateway entry point class, it is usually easier to copy/paste a [sample gateway class](samples/src/main/java/com/coreoz/http)
 5. Use and configure available [HTTP Gateway modules](#available-modules)
@@ -110,7 +110,7 @@ TODO
 ----
 - [ ] Provide documentation about logging and good practices
 - [ ] Implement both key and basic auth for clients and services
-- [ ] upgrade play and java versions
+- [ ] upgrade netty and ahc versions
 - [ ] provide a way to easily validate downstream request body
 - [ ] Add Gateway archetype
 - [ ] Add a module to generate an OpenAPI spec from existing specs, see https://github.com/kpramesh2212/openapi-merger-plugin

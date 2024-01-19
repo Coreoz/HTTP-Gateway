@@ -1,14 +1,14 @@
 package com.coreoz.http.play;
 
-import akka.NotUsed;
-import akka.stream.javadsl.Source;
-import akka.util.ByteString;
 import com.coreoz.http.play.responses.HttpGatewayDownstreamError;
-import com.coreoz.http.upstream.HttpGatewayUpstreamResponse;
 import com.coreoz.http.play.responses.JsonContent;
 import com.coreoz.http.play.responses.ResultError;
+import com.coreoz.http.upstream.HttpGatewayUpstreamResponse;
 import com.google.common.net.HttpHeaders;
 import io.netty.handler.codec.http.HttpResponseStatus;
+import org.apache.pekko.NotUsed;
+import org.apache.pekko.stream.javadsl.Source;
+import org.apache.pekko.util.ByteString;
 import org.asynchttpclient.HttpResponseBodyPart;
 import org.asynchttpclient.Param;
 import org.reactivestreams.Publisher;
