@@ -8,7 +8,7 @@ The difference between HTTP Gateway and other HTTP gateway frameworks:
   - Routes are indexed so that the algorithm to match the correct route always resolves in a complexity of `O(1)`, this means that if thousands of routes are served, it will not slow down the gateway a bit.
   - Almost all components are customizable/replaceable, so this toolkit can be used for many different use cases.
 
-HTTP Gateway relies on other powerful open source libraries, in particular:
+HTTP Gateway relies on other powerful open source libraries, especially:
 - [Netty](https://github.com/netty/netty)
 - [Play Server](https://www.playframework.com/documentation/3.0.x/JavaEmbeddingPlay)
 - [Async HTTP Client](https://github.com/AsyncHttpClient/async-http-client)
@@ -81,8 +81,6 @@ This [client access control module](client-access-control/) provides client auth
 
 ### Downstream validation
 This [downstream validation module](downstream-validation/) provides a validation system to unify the downstream validation process.
-
-TODO show example to explain how to use custom values
 
 ### Config
 These modules provide the HTTP Gateway setup capability where clients and services are configured in a file.
