@@ -108,7 +108,7 @@ TODO
 ----
 - [ ] Provide documentation about logging and good practices
 - [ ] Implement both key and basic auth for clients and services
-- [ ] upgrade netty and ahc versions
+- [ ] upgrade ahc version
 - [ ] provide a way to easily validate downstream request body
 - [ ] Add Gateway archetype
 - [ ] Add a module to generate an OpenAPI spec from existing specs, see https://github.com/kpramesh2212/openapi-merger-plugin
