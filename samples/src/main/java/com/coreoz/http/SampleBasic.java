@@ -2,10 +2,7 @@ package com.coreoz.http;
 
 import com.coreoz.http.conf.HttpGatewayConfiguration;
 import com.coreoz.http.conf.HttpGatewayRouterConfiguration;
-import com.coreoz.http.config.HttpGatewayConfigClientAccessControl;
-import com.coreoz.http.config.HttpGatewayConfigLoader;
-import com.coreoz.http.config.HttpGatewayConfigServices;
-import com.coreoz.http.config.HttpGatewayConfigServicesAuth;
+import com.coreoz.http.config.*;
 import com.coreoz.http.play.HttpGatewayDownstreamResponses;
 import com.coreoz.http.services.auth.HttpGatewayRemoteServicesAuthenticator;
 import com.coreoz.http.services.HttpGatewayRemoteServicesIndex;
@@ -22,6 +19,7 @@ import com.coreoz.http.validation.HttpGatewayValidation;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -42,7 +40,9 @@ public class SampleBasic {
         HttpGatewayConfigLoader configLoader = new HttpGatewayConfigLoader();
         HttpGatewayRemoteServicesIndex servicesIndex = HttpGatewayConfigServices.readConfig(configLoader);
         HttpGatewayRemoteServicesAuthenticator remoteServicesAuthenticator = HttpGatewayConfigServicesAuth.readConfig(configLoader);
-        HttpGatewayConfigClientAccessControl gatewayClients = HttpGatewayConfigClientAccessControl.readConfig(configLoader).validateConfig(servicesIndex);
+        HttpGatewayConfigClientAccessControl gatewayClients = HttpGatewayConfigClientAccessControl
+            .readConfig(configLoader, List.of(HttpGatewayConfigClientAuth.KEY_AUTH))
+            .validateConfig(servicesIndex);
         HttpGatewayClientValidator clientValidator = new HttpGatewayClientValidator(servicesIndex, gatewayClients);
         HttpGatewayRouter httpRouter = new HttpGatewayRouter(servicesIndex.computeValidatedIndexedRoutes());
         HttpGatewayRouteValidator routeValidator = new HttpGatewayRouteValidator(httpRouter, servicesIndex);

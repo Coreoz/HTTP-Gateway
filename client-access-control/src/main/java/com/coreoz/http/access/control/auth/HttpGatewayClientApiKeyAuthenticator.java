@@ -19,14 +19,12 @@ public class HttpGatewayClientApiKeyAuthenticator implements HttpGatewayClientAu
         ));
     }
 
-    // TODO faire un TU avec un second authenticator
-
     public String authenticate(Request downstreamRequest) {
         String authorizationHeaderValue = downstreamRequest.header(HttpHeaders.AUTHORIZATION).orElse(null);
         String apiKey = extractApiKeyFromRequest(authorizationHeaderValue);
         if (apiKey == null) {
-            logger.warn(
-                "Authentication failed: missing authentication API Key on IP {}, Authorization header value is {}",
+            logger.info(
+                "Authentication failed: missing authentication API Key on IP {}, Authorization header value received is {}",
                 downstreamRequest.remoteAddress(),
                 authorizationHeaderValue
             );
@@ -35,7 +33,7 @@ public class HttpGatewayClientApiKeyAuthenticator implements HttpGatewayClientAu
         String clientId = clientIndexedByApiKey.get(apiKey);
         if (clientId == null) {
             logger.warn(
-                "Authentication failed: not client is recognized for API Key '{}' on IP {}, Authorization header value is {}",
+                "Authentication failed: not client is recognized for API Key '{}' on IP {}, Authorization header value received is {}",
                 apiKey,
                 downstreamRequest.remoteAddress(),
                 authorizationHeaderValue

@@ -4,6 +4,11 @@ import play.mvc.Http;
 
 import java.util.List;
 
+/**
+ * Handle the authentication for the all client using the same authentication method.
+ * For example, one single instance of {@code HttpGatewayClientApiKeyAuthenticator} will handle authentication
+ * for all clients using the API key authentication method. It is why each authenticator contains an index of clients.
+ */
 public interface HttpGatewayClientAuthenticator {
     /**
      * Authenticate a client from an incoming HTTP Gateway request
@@ -16,7 +21,7 @@ public interface HttpGatewayClientAuthenticator {
         return new HttpGatewayMergedClientAuthenticator(authenticators);
     }
 
-    static class HttpGatewayMergedClientAuthenticator implements HttpGatewayClientAuthenticator {
+    class HttpGatewayMergedClientAuthenticator implements HttpGatewayClientAuthenticator {
         private final List<HttpGatewayClientAuthenticator> authenticators;
 
         public HttpGatewayMergedClientAuthenticator(List<HttpGatewayClientAuthenticator> authenticators) {

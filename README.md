@@ -106,8 +106,6 @@ This will generate the `dependency-graph.png` file in the `target` directory.
 
 TODO
 ----
-- [ ] Provide documentation about logging and good practices
-- [ ] Implement both key and basic auth for clients and services
 - [ ] upgrade ahc version
 - [ ] provide a way to easily validate downstream request body
 - [ ] Add Gateway archetype

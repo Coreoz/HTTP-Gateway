@@ -1,9 +1,7 @@
 package com.coreoz.http.config;
 
-import com.coreoz.http.access.control.auth.HttpGatewayAuthApiKey;
-import com.coreoz.http.access.control.auth.HttpGatewayAuthObject;
-import com.coreoz.http.access.control.auth.HttpGatewayClientApiKeyAuthenticator;
-import com.coreoz.http.access.control.auth.HttpGatewayClientAuthenticator;
+import com.coreoz.http.access.control.auth.*;
+import com.google.common.annotations.VisibleForTesting;
 import com.typesafe.config.Config;
 import lombok.Value;
 
@@ -13,9 +11,11 @@ import java.util.stream.Collectors;
 
 public class HttpGatewayConfigClientAuth {
     public static final HttpGatewayClientAuthConfig<HttpGatewayAuthApiKey> KEY_AUTH = HttpGatewayClientAuthConfig.of(HttpGatewayConfigAuth.KEY_AUTH, HttpGatewayClientApiKeyAuthenticator::new);
+    public static final HttpGatewayClientAuthConfig<HttpGatewayAuthBasic> BASIC_AUTH = HttpGatewayClientAuthConfig.of(HttpGatewayConfigAuth.BASIC_AUTH, HttpGatewayClientBasicAuthenticator::new);
 
     private static final List<HttpGatewayClientAuthConfig<? extends HttpGatewayAuthObject>> supportedAuthConfigs = List.of(
-        KEY_AUTH
+        KEY_AUTH,
+        BASIC_AUTH
     );
 
     public static HttpGatewayClientAuthenticator readAuth(List<? extends Config> clientsConfig) {
@@ -23,6 +23,18 @@ public class HttpGatewayConfigClientAuth {
     }
 
     public static HttpGatewayClientAuthenticator readAuth(List<? extends Config> clientsConfig, List<HttpGatewayClientAuthConfig<? extends HttpGatewayAuthObject>> supportedAuthConfigs) {
+        return HttpGatewayClientAuthenticator.merge(readAuthenticators(clientsConfig, supportedAuthConfigs));
+    }
+
+    /**
+     * Read config authentication without performing merging/flattening authenticators.
+     * See {@link HttpGatewayClientAuthenticator#merge(List)} for flattening authenticators
+     * @param clientsConfig The client configuration configs
+     * @param supportedAuthConfigs The supported authentication methods
+     * @return The authenticators for each authentication method
+     */
+    @VisibleForTesting
+    static List<HttpGatewayClientAuthenticator> readAuthenticators(List<? extends Config> clientsConfig, List<HttpGatewayClientAuthConfig<? extends HttpGatewayAuthObject>> supportedAuthConfigs) {
         Map<String, List<? extends HttpGatewayAuthObject>> authReadConfigs = HttpGatewayConfigAuth.readAuth(
             "client-id",
             clientsConfig,
@@ -35,14 +47,20 @@ public class HttpGatewayConfigClientAuth {
                 availableAuthConfig -> availableAuthConfig.authConfig.getAuthType(),
                 HttpGatewayClientAuthConfig::getAuthenticatorCreator
             ));
-        return makeAuthenticator(indexedAuthenticatorCreator, authReadConfigs);
+        return makeAuthenticators(authReadConfigs, indexedAuthenticatorCreator);
     }
 
-    private static HttpGatewayClientAuthenticator makeAuthenticator(
-        Map<String, HttpGatewayClientAuthenticatorCreator<? extends HttpGatewayAuthObject>> indexedAuthenticatorCreator,
-        Map<String, List<? extends HttpGatewayAuthObject>> authReadConfigs
+    /**
+     * Create authenticator objects from using authentication values read from the client config, and the indexed authenticator creators
+     * @param authReadConfigs Authentication values read from the client config
+     * @param indexedAuthenticatorCreator The indexed authenticator creators
+     * @return The authenticators for each authentication method
+     */
+    private static List<HttpGatewayClientAuthenticator> makeAuthenticators(
+        Map<String, List<? extends HttpGatewayAuthObject>> authReadConfigs,
+        Map<String, HttpGatewayClientAuthenticatorCreator<? extends HttpGatewayAuthObject>> indexedAuthenticatorCreator
         ) {
-        return HttpGatewayClientAuthenticator.merge(authReadConfigs
+        return authReadConfigs
             .entrySet()
             .stream()
             .map(authConfig -> {
@@ -51,7 +69,7 @@ public class HttpGatewayConfigClientAuth {
                 //noinspection unchecked
                 return creator.createAuthenticator((List<HttpGatewayAuthObject>) authConfig.getValue());
             })
-            .toList());
+            .toList();
     }
 
     public static List<HttpGatewayClientAuthConfig<? extends HttpGatewayAuthObject>> supportedAuthConfigs() {
