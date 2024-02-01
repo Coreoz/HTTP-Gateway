@@ -106,8 +106,8 @@ This will generate the `dependency-graph.png` file in the `target` directory.
 
 TODO
 ----
+- [ ] Add a module to generate an OpenAPI spec from existing specs, see https://github.com/kpramesh2212/openapi-merger-plugin
+- [ ] Add a cli to generate a service config from an OpenAPI spec
 - [ ] upgrade ahc version
 - [ ] provide a way to easily validate downstream request body
 - [ ] Add Gateway archetype
-- [ ] Add a module to generate an OpenAPI spec from existing specs, see https://github.com/kpramesh2212/openapi-merger-plugin
-- [ ] Add a cli to generate a service config from an OpenAPI spec 
