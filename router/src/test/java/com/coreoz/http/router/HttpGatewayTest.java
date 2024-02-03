@@ -34,7 +34,7 @@ public class HttpGatewayTest {
         ));
         HttpGateway httpGateway = HttpGateway.start(new HttpGatewayConfiguration(
             HTTP_GATEWAY_PORT,
-            HttpGatewayRouterConfiguration.asyncRouting(downstreamRequest -> {
+            routerDsl -> routerDsl.addRoutes(HttpGatewayRouterConfiguration.asyncRouting(downstreamRequest -> {
                 DestinationRoute destinationRoute = httpRouter
                     .searchRoute(downstreamRequest.method(), downstreamRequest.path())
                     .map((matchingRoute) -> httpRouter.computeDestinationRoute(matchingRoute, "http://localhost:" + SparkMockServer.SPARK_HTTP_PORT))
@@ -58,7 +58,7 @@ public class HttpGatewayTest {
 
                     return HttpGatewayDownstreamResponses.buildResult(upstreamResponse);
                 });
-            })
+            }))
         ));
 
         HttpResponse<String> httpResponse = makeHttpRequest("/endpoint1");

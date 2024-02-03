@@ -1,6 +1,7 @@
 package com.coreoz.http;
 
 import com.coreoz.http.conf.HttpGatewayConfiguration;
+import com.coreoz.http.conf.HttpGatewayRoutingDsl;
 import com.coreoz.http.play.StreamingBodyParser;
 import play.Mode;
 import play.routing.RoutingDsl;
@@ -19,9 +20,9 @@ public class HttpGateway {
             .forRouter(
                 Mode.PROD,
                 configuration.getHttpPort(),
-                builtInComponents -> configuration.getRouterConfiguration().configureRoutes(new RoutingDsl(
+                builtInComponents -> configuration.getRoutingDsl().configure(new HttpGatewayRoutingDsl(new RoutingDsl(
                     new StreamingBodyParser(builtInComponents.scalaBodyParsers().materializer())
-                ))
+                ))).build()
             ));
     }
 

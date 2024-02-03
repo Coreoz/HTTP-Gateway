@@ -26,9 +26,9 @@ public class HttpGatewayConfigServicesAuthTest {
         );
 
         Assertions.assertThat(serviceAuthentications).hasSize(1);
-        Assertions.assertThat(serviceAuthentications.getFirst().getServiceId()).isEqualTo("service-id-test");
-        Assertions.assertThat(serviceAuthentications.getFirst().getAuthenticator()).isInstanceOf(HttpGatewayRemoteServiceBasicAuthenticator.class);
-        Assertions.assertThat(((HttpGatewayRemoteServiceBasicAuthenticator) serviceAuthentications.getFirst().getAuthenticator()).getAuthorizationBasic()).isEqualTo("Basic dXNlci10ZXN0OnVzZXItcGFzc3dvcmQ=");
+        Assertions.assertThat(serviceAuthentications.get(0).getServiceId()).isEqualTo("service-id-test");
+        Assertions.assertThat(serviceAuthentications.get(0).getAuthenticator()).isInstanceOf(HttpGatewayRemoteServiceBasicAuthenticator.class);
+        Assertions.assertThat(((HttpGatewayRemoteServiceBasicAuthenticator) serviceAuthentications.get(0).getAuthenticator()).getAuthorizationBasic()).isEqualTo("Basic dXNlci10ZXN0OnVzZXItcGFzc3dvcmQ=");
     }
 
     @Test

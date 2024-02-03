@@ -3,6 +3,7 @@ package com.coreoz.http;
 import com.coreoz.http.conf.HttpGatewayConfiguration;
 import com.coreoz.http.conf.HttpGatewayRouterConfiguration;
 import com.coreoz.http.config.*;
+import com.coreoz.http.openapi.route.OpenApiRoute;
 import com.coreoz.http.play.HttpGatewayDownstreamResponses;
 import com.coreoz.http.services.auth.HttpGatewayRemoteServicesAuthenticator;
 import com.coreoz.http.services.HttpGatewayRemoteServicesIndex;
@@ -48,50 +49,57 @@ public class SampleBasic {
         HttpGatewayRouteValidator routeValidator = new HttpGatewayRouteValidator(httpRouter, servicesIndex);
 
         HttpGatewayUpstreamStringPeekerClient httpGatewayUpstreamClient = new HttpGatewayUpstreamStringPeekerClient();
+        // TODO construct with clientValidator & httpGatewayUpstreamClient
+        OpenApiRoute openApiRoute = new OpenApiRoute();
 
         return HttpGateway.start(new HttpGatewayConfiguration(
             HTTP_GATEWAY_PORT,
-            HttpGatewayRouterConfiguration.asyncRouting(downstreamRequest -> {
-                // validation
-                HttpGatewayValidation<HttpGatewayDestinationService> validation = clientValidator
-                    .validateClientIdentification(downstreamRequest)
-                    .then(clientId -> routeValidator
-                        .validate(downstreamRequest)
-                        .then(destinationRoute -> clientValidator.validateClientAccess(downstreamRequest, destinationRoute, clientId))
-                    );
-                // error management
-                if (validation.isError()) {
-                    logger.warn(validation.error().getMessage());
-                    return HttpGatewayDownstreamResponses.buildError(validation.error());
-                }
-                HttpGatewayDestinationService destinationService = validation.value();
+            routerDsl -> routerDsl
+                // Additional routing must be set before the main HTTP Gateway routing part
+                .addRoutes(openApiRoute)
+                .addRoutes(HttpGatewayRouterConfiguration.asyncRouting(downstreamRequest -> {
+                    // starts validation
+                    HttpGatewayValidation<String> clientValidation = clientValidator.validateClientIdentification(downstreamRequest);
 
-                HttpGatewayPeekingUpstreamRequest<String, String> remoteRequest = httpGatewayUpstreamClient
-                    .prepareRequest(downstreamRequest)
-                    .withUrl(destinationService.getDestinationRoute().getDestinationUrl())
-                    .with(remoteServicesAuthenticator.forRoute(
-                        destinationService.getServiceId(), destinationService.getDestinationRoute().getRouteId()
-                    ))
-                    .copyBasicHeaders()
-                    .copyQueryParams();
-                CompletableFuture<HttpGatewayUpstreamKeepingResponse<String, String>> peekingUpstreamFutureResponse = httpGatewayUpstreamClient.executeUpstreamRequest(remoteRequest);
-                return peekingUpstreamFutureResponse.thenApply(peekingUpstreamResponse -> {
-                    HttpGatewayUpstreamResponse upstreamResponse = peekingUpstreamResponse.getUpstreamResponse();
-                    if (upstreamResponse.getStatusCode() >= HttpResponseStatus.INTERNAL_SERVER_ERROR.code()) {
-                        // Do not forward the response body if the upstream server returns an internal error
-                        // => this enables to avoid forwarding sensitive information
-                        PeekerPublishersConsumer.consume(upstreamResponse.getPublisher());
-                        // Set an empty body response
-                        upstreamResponse.setPublisher(null);
+                    // validation
+                    HttpGatewayValidation<HttpGatewayDestinationService> validation = clientValidation
+                        .then(clientId -> routeValidator
+                            .validate(downstreamRequest)
+                            .then(destinationRoute -> clientValidator.validateClientAccess(downstreamRequest, destinationRoute, clientId))
+                        );
+                    // error management
+                    if (validation.isError()) {
+                        logger.warn(validation.error().getMessage());
+                        return HttpGatewayDownstreamResponses.buildError(validation.error());
                     }
+                    HttpGatewayDestinationService destinationService = validation.value();
 
-                    peekingUpstreamResponse.getStreamsPeeked().thenAccept(peekedStreams -> {
-                        logger.debug("Proxied request: downstream={} upstream={}", peekedStreams.getDownstreamPeeking(), peekedStreams.getUpstreamPeeking());
+                    HttpGatewayPeekingUpstreamRequest<String, String> remoteRequest = httpGatewayUpstreamClient
+                        .prepareRequest(downstreamRequest)
+                        .withUrl(destinationService.getDestinationRoute().getDestinationUrl())
+                        .with(remoteServicesAuthenticator.forRoute(
+                            destinationService.getServiceId(), destinationService.getDestinationRoute().getRouteId()
+                        ))
+                        .copyBasicHeaders()
+                        .copyQueryParams();
+                    CompletableFuture<HttpGatewayUpstreamKeepingResponse<String, String>> peekingUpstreamFutureResponse = httpGatewayUpstreamClient.executeUpstreamRequest(remoteRequest);
+                    return peekingUpstreamFutureResponse.thenApply(peekingUpstreamResponse -> {
+                        HttpGatewayUpstreamResponse upstreamResponse = peekingUpstreamResponse.getUpstreamResponse();
+                        if (upstreamResponse.getStatusCode() >= HttpResponseStatus.INTERNAL_SERVER_ERROR.code()) {
+                            // Do not forward the response body if the upstream server returns an internal error
+                            // => this enables to avoid forwarding sensitive information
+                            PeekerPublishersConsumer.consume(upstreamResponse.getPublisher());
+                            // Set an empty body response
+                            upstreamResponse.setPublisher(null);
+                        }
+
+                        peekingUpstreamResponse.getStreamsPeeked().thenAccept(peekedStreams -> {
+                            logger.debug("Proxied request: downstream={} upstream={}", peekedStreams.getDownstreamPeeking(), peekedStreams.getUpstreamPeeking());
+                        });
+
+                        return HttpGatewayDownstreamResponses.buildResult(upstreamResponse);
                     });
-
-                    return HttpGatewayDownstreamResponses.buildResult(upstreamResponse);
-                });
-            })
+                }))
         ));
     }
 }

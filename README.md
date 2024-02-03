@@ -33,7 +33,7 @@ To build a new HTTP gateway, it is best to start looking at the [HTTP Gateway sa
 
 Then the steps are:
 1. Create a Java project, for example using the [Plume archetype](https://github.com/Coreoz/Plume-archetypes)
-2. Make sure you are using at least Java 21
+2. Make sure you are using at least Java 17
 3. Add the HTTP Gateway Maven dependencies, in doubt, it is possible to copy the ones from the [sample HTTP Gateways pom.xml file](samples/pom.xml) 
 4. Create the Gateway entry point class, it is usually easier to copy/paste a [sample gateway class](samples/src/main/java/com/coreoz/http)
 5. Use and configure available [HTTP Gateway modules](#available-modules)
@@ -107,6 +107,10 @@ This will generate the `dependency-graph.png` file in the `target` directory.
 TODO
 ----
 - [ ] Add a module to generate an OpenAPI spec from existing specs, see https://github.com/kpramesh2212/openapi-merger-plugin
+  - Provide a dedicated route that will return the consolidated JSON (add another todo to customize it by consumer)
+  - Create the cache for this call returning the OpenAPI object
+  - Provide all service a route toward the OpenAPI spec => with a default, base-url/api/swagger, and a authentication for this => in a dedicated Maven module
+  - Code to query all OpenAPI spec + merge it all
 - [ ] Add a cli to generate a service config from an OpenAPI spec
 - [ ] Migrate integration tests to javalin (https://github.com/javalin/javalin) to avoid tests raising security threads alerts (even though it's safe since it's only for tests)
 - [ ] upgrade ahc version

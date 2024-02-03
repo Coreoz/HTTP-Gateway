@@ -29,7 +29,7 @@ public class HttpGatewayTest {
     public void integration_test__verify_that_server_starts_and_is_working() throws IOException, InterruptedException {
         HttpGateway httpGateway = HttpGateway.start(new HttpGatewayConfiguration(
             HTTP_GATEWAY_PORT,
-            (router) -> router.POST("/test").routingTo((request) -> Results.ok("Hello world !")).build()
+            routerDsl -> routerDsl.addRoutes(route -> route.POST("/test").routingTo((request) -> Results.ok("Hello world !")))
         ));
 
         HttpResponse<String> httpResponse = makeHttpRequest("/test");
@@ -44,7 +44,7 @@ public class HttpGatewayTest {
     public void integration_test__verify_that_server_and_async_router_is_working() throws IOException, InterruptedException {
         HttpGateway httpGateway = HttpGateway.start(new HttpGatewayConfiguration(
             HTTP_GATEWAY_PORT,
-            HttpGatewayRouterConfiguration.asyncRouting(request -> CompletableFuture.completedFuture(Results.ok("Hello world !")))
+            routerDsl -> routerDsl.addRoutes(HttpGatewayRouterConfiguration.asyncRouting(request -> CompletableFuture.completedFuture(Results.ok("Hello world !"))))
         ));
 
         HttpResponse<String> httpResponse = makeHttpRequest("/endpoint-not-used-here");
@@ -60,7 +60,7 @@ public class HttpGatewayTest {
         HttpGatewayUpstreamClient httpGatewayUpstreamClient = new HttpGatewayUpstreamClient();
         HttpGateway httpGateway = HttpGateway.start(new HttpGatewayConfiguration(
             HTTP_GATEWAY_PORT,
-            HttpGatewayRouterConfiguration.asyncRouting(request -> {
+            routerDsl -> routerDsl.addRoutes(HttpGatewayRouterConfiguration.asyncRouting(request -> {
                 HttpGatewayUpstreamRequest upstreamRequest = httpGatewayUpstreamClient
                     .prepareRequest(request)
                     .withUrl("http://localhost:" + SparkMockServer.SPARK_HTTP_PORT + request.path());
@@ -74,7 +74,7 @@ public class HttpGatewayTest {
 
                     return HttpGatewayDownstreamResponses.buildResult(upstreamResponse);
                 });
-            })
+            }))
         ));
 
         HttpResponse<String> httpResponse = makeHttpRequest("/long-body");

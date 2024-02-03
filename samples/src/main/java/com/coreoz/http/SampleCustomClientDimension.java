@@ -55,7 +55,7 @@ public class SampleCustomClientDimension {
 
         return HttpGateway.start(new HttpGatewayConfiguration(
             HTTP_GATEWAY_PORT,
-            HttpGatewayRouterConfiguration.asyncRouting(downstreamRequest -> {
+            routingDsl -> routingDsl.addRoutes(HttpGatewayRouterConfiguration.asyncRouting(downstreamRequest -> {
                 // validation
                 HttpGatewayValidation<CustomClientValidation> validation = clientValidator
                     .validateClientIdentification(downstreamRequest)
@@ -103,7 +103,7 @@ public class SampleCustomClientDimension {
                     return HttpGatewayDownstreamResponses.buildResult(upstreamResponse);
                 });
             })
-        ));
+        )));
     }
 
     // Custom authorization

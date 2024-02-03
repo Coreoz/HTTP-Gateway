@@ -34,7 +34,7 @@ public class HttpGatewayUpstreamStringPeekerClientTest {
         HttpGatewayUpstreamStringPeekerClient httpGatewayUpstreamClient = new HttpGatewayUpstreamStringPeekerClient();
         httpGateway = HttpGateway.start(new HttpGatewayConfiguration(
             HTTP_GATEWAY_PORT,
-            HttpGatewayRouterConfiguration.asyncRouting(downstreamRequest -> {
+            routerDsl -> routerDsl.addRoutes(HttpGatewayRouterConfiguration.asyncRouting(downstreamRequest -> {
 
                 HttpGatewayStringStreamPeekingConfiguration peekingConfig = new HttpGatewayStringStreamPeekingConfiguration(downstreamRequest
                     .header(HEADER_PEEKING_BYTES_COUNT)
@@ -60,7 +60,7 @@ public class HttpGatewayUpstreamStringPeekerClientTest {
 
                     return HttpGatewayDownstreamResponses.buildResult(upstreamResponse);
                 });
-            })
+            }))
         ));
     }
 

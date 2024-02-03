@@ -91,4 +91,6 @@ public class HttpGatewayClientRouteAccessControl implements HttpGatewayClientRou
         return allowedRoutesByClient.getOrDefault(clientId, Set.of()).contains(routeId)
             || allowedServicesByClient.getOrDefault(clientId, Set.of()).contains(serviceId);
     }
+
+    // TODO add a method to expose routes and services linked to the client
 }

@@ -83,4 +83,6 @@ public class HttpGatewayConfigClientAccessControl implements HttpGatewayClientAc
         routeAccessControl.validateConfig(remoteServicesIndex);
         return this;
     }
+
+    // TODO add a method to expose routes and services linked to the client
 }

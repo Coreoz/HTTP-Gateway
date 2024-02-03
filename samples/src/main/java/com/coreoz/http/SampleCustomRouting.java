@@ -7,11 +7,11 @@ import com.coreoz.http.config.HttpGatewayConfigClientAuth;
 import com.coreoz.http.config.HttpGatewayConfigServices;
 import com.coreoz.http.config.HttpGatewayConfigServicesAuth;
 import com.coreoz.http.play.HttpGatewayDownstreamResponses;
-import com.coreoz.http.services.HttpGatewayRemoteService;
-import com.coreoz.http.services.auth.HttpGatewayRemoteServicesAuthenticator;
-import com.coreoz.http.services.HttpGatewayRemoteServicesIndex;
 import com.coreoz.http.router.HttpGatewayRouter;
 import com.coreoz.http.router.data.DestinationRoute;
+import com.coreoz.http.services.HttpGatewayRemoteService;
+import com.coreoz.http.services.HttpGatewayRemoteServicesIndex;
+import com.coreoz.http.services.auth.HttpGatewayRemoteServicesAuthenticator;
 import com.coreoz.http.upstream.HttpGatewayPeekingUpstreamRequest;
 import com.coreoz.http.upstream.HttpGatewayUpstreamKeepingResponse;
 import com.coreoz.http.upstream.HttpGatewayUpstreamResponse;
@@ -49,7 +49,7 @@ public class SampleCustomRouting {
 
         return HttpGateway.start(new HttpGatewayConfiguration(
             HTTP_GATEWAY_PORT,
-            HttpGatewayRouterConfiguration.asyncRouting(downstreamRequest -> {
+            routingDsl -> routingDsl.addRoutes(HttpGatewayRouterConfiguration.asyncRouting(downstreamRequest -> {
                 // validation
                 HttpGatewayValidation<ValidationResult> validation = HttpGatewayClientValidators
                     .validateClientIdentification(clientsAuthenticator, downstreamRequest)
@@ -97,7 +97,7 @@ public class SampleCustomRouting {
 
                     return HttpGatewayDownstreamResponses.buildResult(upstreamResponse);
                 });
-            })
+            }))
         ));
     }
 

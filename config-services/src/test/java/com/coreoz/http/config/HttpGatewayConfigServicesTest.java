@@ -24,7 +24,7 @@ public class HttpGatewayConfigServicesTest {
             .assertThat(remoteServices)
             .isNotEmpty()
             .hasSize(1);
-        HttpGatewayRemoteService serviceTest = remoteServices.getFirst();
+        HttpGatewayRemoteService serviceTest = remoteServices.get(0);
         Assertions.assertThat(serviceTest.getServiceId()).isEqualTo("test-service");
         Assertions.assertThat(serviceTest.getBaseUrl()).isEqualTo("http://localhost:45678");
         Assertions.assertThat(serviceTest.getRoutes()).containsExactly(

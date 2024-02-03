@@ -5,5 +5,5 @@ import lombok.Value;
 @Value
 public class HttpGatewayConfiguration {
     int httpPort;
-    HttpGatewayRouterConfiguration routerConfiguration;
+    HttpGatewayRoutingDslConfiguration routingDsl;
 }

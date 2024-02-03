@@ -38,6 +38,10 @@
             <groupId>com.coreoz</groupId>
             <artifactId>http-gateway-downstream-validation</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.coreoz</groupId>
+            <artifactId>http-gateway-openapi</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>ch.qos.logback</groupId>
