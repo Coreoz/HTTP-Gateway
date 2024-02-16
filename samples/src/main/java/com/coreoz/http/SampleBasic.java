@@ -8,10 +8,7 @@ import com.coreoz.http.play.HttpGatewayDownstreamResponses;
 import com.coreoz.http.services.auth.HttpGatewayRemoteServicesAuthenticator;
 import com.coreoz.http.services.HttpGatewayRemoteServicesIndex;
 import com.coreoz.http.router.HttpGatewayRouter;
-import com.coreoz.http.upstream.HttpGatewayPeekingUpstreamRequest;
-import com.coreoz.http.upstream.HttpGatewayUpstreamKeepingResponse;
-import com.coreoz.http.upstream.HttpGatewayUpstreamResponse;
-import com.coreoz.http.upstream.HttpGatewayUpstreamStringPeekerClient;
+import com.coreoz.http.upstream.*;
 import com.coreoz.http.upstream.publisher.PeekerPublishersConsumer;
 import com.coreoz.http.validation.HttpGatewayClientValidator;
 import com.coreoz.http.validation.HttpGatewayDestinationService;
@@ -48,9 +45,12 @@ public class SampleBasic {
         HttpGatewayRouter httpRouter = new HttpGatewayRouter(servicesIndex.computeValidatedIndexedRoutes());
         HttpGatewayRouteValidator routeValidator = new HttpGatewayRouteValidator(httpRouter, servicesIndex);
 
-        HttpGatewayUpstreamStringPeekerClient httpGatewayUpstreamClient = new HttpGatewayUpstreamStringPeekerClient();
-        // TODO construct with clientValidator & httpGatewayUpstreamClient
-        OpenApiRoute openApiRoute = new OpenApiRoute();
+        HttpGatewayUpstreamClient upstreamBaseClient = new HttpGatewayUpstreamClient();
+        HttpGatewayUpstreamStringPeekerClient httpGatewayUpstreamClient = new HttpGatewayUpstreamStringPeekerClient(
+            HttpGatewayStringStreamPeekingConfiguration.DEFAULT_CONFIG, upstreamBaseClient
+        );
+        // TODO configure correctly
+        OpenApiRoute openApiRoute = new OpenApiRoute(clientValidator, null);
 
         return HttpGateway.start(new HttpGatewayConfiguration(
             HTTP_GATEWAY_PORT,

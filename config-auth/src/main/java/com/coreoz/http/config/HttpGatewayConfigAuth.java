@@ -22,9 +22,23 @@ public class HttpGatewayConfigAuth {
     public static final HttpGatewayAuthConfig<HttpGatewayAuthApiKey> KEY_AUTH = HttpGatewayAuthConfig.of("key", HttpGatewayConfigAuth::readAuthKey);
     public static final HttpGatewayAuthConfig<HttpGatewayAuthBasic> BASIC_AUTH = HttpGatewayAuthConfig.of("basic", HttpGatewayConfigAuth::readBasicAuth);
 
+    public static final String CONFIG_AUTH_EMPTY_PREFIX = "";
+
+    /**
+     * See {@link #readAuth(String, String, List, List)}
+     */
+    public static Map<String, List<? extends HttpGatewayAuthObject>> readAuth(
+        String configObjectId,
+        List<? extends Config> objectsConfig,
+        List<HttpGatewayAuthConfig<? extends HttpGatewayAuthObject>> supportedAuthConfigs
+    ) {
+        return readAuth(configObjectId, CONFIG_AUTH_EMPTY_PREFIX, objectsConfig, supportedAuthConfigs);
+    }
+
     /**
      * Read authentication from a list of objects
      * @param configObjectId The config key that identify the ID of an object item
+     * @param configAuthPrefix The config auth prefix key if it exists. For example for the config object {id: 123, openapi: { auth: { ... }}}, the configAuthPrefix will be "openapi." (with the .) because the "auth" object is not present in the root node. The configAuthPrefix must be empty if the "auth" object to be read is already present in the root node.
      * @param objectsConfig The list of configs, each config item represents an object
      * @param supportedAuthConfigs The list of supported authentication methods
      * @return A {@code Map} containing auth object indexed by authentication method/type.
@@ -34,7 +48,10 @@ public class HttpGatewayConfigAuth {
      * @throws ConfigException if a missing authentication key is absent in the objects or if the objectId key is missing
      */
     public static Map<String, List<? extends HttpGatewayAuthObject>> readAuth(
-        String configObjectId, List<? extends Config> objectsConfig, List<HttpGatewayAuthConfig<? extends HttpGatewayAuthObject>> supportedAuthConfigs
+        String configObjectId,
+        String configAuthPrefix,
+        List<? extends Config> objectsConfig,
+        List<HttpGatewayAuthConfig<? extends HttpGatewayAuthObject>> supportedAuthConfigs
     ) {
         Map<String, HttpGatewayAuthConfig<? extends HttpGatewayAuthObject>> indexedSupportedAuthConfigs = supportedAuthConfigs
             .stream()
@@ -45,8 +62,8 @@ public class HttpGatewayConfigAuth {
         Map<String, List<? extends HttpGatewayAuthObject>> authReadConfigs = new HashMap<>();
         for (Config objectConfig : objectsConfig) {
             String objectId = objectConfig.getString(configObjectId);
-            if (objectConfig.hasPath("auth")) {
-                Config baseAuthConfig = objectConfig.getConfig("auth");
+            if (objectConfig.hasPath(configAuthPrefix + "auth")) {
+                Config baseAuthConfig = objectConfig.getConfig(configAuthPrefix + "auth");
                 String authType = baseAuthConfig.getString("type");
                 HttpGatewayAuthConfig<? extends HttpGatewayAuthObject> authConfig = indexedSupportedAuthConfigs.get(authType);
                 if (authConfig == null) {

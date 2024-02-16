@@ -26,10 +26,14 @@ public class HttpGatewayConfigServicesAuth {
     /**
      * Available remote services authenticators
      */
-    private final static List<HttpGatewayServiceAuthConfig<? extends HttpGatewayAuthObject>> supportedAuthConfigs = List.of(
+    private static final List<HttpGatewayServiceAuthConfig<? extends HttpGatewayAuthObject>> supportedAuthConfigs = List.of(
         BASIC_AUTH,
         KEY_AUTH
     );
+
+    public static List<HttpGatewayServiceAuthConfig<? extends HttpGatewayAuthObject>> supportedAuthConfigs() {
+        return supportedAuthConfigs;
+    }
 
     /**
      * Read remote services authentication config to create a {@link HttpGatewayRemoteServicesAuthenticator}
@@ -63,8 +67,7 @@ public class HttpGatewayConfigServicesAuth {
         return HttpGatewayRemoteServicesAuthenticator.fromRemoteClientAuthentications(serviceAuthentications);
     }
 
-    @VisibleForTesting
-    static List<HttpGatewayRemoteServiceAuth> createServiceAuthentications(List<HttpGatewayServiceAuthConfig<? extends HttpGatewayAuthObject>> supportedAuthConfigs, Map<String, List<? extends HttpGatewayAuthObject>> authReadConfigs) {
+    public static List<HttpGatewayRemoteServiceAuth> createServiceAuthentications(List<HttpGatewayServiceAuthConfig<? extends HttpGatewayAuthObject>> supportedAuthConfigs, Map<String, List<? extends HttpGatewayAuthObject>> authReadConfigs) {
         Map<String, HttpGatewayUpstreamAuthenticatorCreator<? extends HttpGatewayAuthObject>> indexedAuthenticatorCreator = supportedAuthConfigs
             .stream()
             .collect(Collectors.toMap(
