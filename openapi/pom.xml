@@ -20,11 +20,11 @@
         </dependency>
         <dependency>
             <groupId>com.coreoz</groupId>
-            <artifactId>http-gateway-downstream-validation</artifactId>
+            <artifactId>http-gateway-router</artifactId>
         </dependency>
         <dependency>
             <groupId>com.coreoz</groupId>
-            <artifactId>http-gateway-upstream-peeker</artifactId>
+            <artifactId>http-gateway-downstream-validation</artifactId>
         </dependency>
 
         <dependency>
@@ -37,5 +37,12 @@
 			<artifactId>lombok</artifactId>
 			<scope>provided</scope>
 		</dependency>
+
+        <!-- unit testing -->
+        <dependency>
+            <groupId>com.coreoz</groupId>
+            <artifactId>http-gateway-test</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>

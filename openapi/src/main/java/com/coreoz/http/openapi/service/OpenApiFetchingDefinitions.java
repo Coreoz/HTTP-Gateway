@@ -58,7 +58,8 @@ public class OpenApiFetchingDefinitions implements OpenApiFetchingService {
                     (OpenAPI consolidatedOpenApi, OpenAPI serviceOpenApi) -> OpenApiMerger.addDefinitions(
                         consolidatedOpenApi,
                         serviceOpenApi,
-                        new OpenApiMergerConfiguration()
+                        // TODO new OpenApiMergerConfiguration
+                        null
                     )));
     }
 

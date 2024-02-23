@@ -60,12 +60,21 @@ public class HttpGatewayRemoteServicesIndex {
     private Stream<HttpEndpoint> routesStream() {
         return services
             .stream()
-            .flatMap(service -> service.getRoutes().stream().map(route -> new HttpEndpoint(
-                route.getRouteId(),
-                route.getMethod(),
-                gatewayRewriteRoutes.getOrDefault(route.getRouteId(), route.getPath()),
-                route.getPath()
-            )));
+            .flatMap(service -> service.getRoutes().stream().map(this::serviceRouteToHttpEndpoint));
+    }
+
+    /**
+     * Generate the HTTP Gateway {@link HttpEndpoint} for a remote service route.
+     * This method takes into consideration route rewriting.
+     * @param route The remote service route
+     */
+    public HttpEndpoint serviceRouteToHttpEndpoint(HttpGatewayRemoteServiceRoute route) {
+        return new HttpEndpoint(
+            route.getRouteId(),
+            route.getMethod(),
+            gatewayRewriteRoutes.getOrDefault(route.getRouteId(), route.getPath()),
+            route.getPath()
+        );
     }
 
     /**
