@@ -25,12 +25,10 @@ public class PeekerPublishersConsumer {
     private static final int SIZE_OF_BODY_PARTS_TO_READ = 4;
 
     public static void consume(Publisher<?> publisherToConsume) {
-        if (!(publisherToConsume instanceof PublisherPeeker)) {
+        if (!(publisherToConsume instanceof PublisherPeeker<?> peekerPublisherToConsume)) {
             // Cannot consume null publisher or publisher that is not an instance of PublisherPeeker
             return;
         }
-        @SuppressWarnings("DataFlowIssue")
-        PublisherPeeker<?> peekerPublisherToConsume = (PublisherPeeker<?>) publisherToConsume;
         SubscriptionHolder subscriptionHolder = new SubscriptionHolder();
         peekerPublisherToConsume.subscribe(new Subscriber<Object>() {
             @Override

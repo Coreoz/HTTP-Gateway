@@ -19,6 +19,14 @@ import static com.coreoz.http.config.HttpGatewayConfigServicesAuth.createService
 public class HttpGatewayConfigOpenApiServices {
     public static final String CONFIG_OPEN_API_PREFIX = "open-api";
 
+    public static List<OpenApiUpstreamParameters> readConfig(HttpGatewayConfigLoader configLoader) {
+        return readConfig(configLoader.getHttpGatewayConfig());
+    }
+
+    public static List<OpenApiUpstreamParameters> readConfig(HttpGatewayConfigLoader configLoader, List<HttpGatewayConfigServicesAuth.HttpGatewayServiceAuthConfig<? extends HttpGatewayAuthObject>> supportedAuthConfigs) {
+        return readConfig(configLoader.getHttpGatewayConfig(), supportedAuthConfigs);
+    }
+
     public static List<OpenApiUpstreamParameters> readConfig(Config gatewayConfig) {
         return readConfig(gatewayConfig, HttpGatewayConfigServicesAuth.supportedAuthConfigs());
     }

@@ -4,6 +4,7 @@ import com.coreoz.http.conf.HttpGatewayConfiguration;
 import com.coreoz.http.conf.HttpGatewayRouterConfiguration;
 import com.coreoz.http.config.*;
 import com.coreoz.http.openapi.route.OpenApiRoute;
+import com.coreoz.http.openapi.service.OpenApiFetchingDefinitions;
 import com.coreoz.http.play.HttpGatewayDownstreamResponses;
 import com.coreoz.http.services.auth.HttpGatewayRemoteServicesAuthenticator;
 import com.coreoz.http.services.HttpGatewayRemoteServicesIndex;
@@ -49,8 +50,16 @@ public class SampleBasic {
         HttpGatewayUpstreamStringPeekerClient httpGatewayUpstreamClient = new HttpGatewayUpstreamStringPeekerClient(
             HttpGatewayStringStreamPeekingConfiguration.DEFAULT_CONFIG, upstreamBaseClient
         );
-        // TODO configure correctly
-        OpenApiRoute openApiRoute = new OpenApiRoute(clientValidator, null);
+
+        // OpenApi configuration
+        OpenApiRoute openApiRoute = new OpenApiRoute(
+            clientValidator,
+            new OpenApiFetchingDefinitions(
+                upstreamBaseClient,
+                servicesIndex,
+                HttpGatewayConfigOpenApiServices.readConfig(configLoader)
+            )
+        );
 
         return HttpGateway.start(new HttpGatewayConfiguration(
             HTTP_GATEWAY_PORT,

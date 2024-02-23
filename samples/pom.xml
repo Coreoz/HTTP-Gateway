@@ -40,7 +40,7 @@
         </dependency>
         <dependency>
             <groupId>com.coreoz</groupId>
-            <artifactId>http-gateway-openapi</artifactId>
+            <artifactId>http-gateway-config-openapi</artifactId>
         </dependency>
 
         <dependency>

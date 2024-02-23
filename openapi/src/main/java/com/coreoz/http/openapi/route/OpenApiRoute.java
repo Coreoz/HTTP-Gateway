@@ -11,14 +11,12 @@ import play.routing.RoutingDsl;
 public class OpenApiRoute implements HttpGatewayRouterConfiguration {
 
     private final HttpGatewayClientValidator clientValidator;
-    private final OpenApiFetchingService fetchingService;
     private OpenAPI openApiDefinition;
 
     // TODO HttpGatewayRemoteServicesIndex
     // TODO OpenAPI configuration(remote openapi auth + URL), with default
     public OpenApiRoute(HttpGatewayClientValidator clientValidator, OpenApiFetchingService fetchingService) {
         this.clientValidator = clientValidator;
-        this.fetchingService = fetchingService;
         fetchingService.fetch().thenAccept(openApiDefinition -> {
             OpenApiRoute.this.openApiDefinition = openApiDefinition;
         });
@@ -28,7 +26,7 @@ public class OpenApiRoute implements HttpGatewayRouterConfiguration {
     public void configureRoutes(RoutingDsl routingDsl) {
         routingDsl.GET("/openapi").routingTo(request -> {
             // TODO optional authentication
-            // TODO service
+            // TODO show only schema definition with routes visible for the authenticated client
             if (openApiDefinition != null) {
                 return Results.ok(new JsonContent(openApiDefinition));
             }

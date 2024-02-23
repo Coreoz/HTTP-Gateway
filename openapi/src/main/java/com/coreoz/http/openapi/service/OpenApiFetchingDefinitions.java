@@ -2,44 +2,63 @@ package com.coreoz.http.openapi.service;
 
 import com.coreoz.http.openapi.merge.OpenApiMerger;
 import com.coreoz.http.openapi.merge.OpenApiMergerConfiguration;
+import com.coreoz.http.services.HttpGatewayRemoteService;
 import com.coreoz.http.services.HttpGatewayRemoteServicesIndex;
+import com.coreoz.http.upstream.HttpGatewayResponseStatus;
 import com.coreoz.http.upstream.HttpGatewayUpstreamClient;
+import com.coreoz.http.upstream.HttpGatewayUpstreamRequest;
 import io.swagger.v3.oas.models.OpenAPI;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.pekko.stream.javadsl.StreamConverters;
+import org.reactivestreams.Publisher;
+import play.mvc.Http;
 
+import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
+@Slf4j
 public class OpenApiFetchingDefinitions implements OpenApiFetchingService {
     private final HttpGatewayUpstreamClient upstreamClient;
     private final HttpGatewayRemoteServicesIndex remoteServicesIndex;
-    private final List<OpenApiUpstreamParameters> openApiUpstreamParameters;
-
-    // TODO cache
+    private final Map<String, OpenApiUpstreamParameters> openApiUpstreamParameters;
 
     public OpenApiFetchingDefinitions(
         HttpGatewayUpstreamClient upstreamClient,
         HttpGatewayRemoteServicesIndex remoteServicesIndex,
-        List<OpenApiUpstreamParameters> openApiUpstreamParameters) {
+        List<OpenApiUpstreamParameters> openApiUpstreamParameters
+    ) {
         this.upstreamClient = upstreamClient;
         this.remoteServicesIndex = remoteServicesIndex;
-        this.openApiUpstreamParameters = openApiUpstreamParameters;
+        this.openApiUpstreamParameters = openApiUpstreamParameters
+            .stream()
+            .collect(Collectors.toMap(
+                OpenApiUpstreamParameters::serviceId,
+                Function.identity()
+            ));
     }
-
-    // TODO cache initialization method with
-    //  - fetching all remote OpenAPI spec
-    //  - creating a new OpenAPi from all other using the routes referenced in the HTTP API Gateway service config
-    //  - filter available routes
 
     @Override
     public CompletableFuture<OpenAPI> fetch() {
-        @SuppressWarnings("unchecked")
-        CompletableFuture<OpenAPI>[] fetchingSpecifications = openApiUpstreamParameters
+        Map<String, HttpGatewayRemoteService> indexedRemoteService = remoteServicesIndex
+            .getServices()
             .stream()
-            .map(this::fetchRemoteOpenApi)
+            .collect(Collectors.toMap(
+                HttpGatewayRemoteService::getServiceId,
+                Function.identity()
+            ));
+        @SuppressWarnings("unchecked")
+        CompletableFuture<ServiceWithOpenApi>[] fetchingSpecifications = openApiUpstreamParameters
+            .values()
+            .stream()
+            .map((OpenApiUpstreamParameters openApiParams) -> fetchRemoteOpenApi(
+                openApiParams,
+                indexedRemoteService.get(openApiParams.serviceId())
+            ))
             .toArray(CompletableFuture[]::new);
 
         return CompletableFuture
@@ -55,18 +74,64 @@ public class OpenApiFetchingDefinitions implements OpenApiFetchingService {
                 })
                 .reduce(
                     new OpenAPI(),
-                    (OpenAPI consolidatedOpenApi, OpenAPI serviceOpenApi) -> OpenApiMerger.addDefinitions(
+                    (OpenAPI consolidatedOpenApi, ServiceWithOpenApi serviceOpenApi) -> OpenApiMerger.addDefinitions(
                         consolidatedOpenApi,
-                        serviceOpenApi,
-                        // TODO new OpenApiMergerConfiguration
-                        null
-                    )));
+                        serviceOpenApi.openApi(),
+                        new OpenApiMergerConfiguration(
+                            serviceOpenApi
+                                .remoteService()
+                                .getRoutes()
+                                .stream()
+                                .map(remoteServicesIndex::serviceRouteToHttpEndpoint)
+                                .toList(),
+                            capitalize(serviceOpenApi.remoteService().getServiceId()),
+                            serviceOpenApi.remoteService().getServiceId(),
+                            true
+                        )
+                    ),
+                    // this is not made to be run in parallel
+                    null
+                )
+            );
     }
 
 
-    private CompletableFuture<OpenAPI> fetchRemoteOpenApi(OpenApiUpstreamParameters openApiUpstreamParameters) {
-        // upstreamClient.executeUpstreamRequest();
-        // TODO to implements
-        return CompletableFuture.completedFuture(null);
+    private CompletableFuture<ServiceWithOpenApi> fetchRemoteOpenApi(
+        OpenApiUpstreamParameters openApiUpstreamParameters, HttpGatewayRemoteService remoteService
+    ) {
+        // TODO handle OpenAPI files that are put directly in the src/main/resources folder
+        HttpGatewayUpstreamRequest request = upstreamClient
+            .prepareRequest(new Http.RequestBuilder().build())
+            .withUrl(remoteService.getBaseUrl() + openApiUpstreamParameters.openApiRemotePath())
+            .with(openApiUpstreamParameters.upstreamAuthenticator());
+        return upstreamClient
+            .executeUpstreamRequest(request)
+            .thenApply(response -> {
+                // responseBodyString = new String(publisherToInputStream(response.getPublisher()).readAllBytes(), );
+                if (response.getResponseStatus() != HttpGatewayResponseStatus.OK) {
+                    logger.error("Could not fetch remote OpenAPI definition: {}", response);
+                    return new ServiceWithOpenApi(remoteService, new OpenAPI());
+                }
+                // TODO finish implementing this
+                return null;
+            });
+    }
+
+    private static InputStream publisherToInputStream(Publisher<?> publisher) {
+        // StreamConverters.asInputStream() ?
+        if (publisher == null) {
+            return InputStream.nullInputStream();
+        }
+        // TODO look if there isn't already a Publisher to InputStream interface
+        return InputStream.nullInputStream();
+    }
+
+    private static record ServiceWithOpenApi(HttpGatewayRemoteService remoteService, OpenAPI openApi) { }
+
+    private static String capitalize(String content) {
+        if (content.isEmpty()) {
+            return content;
+        }
+        return content.substring(0, 1).toUpperCase() + content.substring(1);
     }
 }
