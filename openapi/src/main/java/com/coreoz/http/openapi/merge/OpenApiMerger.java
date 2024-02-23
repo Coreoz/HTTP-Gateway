@@ -4,6 +4,7 @@ import com.coreoz.http.router.SearchRouteIndexer;
 import com.coreoz.http.router.data.HttpEndpoint;
 import com.coreoz.http.router.data.ParsedSegment;
 import com.google.common.base.Strings;
+import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
@@ -27,14 +28,22 @@ public class OpenApiMerger {
     public static OpenAPI addDefinitions(OpenAPI baseDefinitions, OpenAPI definitionsToBeAdded, OpenApiMergerConfiguration mergeConfiguration) {
         Set<OpenApiSchemaMapping> addedSchemas = mergePaths(baseDefinitions, definitionsToBeAdded, mergeConfiguration);
         // TODO add routes for missing endpoints
-        // TODO merge components with componentNamePrefix
-        // baseDefinitions.getComponents().getSchemas().
         mergeSchemas(baseDefinitions, definitionsToBeAdded, addedSchemas);
         return baseDefinitions;
     }
 
     private static void mergeSchemas(OpenAPI baseDefinitions, OpenAPI definitionsToBeAdded, Set<OpenApiSchemaMapping> addedSchemas) {
-        System.out.println("TODO merge schemas: " + addedSchemas);
+        if (baseDefinitions.getComponents() == null && !addedSchemas.isEmpty()) {
+            Components components = new Components();
+            components.setSchemas(new HashMap<>());
+            baseDefinitions.setComponents(components);
+        }
+        for (OpenApiSchemaMapping schemaToBeMerged : addedSchemas) {
+            baseDefinitions.getComponents().getSchemas().put(
+                schemaToBeMerged.newName(),
+                definitionsToBeAdded.getComponents().getSchemas().get(schemaToBeMerged.initialName())
+            );
+        }
     }
 
     private static Set<OpenApiSchemaMapping> mergePaths(OpenAPI baseDefinitions, OpenAPI definitionsToBeAdded, OpenApiMergerConfiguration mergeConfiguration) {
@@ -145,7 +154,10 @@ public class OpenApiMerger {
             if (currentSchemaName != null) {
                 String newSchemaName = renameSchema(currentSchemaName, componentNamePrefix);
                 schemaNameUpdater.accept(element, newSchemaName);
-                schemaMappings.add(new OpenApiSchemaMapping(currentSchemaName, newSchemaName));
+                schemaMappings.add(new OpenApiSchemaMapping(
+                    parseSchemaName(currentSchemaName),
+                    parseSchemaName(newSchemaName)
+                ));
             }
         }
         return schemaMappings;
@@ -155,7 +167,11 @@ public class OpenApiMerger {
         if (!currentComponentName.startsWith(COMPONENT_SCHEMA_PREFIX)) {
             return currentComponentName;
         }
-        return COMPONENT_SCHEMA_PREFIX + componentNamePrefix + currentComponentName.substring(COMPONENT_SCHEMA_PREFIX.length());
+        return COMPONENT_SCHEMA_PREFIX + componentNamePrefix + parseSchemaName(currentComponentName);
+    }
+
+    private static String parseSchemaName(String schemaReference) {
+        return schemaReference.substring(COMPONENT_SCHEMA_PREFIX.length());
     }
 
     private static String rewritePath(HttpEndpoint httpEndpoint, String definitionPath) {
