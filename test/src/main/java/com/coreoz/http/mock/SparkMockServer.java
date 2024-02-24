@@ -22,6 +22,7 @@ public class SparkMockServer {
     private static void initializeSpark() {
         Spark.port(SPARK_HTTP_PORT);
         Spark.get("/hello", (request, response) -> "World");
+        Spark.get("/openapi", (request, response) -> SparkMockServer.class.getResourceAsStream("/petstore.yaml"));
         Spark.get("/pets/:id", (request, response) -> "Fetch pet " + request.params("id"));
         Spark.get("/pets", (request, response) -> {
             if (!isBasicAuthValid(request)) {

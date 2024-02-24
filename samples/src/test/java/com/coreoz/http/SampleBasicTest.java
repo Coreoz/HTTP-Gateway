@@ -14,10 +14,11 @@ import java.net.http.HttpResponse;
 import java.util.function.Function;
 
 public class SampleBasicTest {
-    private static HttpGateway httpGateway = SampleBasic.startsGateway();
+    private static final HttpGateway httpGateway;
 
     static {
         SparkMockServer.initialize();
+        httpGateway = SampleBasic.startsGateway();
     }
 
     @AfterClass
@@ -74,6 +75,15 @@ public class SampleBasicTest {
             .GET());
         Assertions.assertThat(httpResponse.statusCode()).isEqualTo(HttpResponseStatus.OK.code());
         Assertions.assertThat(httpResponse.body()).isEqualTo("Another route");
+    }
+
+    @Test
+    public void verify_that_openapi_endpoint_returns_openapi_definitions() {
+        HttpResponse<String> httpResponse = makeHttpRequest("/openapi", HttpRequest.Builder::GET);
+        Assertions.assertThat(httpResponse.statusCode()).isEqualTo(HttpResponseStatus.OK.code());
+        // TODO make a real unit test
+        // Assertions.assertThat(httpResponse.body()).isEqualTo("Another route");
+        System.out.println(httpResponse.body());
     }
 
     @SneakyThrows

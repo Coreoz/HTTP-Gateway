@@ -26,6 +26,11 @@
             <groupId>com.coreoz</groupId>
             <artifactId>http-gateway-downstream-validation</artifactId>
         </dependency>
+        <!-- TODO to remove and replace by a dedicated publisher module, it is just used to verify that the bytesReader works correctly -->
+        <dependency>
+            <groupId>com.coreoz</groupId>
+            <artifactId>http-gateway-upstream-peeker</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>io.swagger.parser.v3</groupId>

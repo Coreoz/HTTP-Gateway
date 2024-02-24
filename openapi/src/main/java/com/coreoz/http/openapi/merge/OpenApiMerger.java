@@ -3,6 +3,7 @@ package com.coreoz.http.openapi.merge;
 import com.coreoz.http.router.SearchRouteIndexer;
 import com.coreoz.http.router.data.HttpEndpoint;
 import com.coreoz.http.router.data.ParsedSegment;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Strings;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -15,6 +16,7 @@ import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class OpenApiMerger {
     private static final String COMPONENT_SCHEMA_PREFIX = "#/components/schemas/";
@@ -123,7 +125,7 @@ public class OpenApiMerger {
 
     private static Set<OpenApiSchemaMapping> updateOperationSchemaNames(Operation operation, String componentNamePrefix) {
         Set<OpenApiSchemaMapping> schemaMappings = new HashSet<>();
-        schemaMappings.addAll(updateSchemaName(componentNamePrefix, operation.getParameters(), Parameter::get$ref, Parameter::set$ref));
+        schemaMappings.addAll(updateSchemaName(componentNamePrefix, MoreObjects.firstNonNull(operation.getParameters(), List.of()), Parameter::get$ref, Parameter::set$ref));
         schemaMappings.addAll(updateSchemaName(
             componentNamePrefix,
             operation.getRequestBody() == null ? List.of() : List.of(operation.getRequestBody()),
@@ -138,7 +140,15 @@ public class OpenApiMerger {
         ));
         schemaMappings.addAll(updateSchemaName(
             componentNamePrefix,
-            operation.getResponses().entrySet().stream().flatMap(entry -> entry.getValue().getContent().entrySet().stream()).toList(),
+            operation
+                .getResponses()
+                .entrySet()
+                .stream()
+                .flatMap(entry -> entry.getValue().getContent() == null ?
+                    Stream.of()
+                    : entry.getValue().getContent().entrySet().stream()
+                )
+                .toList(),
             entry -> entry.getValue().getSchema().get$ref(),
             (entry, newSchemaName) -> entry.getValue().getSchema().set$ref(newSchemaName)
         ));

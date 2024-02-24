@@ -2,18 +2,21 @@ package com.coreoz.http.openapi.service;
 
 import com.coreoz.http.openapi.merge.OpenApiMerger;
 import com.coreoz.http.openapi.merge.OpenApiMergerConfiguration;
+import com.coreoz.http.openapi.publisher.BytesReaderPublishers;
 import com.coreoz.http.services.HttpGatewayRemoteService;
 import com.coreoz.http.services.HttpGatewayRemoteServicesIndex;
 import com.coreoz.http.upstream.HttpGatewayResponseStatus;
 import com.coreoz.http.upstream.HttpGatewayUpstreamClient;
 import com.coreoz.http.upstream.HttpGatewayUpstreamRequest;
+import com.coreoz.http.upstream.HttpGatewayUpstreamResponse;
+import com.coreoz.http.upstream.publisher.ByteReaders;
+import com.coreoz.http.upstream.publisher.HttpCharsetParser;
+import io.swagger.parser.OpenAPIParser;
 import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.parser.core.models.SwaggerParseResult;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.pekko.stream.javadsl.StreamConverters;
-import org.reactivestreams.Publisher;
 import play.mvc.Http;
 
-import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -73,6 +76,7 @@ public class OpenApiFetchingDefinitions implements OpenApiFetchingService {
                     }
                 })
                 .reduce(
+                    // TODO enable to customize base OpenAPI
                     new OpenAPI(),
                     (OpenAPI consolidatedOpenApi, ServiceWithOpenApi serviceOpenApi) -> OpenApiMerger.addDefinitions(
                         consolidatedOpenApi,
@@ -89,8 +93,9 @@ public class OpenApiFetchingDefinitions implements OpenApiFetchingService {
                             true
                         )
                     ),
-                    // this is not made to be run in parallel
-                    null
+                    (a, b) -> {
+                        throw new RuntimeException("Not supported");
+                    }
                 )
             );
     }
@@ -106,27 +111,44 @@ public class OpenApiFetchingDefinitions implements OpenApiFetchingService {
             .with(openApiUpstreamParameters.upstreamAuthenticator());
         return upstreamClient
             .executeUpstreamRequest(request)
+            .thenCompose(response -> {
+                if (response.getPublisher() == null) {
+                    return CompletableFuture.completedFuture(new CompleteResponse(response, null));
+                }
+                return BytesReaderPublishers
+                    .publisherToFutureBytes(response.getPublisher(), ByteReaders::readBytesFromHttpResponseBodyPart)
+                    .thenApply(responseBody -> new CompleteResponse(response, responseBody));
+            })
             .thenApply(response -> {
-                // responseBodyString = new String(publisherToInputStream(response.getPublisher()).readAllBytes(), );
-                if (response.getResponseStatus() != HttpGatewayResponseStatus.OK) {
-                    logger.error("Could not fetch remote OpenAPI definition: {}", response);
+                String responseBodyString = response.responseBody() == null ? null : new String(
+                    response.responseBody(),
+                    HttpCharsetParser.parseEncodingFromHttpContentType(
+                        response.response().getContentType()
+                    )
+                );
+                if (response.response().getResponseStatus() != HttpGatewayResponseStatus.OK) {
+                    logger.error(
+                        "Could not fetch remote OpenAPI definition: responseStatut={} - exception={} - status code={} - response body={}",
+                        response.response().getResponseStatus(),
+                        response.response().getGatewayError(),
+                        response.response().getStatusCode(),
+                        responseBodyString
+                    );
                     return new ServiceWithOpenApi(remoteService, new OpenAPI());
                 }
-                // TODO finish implementing this
-                return null;
+
+                SwaggerParseResult openApiParsingResult = new OpenAPIParser().readContents(responseBodyString, null, null);
+                return new ServiceWithOpenApi(remoteService, openApiParsingResult.getOpenAPI());
+            })
+            .exceptionally(error -> {
+                logger.info("Failed to fetch openAPI definitions for service {}", remoteService, error);
+                return new ServiceWithOpenApi(remoteService, new OpenAPI());
             });
     }
 
-    private static InputStream publisherToInputStream(Publisher<?> publisher) {
-        // StreamConverters.asInputStream() ?
-        if (publisher == null) {
-            return InputStream.nullInputStream();
-        }
-        // TODO look if there isn't already a Publisher to InputStream interface
-        return InputStream.nullInputStream();
-    }
+    private record ServiceWithOpenApi(HttpGatewayRemoteService remoteService, OpenAPI openApi) { }
 
-    private static record ServiceWithOpenApi(HttpGatewayRemoteService remoteService, OpenAPI openApi) { }
+    private record CompleteResponse(HttpGatewayUpstreamResponse response, byte[] responseBody) { }
 
     private static String capitalize(String content) {
         if (content.isEmpty()) {
