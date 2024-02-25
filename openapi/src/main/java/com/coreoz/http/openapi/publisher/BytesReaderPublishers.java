@@ -10,6 +10,7 @@ import java.io.ByteArrayOutputStream;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
+// TODO to comment and to put in a dedicated publisher package
 public class BytesReaderPublishers {
     private static final long BIG_ENOUGH_NUMBER = 1000L;
 

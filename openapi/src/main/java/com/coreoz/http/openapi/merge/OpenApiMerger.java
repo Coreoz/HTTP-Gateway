@@ -18,6 +18,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+// TODO put in a dedicated module
 public class OpenApiMerger {
     private static final String COMPONENT_SCHEMA_PREFIX = "#/components/schemas/";
 

@@ -16,8 +16,7 @@ public class OpenApiRoute implements HttpGatewayRouterConfiguration {
     private final HttpGatewayClientValidator clientValidator;
     private OpenAPI openApiDefinition;
 
-    // TODO HttpGatewayRemoteServicesIndex
-    // TODO OpenAPI configuration(remote openapi auth + URL), with default
+    // TODO OpenAPI configuration(remote openapi auth + URL), base OpenAPI config, with default => builder configuration, optional authentication & OpenAPI cleaning
     public OpenApiRoute(HttpGatewayClientValidator clientValidator, OpenApiFetchingService fetchingService) {
         this.clientValidator = clientValidator;
         fetchingService.fetch().thenAccept(openApiDefinition -> {
