@@ -84,5 +84,5 @@ public class HttpGatewayConfigClientAccessControl implements HttpGatewayClientAc
         return this;
     }
 
-    // TODO add a method to expose routes and services linked to the client
+    // TODO add a method to expose routes and services linked to the client => to be later used by the openapi module to filter exposed documentation to the client
 }
