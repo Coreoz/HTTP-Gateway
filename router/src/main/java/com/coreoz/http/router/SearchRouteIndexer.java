@@ -4,58 +4,32 @@ import com.coreoz.http.router.data.EndpointParsedData;
 import com.coreoz.http.router.data.HttpEndpoint;
 import com.coreoz.http.router.data.IndexedEndpoints;
 import com.coreoz.http.router.data.ParsedSegment;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.coreoz.http.router.routes.HttpRoutes;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * Gère l'indexation des motifs de routes. Par exemple :
+ * Handle route indexing in an {@link IndexedEndpoints}. Some examples of routes:<br>
+ * <pre>
  * - /users
  * - /users/{id}
  * - /users/{id}/addresses
  * - /users/{id}/addresses/{idAddress}
- *
- * Les routes indexées peuvent ensuite être recherchées avec @{@link SearchRouteEngine}
+ * </pre>
+ * {@link SearchRouteEngine} enables route search in the {@link IndexedEndpoints}.
  */
 public class SearchRouteIndexer {
-    private static final Logger logger = LoggerFactory.getLogger(SearchRouteIndexer.class);
-
     private static final Integer MAX_LONG_OFFSET_FOR_POSITIVE_NUMBERS = 62;
 
     /**
-     * Parse the segments of an endpoint. For instance <code>/users/{id}/addresses</code> will give:
-     * <pre>
-     * - users (pattern = false)
-     * - id (pattern = true)
-     * - addresses (pattern = false)
-     * </pre>
+     * Add a new endpoint to the routes tree.<br>
+     * <br>
+     * Returns the new route added to the tree or the existing route that is already present in the tree.
      */
-    public static List<ParsedSegment> parseEndpoint(String endpoint) {
-        return Arrays.stream(endpoint.substring(1).split("/")) // substring : pour un endpoint /test/truc le split renvoie ['', 'test', 'truc'], il faut supprimer le premier élément
-            .map(segment -> {
-                boolean isPattern = segment.length() >= 2 && segment.charAt(0) == '{' && segment.charAt(segment.length() - 1) == '}';
-                String name = isPattern ?
-                    segment.substring(1, segment.length() - 1) :
-                    segment;
-                if (name.isEmpty()) {
-                    logger.warn("The endpoint '{}' contains an incorrect segment: empty or with an empty pattern", endpoint);
-                }
-                return new ParsedSegment(name, isPattern);
-            })
-            .toList();
-    }
-
-    /**
-     * Ajoute un nouveau endpoint à l'arbre des routes.
-     *
-     * Retourne la nouvelle route ajoutée à l'arbre
-     * ou la route existante qui était déjà présente dans l'arbre.
-     */
-    public static  EndpointParsedData addEndpointToIndex(Map<String, IndexedEndpoints> indexedEndpoints, HttpEndpoint endpoint) {
+    public static @NotNull EndpointParsedData addEndpointToIndex(@NotNull Map<String, IndexedEndpoints> indexedEndpoints, @NotNull HttpEndpoint endpoint) {
         IndexedEndpoints rootIndex = indexedEndpoints.computeIfAbsent(endpoint.getMethod(), method -> new IndexedEndpoints(
             null,
             1L << MAX_LONG_OFFSET_FOR_POSITIVE_NUMBERS,
@@ -65,7 +39,7 @@ public class SearchRouteIndexer {
         ));
 
         // parser la route
-        List<ParsedSegment> segments = parseEndpoint(endpoint.getDownstreamPath());
+        List<ParsedSegment> segments = HttpRoutes.parsePathAsSegments(endpoint.getDownstreamPath());
         // initialise patterns map
         Map<String, Integer> patterns = new HashMap<>();
 
@@ -88,7 +62,7 @@ public class SearchRouteIndexer {
                 }
                 EndpointParsedData newEndpoint = new EndpointParsedData(
                     patterns,
-                    parseEndpoint(endpoint.getUpstreamPath()),
+                    HttpRoutes.parsePathAsSegments(endpoint.getUpstreamPath()),
                     endpoint
                 );
                 currentIndex.setLastEndpoint(newEndpoint);
@@ -96,11 +70,10 @@ public class SearchRouteIndexer {
             }
         }
 
-        logger.error("The endpoint {} could not be added, this is a bug", endpoint);
-        return null;
+        throw new RuntimeException("The endpoint " + endpoint + " could not be added, this is a bug");
     }
 
-    private static  IndexedEndpoints computeSegmentIndex(IndexedEndpoints currentIndex, String segmentName, int segmentIndex) {
+    private static @NotNull IndexedEndpoints computeSegmentIndex(@NotNull IndexedEndpoints currentIndex, @NotNull String segmentName, int segmentIndex) {
         return currentIndex.getSegments().computeIfAbsent(segmentName, segmentNameToAdd -> new IndexedEndpoints(
             null,
             currentIndex.getRating() | 1L << (MAX_LONG_OFFSET_FOR_POSITIVE_NUMBERS - segmentIndex),
@@ -110,7 +83,9 @@ public class SearchRouteIndexer {
         ));
     }
 
-    private static  IndexedEndpoints computePatternIndex(IndexedEndpoints currentIndex, String segmentName, int segmentIndex, Map<String, Integer> patterns) {
+    private static @NotNull IndexedEndpoints computePatternIndex(
+        @NotNull IndexedEndpoints currentIndex, @NotNull String segmentName, int segmentIndex, @NotNull Map<String, Integer> patterns
+    ) {
         patterns.put(segmentName, segmentIndex);
         if (currentIndex.getPattern() == null) {
             IndexedEndpoints pattern = new IndexedEndpoints(
@@ -129,7 +104,7 @@ public class SearchRouteIndexer {
     /**
      * Main indexation method
      */
-    public static  Map<String, IndexedEndpoints> indexEndpoints(Iterable<HttpEndpoint> endpoints) {
+    public static @NotNull Map<String, IndexedEndpoints> indexEndpoints(@NotNull Iterable<HttpEndpoint> endpoints) {
         // 1. on construit le résultat final
         Map<String, IndexedEndpoints> indexedEndpoints = new HashMap<>();
         // 2. on boucle sur les endpoints et on les ajoute

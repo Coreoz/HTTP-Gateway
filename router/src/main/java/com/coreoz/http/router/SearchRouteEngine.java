@@ -1,25 +1,30 @@
 package com.coreoz.http.router;
 
 import com.coreoz.http.router.data.*;
+import com.coreoz.http.router.routes.HttpRoutes;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
 /**
- * Gère la recherche d'une route concrète auprès d'un index de motifs. Par exemple :
+ * Handle route search in an {@link IndexedEndpoints}. Some examples (URI -> route):<br>
+ * <pre>
  * - /users                             -> /users
  * - /users/1234                        -> /users/{id}
  * - /users/1234/addresses              -> /users/{id}/addresses
  * - /users/1234/addresses/5678         -> /users/{id}/addresses/{idAddress}
- *
- * L'index des motifs de routes est créé avec @{@link SearchRouteIndexer}
+ * </pre>
  */
 public class SearchRouteEngine {
-    private static final String SEGMENT_SEPARATOR = "/";
-
-    public static Optional<MatchingRoute> searchRoute(IndexedEndpoints indexEndpoints, String requestPath) {
-        // initialisation
-        //substring(1) permet d'enlever le premier /
-        ArrayDeque<String> requestElements = new ArrayDeque<>(Arrays.asList(requestPath.substring(1).split(SEGMENT_SEPARATOR)));
+    /**
+     * Perform the search in the index.
+     * @param indexEndpoints The route index
+     * @param requestPath The path to search (that must start with a slash: "/")
+     * @return The optional route that has been found
+     */
+    public static @NotNull Optional<MatchingRoute> searchRoute(@NotNull IndexedEndpoints indexEndpoints, @NotNull String requestPath) {
+        ArrayDeque<String> requestElements = new ArrayDeque<>(Arrays.asList(requestPath.substring(1).split(HttpRoutes.SEGMENT_SEPARATOR)));
         List<SearchSegment> segmentOptions = new ArrayList<>();
         segmentOptions.add(new SearchSegment(
             indexEndpoints,
@@ -58,7 +63,7 @@ public class SearchRouteEngine {
         return Optional.empty();
     }
 
-    private static  SearchSegment toSearchSegment(IndexedEndpoints indexedEndpoints, SearchSegment currentSegmentOption) {
+    private static @NotNull SearchSegment toSearchSegment(@NotNull IndexedEndpoints indexedEndpoints, @NotNull SearchSegment currentSegmentOption) {
         return new SearchSegment(
             indexedEndpoints,
             currentSegmentOption.getRequestRemainingSegments().clone(),
@@ -66,23 +71,15 @@ public class SearchRouteEngine {
         );
     }
 
-    public static  DestinationRoute computeDestinationRoute(MatchingRoute matchingRoute, String destinationBaseUrl) {
-        StringBuilder result = new StringBuilder();
+    public static @NotNull DestinationRoute computeDestinationRoute(@NotNull MatchingRoute matchingRoute, @Nullable String destinationBaseUrl) {
         EndpointParsedData matchingEndpoint = matchingRoute.getMatchingEndpoint();
-        for (int segmentIndex = 1; segmentIndex <= matchingEndpoint.getDestinationRouteSegments().size(); segmentIndex++) {
-            ParsedSegment currentSegment = matchingEndpoint.getDestinationRouteSegments().get(segmentIndex - 1);
-            if (segmentIndex < matchingEndpoint.getDestinationRouteSegments().size() + 1) {
-                result.append(SEGMENT_SEPARATOR);
-            }
-            if (currentSegment.isPattern()) {
-                result.append(matchingRoute.getParams().get(matchingEndpoint.getPatterns().get(currentSegment.getName())));
-            } else {
-                result.append(currentSegment.getName());
-            }
-        }
+        @NotNull String serializedParsedPath = HttpRoutes.serializeParsedPath(
+            matchingEndpoint.getDestinationRouteSegments(),
+            currentSegmentName -> matchingRoute.getParams().get(matchingEndpoint.getPatterns().get(currentSegmentName))
+        );
         return new DestinationRoute(
             matchingEndpoint.getHttpEndpoint().getRouteId(),
-            destinationBaseUrl == null ? result.toString() : (destinationBaseUrl + result)
+            destinationBaseUrl == null ? serializedParsedPath : (destinationBaseUrl + serializedParsedPath)
         );
     }
 }

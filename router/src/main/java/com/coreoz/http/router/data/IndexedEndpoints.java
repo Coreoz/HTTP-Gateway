@@ -4,6 +4,11 @@ import lombok.*;
 
 import java.util.Map;
 
+/**
+ * A routes index.<br>
+ * A route contains a method (GET, POST, etc.), and a path (e.g. "/users/{userId}/addresses")<br>
+ * See {@link com.coreoz.http.router.SearchRouteIndexer} for usage.
+ */
 @AllArgsConstructor
 @Data
 public class IndexedEndpoints {

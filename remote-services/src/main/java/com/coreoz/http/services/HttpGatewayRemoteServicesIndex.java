@@ -3,6 +3,7 @@ package com.coreoz.http.services;
 import com.coreoz.http.router.SearchRouteIndexer;
 import com.coreoz.http.router.data.*;
 import com.coreoz.http.exception.HttpGatewayValidationException;
+import com.coreoz.http.router.routes.HttpRoutes;
 
 import java.util.HashMap;
 import java.util.List;
@@ -110,9 +111,6 @@ public class HttpGatewayRemoteServicesIndex {
             }
 
             EndpointParsedData addedEndpoint = SearchRouteIndexer.addEndpointToIndex(indexedEndpoints, endpoint);
-            if (addedEndpoint == null) {
-                throw new HttpGatewayValidationException("Error reading endpoint " + endpoint);
-            }
             if (addedEndpoint.getHttpEndpoint() != endpoint) {
                 throw new HttpGatewayValidationException(
                     "Duplicate downstream path for routes '"
@@ -149,8 +147,8 @@ public class HttpGatewayRemoteServicesIndex {
     }
 
     private boolean areRouteCompatible(String initialPath, String rewritePath) {
-        return extractPatternNames(SearchRouteIndexer.parseEndpoint(initialPath))
-            .equals(extractPatternNames(SearchRouteIndexer.parseEndpoint(rewritePath)));
+        return extractPatternNames(HttpRoutes.parsePathAsSegments(initialPath))
+            .equals(extractPatternNames(HttpRoutes.parsePathAsSegments(rewritePath)));
     }
 
     private Set<String> extractPatternNames(List<ParsedSegment> routeSegments) {

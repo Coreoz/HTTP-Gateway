@@ -1,8 +1,11 @@
 package com.coreoz.http.openapi.merge;
 
-import com.coreoz.http.router.SearchRouteIndexer;
+import com.coreoz.http.router.routes.HttpRoutes;
+import com.coreoz.http.router.routes.HttpRoutesValidator;
 import com.coreoz.http.router.data.HttpEndpoint;
 import com.coreoz.http.router.data.ParsedSegment;
+import com.coreoz.http.router.routes.ParsedPath;
+import com.coreoz.http.router.routes.ParsedRoute;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Strings;
 import io.swagger.v3.oas.models.Components;
@@ -15,7 +18,6 @@ import io.swagger.v3.oas.models.parameters.RequestBody;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 // TODO put in a dedicated module
@@ -52,15 +54,15 @@ public class OpenApiMerger {
     private static Set<OpenApiSchemaMapping> mergePaths(OpenAPI baseDefinitions, OpenAPI definitionsToBeAdded, OpenApiMergerConfiguration mergeConfiguration) {
         // TODO il faudrait indexer les endpoints du fichier de base pour gérer les conflits : replace, ignore, error
         Set<OpenApiSchemaMapping> addedSchema = new HashSet<>();
-        Map<List<ParsedSegment>, List<HttpEndpoint>> indexedEndpoints = indexEndpointsToAdd(mergeConfiguration.endpoints());
+        HttpRoutesValidator<HttpEndpoint> indexedEndpoints = indexEndpointsToAdd(mergeConfiguration.endpoints());
         for (Map.Entry<String, PathItem> path : definitionsToBeAdded.getPaths().entrySet()) {
-            List<ParsedSegment> openApiParsedEndpoint = parsedGenericEndpoint(path.getKey());
-            List<HttpEndpoint> availableOperations = indexedEndpoints.get(openApiParsedEndpoint);
-            if (availableOperations != null) {
+            ParsedPath definitionPath = HttpRoutes.parsePath(path.getKey());
+            List<ParsedRoute<HttpEndpoint>> availableOperations = indexedEndpoints.findRoutes(definitionPath);
+            if (!availableOperations.isEmpty()) {
                 addedSchema.addAll(addPathDefinitions(
                     baseDefinitions,
                     availableOperations,
-                    path.getKey(),
+                    definitionPath,
                     path.getValue().readOperationsMap(),
                     mergeConfiguration.operationIdPrefix(),
                     mergeConfiguration.componentNamePrefix()
@@ -70,41 +72,30 @@ public class OpenApiMerger {
         return addedSchema;
     }
 
-    private static Map<List<ParsedSegment>, List<HttpEndpoint>> indexEndpointsToAdd(List<HttpEndpoint> endpoints) {
+    private static HttpRoutesValidator<HttpEndpoint> indexEndpointsToAdd(List<HttpEndpoint> endpoints) {
         return endpoints
             .stream()
-            .collect(Collectors.groupingBy(
-                endpoint -> parsedGenericEndpoint(endpoint.getUpstreamPath())
+            .collect(HttpRoutesValidator.collector(
+                endpoint -> HttpRoutes.parseRoute(endpoint.getUpstreamPath(), endpoint.getMethod(), endpoint)
             ));
-    }
-
-    private static List<ParsedSegment> parsedGenericEndpoint(String endpoint) {
-        return SearchRouteIndexer
-            .parseEndpoint(endpoint)
-            .stream()
-            .map(segment -> new ParsedSegment(
-                segment.isPattern() ? null : segment.getName(),
-                segment.isPattern()
-            ))
-            .toList();
     }
 
     private static Set<OpenApiSchemaMapping> addPathDefinitions(
         OpenAPI baseDefinitions,
-        List<HttpEndpoint> availableOperations,
-        String definitionPath,
+        List<ParsedRoute<HttpEndpoint>> availableOperations,
+        ParsedPath definitionPath,
         Map<PathItem.HttpMethod, Operation> pathOperations,
         String operationIdPrefix,
         String componentNamePrefix
     ) {
         PathItem pathItem = new PathItem();
         Set<OpenApiSchemaMapping> addedSchema = new HashSet<>();
-        for (HttpEndpoint availableOperation : availableOperations) {
-            PathItem.HttpMethod operationMethod = PathItem.HttpMethod.valueOf(availableOperation.getMethod().toUpperCase());
+        for (ParsedRoute<HttpEndpoint> availableOperation : availableOperations) {
+            PathItem.HttpMethod operationMethod = PathItem.HttpMethod.valueOf(availableOperation.httpMethod().toUpperCase());
             Operation operationDefinition = pathOperations.get(operationMethod);
             if (operationDefinition != null) {
                 addedSchema.addAll(updateOperationSchemaNames(
-                    updateOperationId(operationDefinition, availableOperation.getRouteId(), operationIdPrefix),
+                    updateOperationId(operationDefinition, availableOperation.attachedData().getRouteId(), operationIdPrefix),
                     componentNamePrefix
                 ));
                 pathItem.operation(
@@ -185,34 +176,30 @@ public class OpenApiMerger {
         return schemaReference.substring(COMPONENT_SCHEMA_PREFIX.length());
     }
 
-    private static String rewritePath(HttpEndpoint httpEndpoint, String definitionPath) {
-        if (!definitionPath.contains("{")) {
+    private static String rewritePath(ParsedRoute<HttpEndpoint> httpEndpoint, ParsedPath definitionPath) {
+        if (!definitionPath.originalPath().contains("{")) {
             // fast return if there are no path parameters
-            return definitionPath;
+            return definitionPath.originalPath();
         }
-        Map<String, String> pathParametersMapping = generatePathParametersMapping(definitionPath, httpEndpoint.getUpstreamPath());
-        return generateDownstreamPathWithDefinitionParameters(httpEndpoint.getDownstreamPath(), pathParametersMapping);
+        Map<String, String> pathParametersMapping = generatePathParametersMapping(definitionPath, httpEndpoint.parsedPath());
+        return generateDownstreamPathWithDefinitionParameters(httpEndpoint.attachedData().getDownstreamPath(), pathParametersMapping);
     }
 
     private static String generateDownstreamPathWithDefinitionParameters(String downstreamPath, Map<String, String> pathParametersMapping) {
-        List<ParsedSegment> downstreamPathSegments = SearchRouteIndexer.parseEndpoint(downstreamPath);
-        return "/" + downstreamPathSegments
-            .stream()
-            .map(segment -> segment.isPattern() ?
-                    "{" + pathParametersMapping.get(segment.getName()) + "}"
-                    : segment.getName()
-            )
-            .collect(Collectors.joining("/"));
+        return HttpRoutes.serializeParsedPath(
+            HttpRoutes.parsePath(downstreamPath),
+            patternName -> "{" + pathParametersMapping.get(patternName) + "}"
+        );
     }
 
-    private static Map<String, String> generatePathParametersMapping(String pathWithParametersToKeep, String pathWithParametersToRename) {
-        List<ParsedSegment> parsedPathToKeep = SearchRouteIndexer.parseEndpoint(pathWithParametersToKeep);
-        List<ParsedSegment> parsedPathToRename = SearchRouteIndexer.parseEndpoint(pathWithParametersToRename);
+    private static Map<String, String> generatePathParametersMapping(
+        ParsedPath pathWithParametersToKeep, ParsedPath pathWithParametersToRename
+    ) {
         Map<String, String> mapping = new HashMap<>();
-        for (int i = 0; i < parsedPathToKeep.size() ; i++) {
-            ParsedSegment currentSegmentToKeep = parsedPathToKeep.get(i);
+        for (int i = 0; i < pathWithParametersToKeep.segments().size() ; i++) {
+            ParsedSegment currentSegmentToKeep = pathWithParametersToKeep.segments().get(i);
             if (currentSegmentToKeep.isPattern()) {
-                mapping.put(parsedPathToRename.get(i).getName(), currentSegmentToKeep.getName());
+                mapping.put(pathWithParametersToRename.segments().get(i).getName(), currentSegmentToKeep.getName());
             }
         }
         return mapping;
