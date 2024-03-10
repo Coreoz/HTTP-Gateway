@@ -18,6 +18,10 @@
 			<groupId>com.coreoz</groupId>
 			<artifactId>http-gateway-core</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.coreoz</groupId>
+			<artifactId>http-gateway-publishers</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>org.projectlombok</groupId>

@@ -1,5 +1,7 @@
-package com.coreoz.http.upstream.publisher;
+package com.coreoz.http.publisher;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -7,14 +9,15 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 /**
- * Guess the Charset to use depending on the Content Type header of an HTTP request
+ * Guess the Charset to use depending on the Content Type header of an HTTP request.
+ * TODO unit test this
  */
 public class HttpCharsetParser {
     private static final Logger logger = LoggerFactory.getLogger(HttpCharsetParser.class);
 
     private static final String CONTENT_TYPE_CHARSET = "charset=";
 
-    public static Charset parseEncodingFromHttpContentType(String contentType) {
+    public static @NotNull Charset parseEncodingFromHttpContentType(@Nullable String contentType) {
         if (contentType == null) {
             return StandardCharsets.ISO_8859_1;
         }

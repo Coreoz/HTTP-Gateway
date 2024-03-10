@@ -10,7 +10,7 @@ import com.coreoz.http.services.auth.HttpGatewayRemoteServicesAuthenticator;
 import com.coreoz.http.services.HttpGatewayRemoteServicesIndex;
 import com.coreoz.http.router.HttpGatewayRouter;
 import com.coreoz.http.upstream.*;
-import com.coreoz.http.upstream.publisher.PeekerPublishersConsumer;
+import com.coreoz.http.publisher.PeekerPublishersConsumer;
 import com.coreoz.http.validation.HttpGatewayClientValidator;
 import com.coreoz.http.validation.HttpGatewayDestinationService;
 import com.coreoz.http.validation.HttpGatewayRouteValidator;

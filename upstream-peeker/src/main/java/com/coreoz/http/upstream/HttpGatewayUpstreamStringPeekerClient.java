@@ -1,6 +1,6 @@
 package com.coreoz.http.upstream;
 
-import com.coreoz.http.upstream.publisher.HttpCharsetParser;
+import com.coreoz.http.publisher.HttpCharsetParser;
 import play.mvc.Http;
 
 import java.util.concurrent.CompletableFuture;

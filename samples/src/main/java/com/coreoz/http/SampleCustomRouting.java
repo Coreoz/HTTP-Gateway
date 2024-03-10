@@ -16,7 +16,7 @@ import com.coreoz.http.upstream.HttpGatewayPeekingUpstreamRequest;
 import com.coreoz.http.upstream.HttpGatewayUpstreamKeepingResponse;
 import com.coreoz.http.upstream.HttpGatewayUpstreamResponse;
 import com.coreoz.http.upstream.HttpGatewayUpstreamStringPeekerClient;
-import com.coreoz.http.upstream.publisher.PeekerPublishersConsumer;
+import com.coreoz.http.publisher.PeekerPublishersConsumer;
 import com.coreoz.http.validation.HttpGatewayClientValidators;
 import com.coreoz.http.validation.HttpGatewayRouteValidator;
 import com.coreoz.http.validation.HttpGatewayValidation;

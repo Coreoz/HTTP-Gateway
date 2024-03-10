@@ -111,6 +111,7 @@ TODO
   - Create the cache for this call returning the OpenAPI object
   - Provide all service a route toward the OpenAPI spec => with a default, base-url/api/swagger, and a authentication for this => in a dedicated Maven module
   - Code to query all OpenAPI spec + merge it all
+- [ ] Regenerate modules graph and document new modules
 - [ ] Add a cli to generate a service config from an OpenAPI spec
 - [ ] Migrate integration tests to javalin (https://github.com/javalin/javalin) to avoid tests raising security threads alerts (even though it's safe since it's only for tests)
 - [ ] upgrade ahc version

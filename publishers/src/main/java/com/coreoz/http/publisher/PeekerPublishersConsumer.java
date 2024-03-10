@@ -1,8 +1,9 @@
-package com.coreoz.http.upstream.publisher;
+package com.coreoz.http.publisher;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
@@ -24,7 +25,7 @@ public class PeekerPublishersConsumer {
      */
     private static final int SIZE_OF_BODY_PARTS_TO_READ = 4;
 
-    public static void consume(Publisher<?> publisherToConsume) {
+    public static void consume(@NotNull Publisher<?> publisherToConsume) {
         if (!(publisherToConsume instanceof PublisherPeeker<?> peekerPublisherToConsume)) {
             // Cannot consume null publisher or publisher that is not an instance of PublisherPeeker
             return;

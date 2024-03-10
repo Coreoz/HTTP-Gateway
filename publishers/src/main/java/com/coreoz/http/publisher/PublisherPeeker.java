@@ -1,7 +1,7 @@
-package com.coreoz.http.upstream.publisher;
+package com.coreoz.http.publisher;
 
-import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
@@ -28,8 +28,8 @@ public class PublisherPeeker<T> implements Publisher<T> {
      * @param bytesReader    The function that will be able to read bytes from the original publisher
      * @param maxBytesToPeek The max number of bytes to peek
      */
-    public PublisherPeeker(Publisher<T> publisher, Consumer<byte[]> onPeek, Function<T, byte[]> bytesReader, int maxBytesToPeek) {
-        this.publisher = Preconditions.checkNotNull(publisher);
+    public PublisherPeeker(@NotNull Publisher<T> publisher, @NotNull Consumer<byte[]> onPeek, @NotNull Function<T, byte[]> bytesReader, int maxBytesToPeek) {
+        this.publisher = publisher;
         this.onPeek = onPeek;
         this.bytesReader = bytesReader;
         this.maxBytesToPeek = maxBytesToPeek;
@@ -38,10 +38,10 @@ public class PublisherPeeker<T> implements Publisher<T> {
     }
 
     @Override
-    public void subscribe(Subscriber<? super T> s) {
+    public void subscribe(@NotNull Subscriber<? super T> s) {
         publisher.subscribe(new Subscriber<>() {
             @Override
-            public void onSubscribe(Subscription subscription) {
+            public void onSubscribe(@NotNull Subscription subscription) {
                 s.onSubscribe(new Subscription() {
                     @Override
                     public void request(long n) {

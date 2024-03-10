@@ -2,15 +2,15 @@ package com.coreoz.http.openapi.service;
 
 import com.coreoz.http.openapi.merge.OpenApiMerger;
 import com.coreoz.http.openapi.merge.OpenApiMergerConfiguration;
-import com.coreoz.http.openapi.publisher.BytesReaderPublishers;
+import com.coreoz.http.publisher.BytesReaderPublishers;
 import com.coreoz.http.services.HttpGatewayRemoteService;
 import com.coreoz.http.services.HttpGatewayRemoteServicesIndex;
 import com.coreoz.http.upstream.HttpGatewayResponseStatus;
 import com.coreoz.http.upstream.HttpGatewayUpstreamClient;
 import com.coreoz.http.upstream.HttpGatewayUpstreamRequest;
 import com.coreoz.http.upstream.HttpGatewayUpstreamResponse;
-import com.coreoz.http.upstream.publisher.ByteReaders;
-import com.coreoz.http.upstream.publisher.HttpCharsetParser;
+import com.coreoz.http.publisher.ByteReaders;
+import com.coreoz.http.publisher.HttpCharsetParser;
 import io.swagger.parser.OpenAPIParser;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.parser.core.models.SwaggerParseResult;

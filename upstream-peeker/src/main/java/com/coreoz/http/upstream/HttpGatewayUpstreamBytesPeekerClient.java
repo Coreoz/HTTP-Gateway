@@ -1,7 +1,7 @@
 package com.coreoz.http.upstream;
 
-import com.coreoz.http.upstream.publisher.ByteReaders;
-import com.coreoz.http.upstream.publisher.PublisherPeeker;
+import com.coreoz.http.publisher.ByteReaders;
+import com.coreoz.http.publisher.PublisherPeeker;
 import io.netty.buffer.ByteBuf;
 import org.reactivestreams.Publisher;
 import play.mvc.Http;

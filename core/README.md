@@ -27,3 +27,7 @@ HttpGateway httpGateway = HttpGateway.start(new HttpGatewayConfiguration(
 ));
 ```
 Some more samples are available in the test file `HttpGatewayTest`.
+
+TODO provide configuration information about:
+- upstream timeouts
+- downstream max request body

@@ -6,7 +6,7 @@ import com.coreoz.http.conf.HttpGatewayRouterConfiguration;
 import com.coreoz.http.mock.LocalHttpClient;
 import com.coreoz.http.mock.SparkMockServer;
 import com.coreoz.http.play.HttpGatewayDownstreamResponses;
-import com.coreoz.http.upstream.publisher.PeekerPublishersConsumer;
+import com.coreoz.http.publisher.PeekerPublishersConsumer;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import org.assertj.core.api.Assertions;
 import org.junit.AfterClass;
