@@ -4,6 +4,9 @@ import com.coreoz.http.mock.LocalHttpClient;
 import com.coreoz.http.mock.SparkMockServer;
 import com.google.common.net.HttpHeaders;
 import io.netty.handler.codec.http.HttpResponseStatus;
+import io.swagger.parser.OpenAPIParser;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.PathItem;
 import lombok.SneakyThrows;
 import org.assertj.core.api.Assertions;
 import org.junit.AfterClass;
@@ -81,9 +84,13 @@ public class SampleBasicTest {
     public void verify_that_openapi_endpoint_returns_openapi_definitions() {
         HttpResponse<String> httpResponse = makeHttpRequest("/openapi", HttpRequest.Builder::GET);
         Assertions.assertThat(httpResponse.statusCode()).isEqualTo(HttpResponseStatus.OK.code());
-        // TODO make a real unit test
-        // Assertions.assertThat(httpResponse.body()).isEqualTo("Another route");
-        System.out.println(httpResponse.body());
+        Assertions.assertThat(httpResponse.body()).startsWith("openapi");
+        OpenAPI mergedOpenApi = new OpenAPIParser().readContents(httpResponse.body(), null, null).getOpenAPI();
+        Assertions.assertThat(mergedOpenApi.getComponents().getSchemas()).hasSize(3);
+        PathItem customRewriteRoute = mergedOpenApi.getPaths().get("/custom-pets/{petId}/custom-route");
+        Assertions.assertThat(customRewriteRoute).isNotNull();
+        // for debugging:
+        // System.out.println(httpResponse.body());
     }
 
     @SneakyThrows
