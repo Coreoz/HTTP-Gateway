@@ -1,6 +1,7 @@
 package com.coreoz.http.openapi.merge;
 
 import com.coreoz.http.router.data.HttpEndpoint;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -11,8 +12,8 @@ import java.util.List;
  * @param createMissingEndpoints True if endpoints present in the configuration and not in the OpenAPI should be added or not
  */
 public record OpenApiMergerConfiguration(
-    List<HttpEndpoint> endpoints,
-    String componentNamePrefix,
-    String operationIdPrefix,
+    @NotNull List<HttpEndpoint> endpoints,
+    @NotNull String componentNamePrefix,
+    @NotNull String operationIdPrefix,
     boolean createMissingEndpoints
 ) { }
