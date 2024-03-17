@@ -26,7 +26,7 @@ public class HttpGatewayRemoteServiceBasicAuthenticatorTest {
 
     public HttpGatewayRemoteServiceBasicAuthenticator makeAuthenticator() {
         return new HttpGatewayRemoteServiceBasicAuthenticator(
-            new HttpGatewayAuthBasic("service-id-test", "user-test", "user-password")
+            new HttpGatewayAuthBasic("user-test", "user-password")
         );
     }
 }

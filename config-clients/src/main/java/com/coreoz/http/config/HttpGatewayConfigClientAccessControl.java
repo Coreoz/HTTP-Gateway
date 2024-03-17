@@ -1,7 +1,6 @@
 package com.coreoz.http.config;
 
 import com.coreoz.http.access.control.HttpGatewayClientAccessController;
-import com.coreoz.http.access.control.auth.HttpGatewayAuthObject;
 import com.coreoz.http.access.control.auth.HttpGatewayClientAuthenticator;
 import com.coreoz.http.access.control.routes.HttpGatewayClientRouteAccessControl;
 import com.coreoz.http.services.HttpGatewayRemoteServicesIndex;
@@ -40,7 +39,7 @@ public class HttpGatewayConfigClientAccessControl implements HttpGatewayClientAc
      * @param supportedAuthConfigs Available auth configuration are listed in {@link HttpGatewayConfigClientAuth}
      * @return The new instance of {@link HttpGatewayConfigClientAccessControl}
      */
-    public static HttpGatewayConfigClientAccessControl readConfig(HttpGatewayConfigLoader configLoader, List<HttpGatewayConfigClientAuth.HttpGatewayClientAuthConfig<? extends HttpGatewayAuthObject>> supportedAuthConfigs) {
+    public static HttpGatewayConfigClientAccessControl readConfig(HttpGatewayConfigLoader configLoader, List<HttpGatewayConfigClientAuth.HttpGatewayClientAuthConfig<?>> supportedAuthConfigs) {
         return readConfig(configLoader.getHttpGatewayConfig(), supportedAuthConfigs);
     }
 
@@ -62,7 +61,7 @@ public class HttpGatewayConfigClientAccessControl implements HttpGatewayClientAc
      * @param supportedAuthConfigs Available auth configuration are listed in {@link HttpGatewayConfigClientAuth}
      * @return The new instance of {@link HttpGatewayConfigClientAccessControl}
      */
-    public static HttpGatewayConfigClientAccessControl readConfig(Config gatewayConfig, List<HttpGatewayConfigClientAuth.HttpGatewayClientAuthConfig<? extends HttpGatewayAuthObject>> supportedAuthConfigs) {
+    public static HttpGatewayConfigClientAccessControl readConfig(Config gatewayConfig, List<HttpGatewayConfigClientAuth.HttpGatewayClientAuthConfig<?>> supportedAuthConfigs) {
         List<? extends Config> clientConfigs = gatewayConfig.getConfigList("clients");
         HttpGatewayClientAuthenticator authenticator = HttpGatewayConfigClientAuth.readAuth(clientConfigs, supportedAuthConfigs);
         HttpGatewayClientRouteAccessControl routeAccessControl = HttpGatewayConfigClientRoutes.readClientsRoutes(gatewayConfig, clientConfigs);

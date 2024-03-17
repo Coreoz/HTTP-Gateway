@@ -20,7 +20,7 @@ public class HttpGatewayRemoteServiceKeyAuthenticatorTest {
 
     public HttpGatewayRemoteServiceKeyAuthenticator makeAuthenticator() {
         return new HttpGatewayRemoteServiceKeyAuthenticator(
-            new HttpGatewayAuthApiKey("service-id-test", "auth-key")
+            new HttpGatewayAuthApiKey("auth-key")
         );
     }
 }

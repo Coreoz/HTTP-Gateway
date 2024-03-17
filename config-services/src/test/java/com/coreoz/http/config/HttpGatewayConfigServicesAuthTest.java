@@ -1,34 +1,28 @@
 package com.coreoz.http.config;
 
 
-import com.coreoz.http.access.control.auth.HttpGatewayAuthBasic;
-import com.coreoz.http.services.auth.HttpGatewayRemoteServiceAuth;
 import com.coreoz.http.services.auth.HttpGatewayRemoteServicesAuthenticator;
 import com.coreoz.http.upstreamauth.HttpGatewayRemoteServiceBasicAuthenticator;
 import com.coreoz.http.upstreamauth.HttpGatewayRemoteServiceKeyAuthenticator;
+import com.coreoz.http.upstreamauth.HttpGatewayUpstreamAuthenticator;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import org.assertj.core.api.Assertions;
+import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 
 import java.util.List;
-import java.util.Map;
 
 public class HttpGatewayConfigServicesAuthTest {
     @Test
-    public void createServiceAuthentications__check_that_authentication_is_correctly_created() {
-        List<HttpGatewayRemoteServiceAuth> serviceAuthentications = HttpGatewayConfigServicesAuth.createServiceAuthentications(
-            List.of(HttpGatewayConfigServicesAuth.BASIC_AUTH),
-            Map.of(
-                HttpGatewayConfigServicesAuth.BASIC_AUTH.getAuthConfig().getAuthType(),
-                List.of(new HttpGatewayAuthBasic("service-id-test", "user-test", "user-password"))
-            )
+    public void readRemoteServiceAuthentication__check_that_authentication_is_correctly_created() {
+        @Nullable HttpGatewayUpstreamAuthenticator serviceAuthentication = HttpGatewayConfigServicesAuth.readRemoteServiceAuthentication(
+            ConfigFactory.load("test-auth.conf").getConfigList("remote-services").get(0),
+            HttpGatewayConfigServicesAuth.indexAuthenticationConfigs(List.of(HttpGatewayConfigServicesAuth.BASIC_AUTH))
         );
 
-        Assertions.assertThat(serviceAuthentications).hasSize(1);
-        Assertions.assertThat(serviceAuthentications.get(0).getServiceId()).isEqualTo("service-id-test");
-        Assertions.assertThat(serviceAuthentications.get(0).getAuthenticator()).isInstanceOf(HttpGatewayRemoteServiceBasicAuthenticator.class);
-        Assertions.assertThat(((HttpGatewayRemoteServiceBasicAuthenticator) serviceAuthentications.get(0).getAuthenticator()).getAuthorizationBasic()).isEqualTo("Basic dXNlci10ZXN0OnVzZXItcGFzc3dvcmQ=");
+        Assertions.assertThat(serviceAuthentication).isNotNull();
+        Assertions.assertThat(((HttpGatewayRemoteServiceBasicAuthenticator) serviceAuthentication).getAuthorizationBasic()).isEqualTo("Basic dGVzdC1hdXRoOmF1dGgtcGFzc3dvcmQ=");
     }
 
     @Test

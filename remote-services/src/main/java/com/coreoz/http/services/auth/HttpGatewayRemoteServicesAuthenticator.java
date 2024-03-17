@@ -2,9 +2,7 @@ package com.coreoz.http.services.auth;
 
 import com.coreoz.http.upstreamauth.HttpGatewayUpstreamAuthenticator;
 
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Index and expose service and route authenticator for upstream services
@@ -30,18 +28,5 @@ public class HttpGatewayRemoteServicesAuthenticator {
             return routeAuthenticator;
         }
         return servicesAuthenticators.get(serviceId);
-    }
-
-    /**
-     * Index services authenticators
-     */
-    public static HttpGatewayRemoteServicesAuthenticator fromRemoteClientAuthentications(List<HttpGatewayRemoteServiceAuth> servicesAuth) {
-        return new HttpGatewayRemoteServicesAuthenticator(
-            servicesAuth.stream().collect(Collectors.toMap(
-                HttpGatewayRemoteServiceAuth::getServiceId,
-                HttpGatewayRemoteServiceAuth::getAuthenticator
-            )),
-            Map.of()
-        );
     }
 }

@@ -2,17 +2,13 @@ package com.coreoz.http.config;
 
 import com.coreoz.http.access.control.auth.HttpGatewayAuthApiKey;
 import com.coreoz.http.access.control.auth.HttpGatewayAuthBasic;
-import com.coreoz.http.access.control.auth.HttpGatewayAuthObject;
 import com.coreoz.http.exception.HttpGatewayValidationException;
 import com.typesafe.config.Config;
 import lombok.Value;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * Read authentication information in a list of objects in a config file.
@@ -22,78 +18,58 @@ public class HttpGatewayConfigAuth {
     public static final HttpGatewayAuthConfig<HttpGatewayAuthApiKey> KEY_AUTH = HttpGatewayAuthConfig.of("key", HttpGatewayConfigAuth::readAuthKey);
     public static final HttpGatewayAuthConfig<HttpGatewayAuthBasic> BASIC_AUTH = HttpGatewayAuthConfig.of("basic", HttpGatewayConfigAuth::readBasicAuth);
 
-    public static final String CONFIG_AUTH_EMPTY_PREFIX = "";
+    public static final String CONFIG_AUTH_NAME = "auth";
 
-    /**
-     * See {@link #readAuth(String, String, List, List)}
-     */
-    public static Map<String, List<? extends HttpGatewayAuthObject>> readAuth(
-        String configObjectId,
-        List<? extends Config> objectsConfig,
-        List<HttpGatewayAuthConfig<? extends HttpGatewayAuthObject>> supportedAuthConfigs
-    ) {
-        return readAuth(configObjectId, CONFIG_AUTH_EMPTY_PREFIX, objectsConfig, supportedAuthConfigs);
-    }
+    // TODO review docs
 
     /**
      * Read authentication from a list of objects
-     * @param configObjectId The config key that identify the ID of an object item
-     * @param configAuthPrefix The config auth prefix key if it exists. For example for the config object {id: 123, openapi: { auth: { ... }}}, the configAuthPrefix will be "openapi." (with the .) because the "auth" object is not present in the root node. The configAuthPrefix must be empty if the "auth" object to be read is already present in the root node.
-     * @param objectsConfig The list of configs, each config item represents an object
-     * @param supportedAuthConfigs The list of supported authentication methods
+     * @param authReaderFetcher The list of supported authentication methods
      * @return A {@code Map} containing auth object indexed by authentication method/type.
      * So the {@code Map} key is the authentication method/type, and the authentication value is the {@code List}
      * of read objects that matche this authentication. See {@link HttpGatewayAuthConfig} for how object are read.
      * @throws HttpGatewayValidationException if the authentication type is not present in {@code supportedAuthConfigs}
-     * @throws ConfigException if a missing authentication key is absent in the objects or if the objectId key is missing
      */
-    public static Map<String, List<? extends HttpGatewayAuthObject>> readAuth(
-        String configObjectId,
-        String configAuthPrefix,
-        List<? extends Config> objectsConfig,
-        List<HttpGatewayAuthConfig<? extends HttpGatewayAuthObject>> supportedAuthConfigs
+    public static @Nullable HttpGatewayAuth<?> readAuthentication(
+        @NotNull Config objectConfig,
+        Function<@NotNull String, @Nullable HttpGatewayAuthReader<?>> authReaderFetcher
     ) {
-        Map<String, HttpGatewayAuthConfig<? extends HttpGatewayAuthObject>> indexedSupportedAuthConfigs = supportedAuthConfigs
-            .stream()
-            .collect(Collectors.toMap(
-                HttpGatewayAuthConfig::getAuthType,
-                Function.identity()
-            ));
-        Map<String, List<? extends HttpGatewayAuthObject>> authReadConfigs = new HashMap<>();
-        for (Config objectConfig : objectsConfig) {
-            String objectId = objectConfig.getString(configObjectId);
-            if (objectConfig.hasPath(configAuthPrefix + "auth")) {
-                Config baseAuthConfig = objectConfig.getConfig(configAuthPrefix + "auth");
-                String authType = baseAuthConfig.getString("type");
-                HttpGatewayAuthConfig<? extends HttpGatewayAuthObject> authConfig = indexedSupportedAuthConfigs.get(authType);
-                if (authConfig == null) {
-                    throw new HttpGatewayValidationException("Unrecognized authentication type '" + authType + "' for " + configObjectId + "=" + objectId);
-                }
-                HttpGatewayAuthObject authConfigObject = authConfig.authReader.readAuthConfig(objectId, baseAuthConfig);
-                @SuppressWarnings("unchecked")
-                List<HttpGatewayAuthObject> authConfigObjects = (List<HttpGatewayAuthObject>) authReadConfigs.computeIfAbsent(authType, authTypeLambda -> new ArrayList<>());
-                authConfigObjects.add(authConfigObject);
-            }
+        if (!objectConfig.hasPath(CONFIG_AUTH_NAME)) {
+            return null;
         }
-        return authReadConfigs;
+        Config baseAuthConfig = objectConfig.getConfig(CONFIG_AUTH_NAME);
+        String authType = baseAuthConfig.getString("type");
+        HttpGatewayAuthReader<?> authReader = authReaderFetcher.apply(authType);
+        if (authReader == null) {
+            throw new HttpGatewayValidationException("Unrecognized authentication type '" + authType + "' for " + objectConfig);
+        }
+        return HttpGatewayAuth.of(
+            authType,
+            authReader.readAuthConfig(baseAuthConfig)
+        );
     }
 
-    private static HttpGatewayAuthApiKey readAuthKey(String objectId, Config authConfig) {
-        return new HttpGatewayAuthApiKey(objectId, authConfig.getString("value"));
+    private static HttpGatewayAuthApiKey readAuthKey(Config authConfig) {
+        return new HttpGatewayAuthApiKey(authConfig.getString("value"));
     }
 
-    private static HttpGatewayAuthBasic readBasicAuth(String objectId, Config authConfig) {
+    private static HttpGatewayAuthBasic readBasicAuth(Config authConfig) {
         return new HttpGatewayAuthBasic(
-            objectId,
             authConfig.getString("userId"),
             authConfig.getString("password")
         );
     }
 
     @Value(staticConstructor = "of")
-    public static class HttpGatewayAuthConfig<T extends HttpGatewayAuthObject> {
+    public static class HttpGatewayAuthConfig<T> {
         String authType;
         HttpGatewayAuthReader<T> authReader;
+    }
+
+    @Value(staticConstructor = "of")
+    public static class HttpGatewayAuth<T> {
+        String authType;
+        T authObject;
     }
 
     /**
@@ -101,12 +77,11 @@ public class HttpGatewayConfigAuth {
      * @param <T> The authentication object type that will contain all the necessary data to perform the authentication
      */
     @FunctionalInterface
-    public interface HttpGatewayAuthReader<T extends HttpGatewayAuthObject> {
+    public interface HttpGatewayAuthReader<T> {
         /**
-         * @param objectId The referenced object for the authentication. It can be a clientId or a serviceId. It will be used by <code>HttpGatewayRemoteServiceAuthenticator</code> and <code>HttpGatewayClientAuthenticator</code> to either guess which authenticator to use (for a service), or to either know which client has been authenticated
          * @param authConfig The authentication {@link Config} object for the current objectId. For a key auth, the object will be <code>{type = "key", value = "sample-api-kay"}</code>
          * @return The authentication object that will contain all the necessary data to perform the authentication
          */
-        T readAuthConfig(String objectId, Config authConfig);
+        T readAuthConfig(Config authConfig);
     }
 }

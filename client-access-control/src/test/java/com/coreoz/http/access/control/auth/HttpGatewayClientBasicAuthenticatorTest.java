@@ -51,8 +51,8 @@ public class HttpGatewayClientBasicAuthenticatorTest {
 
     private HttpGatewayClientBasicAuthenticator makeAuthenticator() {
         return new HttpGatewayClientBasicAuthenticator(List.of(
-            new HttpGatewayAuthBasic("id-1", "user-1", "password-1"),
-            new HttpGatewayAuthBasic("id-2", "user-2", "password-2")
+            new HttpGatewayClientAuth<>("id-1", new HttpGatewayAuthBasic("user-1", "password-1")),
+            new HttpGatewayClientAuth<>("id-2", new HttpGatewayAuthBasic("user-2", "password-2"))
         ));
     }
 }

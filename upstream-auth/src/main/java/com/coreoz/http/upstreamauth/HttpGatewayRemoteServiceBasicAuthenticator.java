@@ -15,7 +15,7 @@ public class HttpGatewayRemoteServiceBasicAuthenticator implements HttpGatewayUp
     public HttpGatewayRemoteServiceBasicAuthenticator(HttpGatewayAuthBasic authBasic) {
         this.authorizationBasic = HttpGatewayAuthBasic.AUTHORIZATION_BASIC_PREFIX
             + Base64.getEncoder().encodeToString(
-            (authBasic.getUserId() + ':' + authBasic.getPassword())
+            (authBasic.userId() + ':' + authBasic.password())
                 .getBytes(StandardCharsets.UTF_8)
         );
     }

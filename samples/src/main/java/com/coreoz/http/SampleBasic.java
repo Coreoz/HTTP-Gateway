@@ -3,14 +3,17 @@ package com.coreoz.http;
 import com.coreoz.http.conf.HttpGatewayConfiguration;
 import com.coreoz.http.conf.HttpGatewayRouterConfiguration;
 import com.coreoz.http.config.*;
+import com.coreoz.http.openapi.fetching.http.OpenApiHttpFetcher;
+import com.coreoz.http.openapi.fetching.http.OpenApiHttpFetcherConfiguration;
 import com.coreoz.http.openapi.route.OpenApiRoute;
-import com.coreoz.http.openapi.service.OpenApiFetchingDefinitions;
+import com.coreoz.http.openapi.route.OpenApiRouteConfiguration;
 import com.coreoz.http.play.HttpGatewayDownstreamResponses;
-import com.coreoz.http.services.auth.HttpGatewayRemoteServicesAuthenticator;
-import com.coreoz.http.services.HttpGatewayRemoteServicesIndex;
-import com.coreoz.http.router.HttpGatewayRouter;
-import com.coreoz.http.upstream.*;
 import com.coreoz.http.publisher.PeekerPublishersConsumer;
+import com.coreoz.http.router.HttpGatewayRouter;
+import com.coreoz.http.services.HttpGatewayRemoteService;
+import com.coreoz.http.services.HttpGatewayRemoteServicesIndex;
+import com.coreoz.http.services.auth.HttpGatewayRemoteServicesAuthenticator;
+import com.coreoz.http.upstream.*;
 import com.coreoz.http.validation.HttpGatewayClientValidator;
 import com.coreoz.http.validation.HttpGatewayDestinationService;
 import com.coreoz.http.validation.HttpGatewayRouteValidator;
@@ -19,7 +22,10 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * This sample feature the standard basic Gateway with:
@@ -52,14 +58,30 @@ public class SampleBasic {
         );
 
         // OpenApi configuration
-        OpenApiRoute openApiRoute = new OpenApiRoute(
-            clientValidator,
-            new OpenApiFetchingDefinitions(
-                upstreamBaseClient,
-                servicesIndex,
-                HttpGatewayConfigOpenApiServices.readConfig(configLoader)
-            )
-        );
+        // TODO update the configuration service to create the correct fetcher per service id
+        Map<String, HttpGatewayRemoteService> servicesIndexedById = servicesIndex
+            .getServices()
+            .stream()
+            .collect(Collectors.toMap(
+                HttpGatewayRemoteService::getServiceId,
+                Function.identity()
+            ));
+        OpenApiRoute openApiRoute = new OpenApiRoute(new OpenApiRouteConfiguration(
+            HttpGatewayConfigOpenApiServices
+                .readConfig(configLoader)
+                .stream()
+                .map(serviceOpenApiConfig -> {
+                    // TODO to be created in the openapi configuration service
+                    return new OpenApiHttpFetcher(new OpenApiHttpFetcherConfiguration(
+                        serviceOpenApiConfig.serviceId(),
+                        servicesIndexedById.get(serviceOpenApiConfig.serviceId()).getBaseUrl() + serviceOpenApiConfig.openApiRemotePath(),
+                        upstreamBaseClient,
+                        serviceOpenApiConfig.upstreamAuthenticator()
+                    ));
+                })
+                .toList(),
+            servicesIndex
+        ));
 
         return HttpGateway.start(new HttpGatewayConfiguration(
             HTTP_GATEWAY_PORT,

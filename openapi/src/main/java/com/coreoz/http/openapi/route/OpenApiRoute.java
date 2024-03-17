@@ -1,8 +1,6 @@
 package com.coreoz.http.openapi.route;
 
 import com.coreoz.http.conf.HttpGatewayRouterConfiguration;
-import com.coreoz.http.openapi.service.OpenApiFetchingService;
-import com.coreoz.http.validation.HttpGatewayClientValidator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.core.util.Yaml;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -12,27 +10,26 @@ import play.routing.RoutingDsl;
 
 @Slf4j
 public class OpenApiRoute implements HttpGatewayRouterConfiguration {
-
-    private final HttpGatewayClientValidator clientValidator;
+    private final String routePath;
     private OpenAPI openApiDefinition;
 
-    // TODO OpenAPI configuration(remote openapi auth + URL), base OpenAPI config, with default => builder configuration, optional authentication & OpenAPI cleaning
-    public OpenApiRoute(HttpGatewayClientValidator clientValidator, OpenApiFetchingService fetchingService) {
-        this.clientValidator = clientValidator;
-        fetchingService.fetch().thenAccept(openApiDefinition -> {
-            OpenApiRoute.this.openApiDefinition = openApiDefinition;
-            logger.info("Open API definitions loaded");
-        }).exceptionally(error -> {
-            logger.error("Failed to load API definition", error);
-            return null;
-        });
+    public OpenApiRoute(OpenApiRouteConfiguration routeConfiguration) {
+        this.routePath = routeConfiguration.getRoutePath();
+        HttpGatewayOpenApiMerger
+            .fetchToUnifiedOpenApi(routeConfiguration)
+            .thenAccept(openApiDefinition -> {
+                OpenApiRoute.this.openApiDefinition = openApiDefinition;
+                logger.info("Open API definitions loaded");
+            }).exceptionally(error -> {
+                logger.error("Failed to load API definition", error);
+                return null;
+            });
     }
 
     @Override
     public void configureRoutes(RoutingDsl routingDsl) {
-        // TODO give the ability to customize the path
-        routingDsl.GET("/openapi").routingTo(request -> {
-            // TODO optional authentication
+        routingDsl.GET(routePath).routingTo(request -> {
+            // TODO optional client authentication
             // TODO show only schema definition with routes visible for the authenticated client
             if (openApiDefinition != null) {
                 try {

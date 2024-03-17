@@ -2,18 +2,19 @@ package com.coreoz.http.config;
 
 import com.coreoz.http.access.control.auth.HttpGatewayAuthApiKey;
 import com.coreoz.http.access.control.auth.HttpGatewayAuthBasic;
-import com.coreoz.http.access.control.auth.HttpGatewayAuthObject;
 import com.coreoz.http.services.auth.HttpGatewayRemoteServiceAuth;
 import com.coreoz.http.services.auth.HttpGatewayRemoteServicesAuthenticator;
 import com.coreoz.http.upstreamauth.HttpGatewayRemoteServiceBasicAuthenticator;
 import com.coreoz.http.upstreamauth.HttpGatewayRemoteServiceKeyAuthenticator;
 import com.coreoz.http.upstreamauth.HttpGatewayUpstreamAuthenticator;
-import com.google.common.annotations.VisibleForTesting;
 import com.typesafe.config.Config;
 import lombok.Value;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -26,12 +27,12 @@ public class HttpGatewayConfigServicesAuth {
     /**
      * Available remote services authenticators
      */
-    private static final List<HttpGatewayServiceAuthConfig<? extends HttpGatewayAuthObject>> supportedAuthConfigs = List.of(
+    private static final List<HttpGatewayServiceAuthConfig<?>> supportedAuthConfigs = List.of(
         BASIC_AUTH,
         KEY_AUTH
     );
 
-    public static List<HttpGatewayServiceAuthConfig<? extends HttpGatewayAuthObject>> supportedAuthConfigs() {
+    public static List<HttpGatewayServiceAuthConfig<?>> supportedAuthConfigs() {
         return supportedAuthConfigs;
     }
 
@@ -51,42 +52,57 @@ public class HttpGatewayConfigServicesAuth {
         return readConfig(gatewayConfig, supportedAuthConfigs);
     }
 
+    // TODO review docs
     /**
      * Read remote services authentication config to create a {@link HttpGatewayRemoteServicesAuthenticator}
      * and enable to use custom authenticators.<br>
      * <br>
      * See {@link #readConfig(Config)} to use default available authenticators.
      */
-    public static HttpGatewayRemoteServicesAuthenticator readConfig(Config gatewayConfig, List<HttpGatewayServiceAuthConfig<? extends HttpGatewayAuthObject>> supportedAuthConfigs) {
-        Map<String, List<? extends HttpGatewayAuthObject>> authReadConfigs = HttpGatewayConfigAuth.readAuth(
-            HttpGatewayConfigServices.CONFIG_SERVICE_ID,
-            HttpGatewayConfigServices.readRemoteServicesConfig(gatewayConfig),
-            supportedAuthConfigs.stream().map(HttpGatewayServiceAuthConfig::getAuthConfig).collect(Collectors.toList())
+    public static @NotNull HttpGatewayRemoteServicesAuthenticator readConfig(@NotNull Config gatewayConfig, @NotNull List<HttpGatewayServiceAuthConfig<?>> supportedAuthConfigs) {
+        Map<String, HttpGatewayServiceAuthConfig<?>> indexedAuthConfigs = indexAuthenticationConfigs(supportedAuthConfigs);
+        return new HttpGatewayRemoteServicesAuthenticator(
+            HttpGatewayConfigServices
+                .readRemoteServicesConfig(gatewayConfig)
+                .stream()
+                .map(serviceConfig -> new HttpGatewayRemoteServiceAuth(
+                    serviceConfig.getString(HttpGatewayConfigServices.CONFIG_SERVICE_ID),
+                    readRemoteServiceAuthentication(serviceConfig, indexedAuthConfigs)
+                ))
+                .filter(serviceAuth -> serviceAuth.getAuthenticator() != null)
+                .collect(Collectors.toMap(
+                    HttpGatewayRemoteServiceAuth::getServiceId,
+                    HttpGatewayRemoteServiceAuth::getAuthenticator
+                )),
+            Map.of()
         );
-        List<HttpGatewayRemoteServiceAuth> serviceAuthentications = createServiceAuthentications(supportedAuthConfigs, authReadConfigs);
-        return HttpGatewayRemoteServicesAuthenticator.fromRemoteClientAuthentications(serviceAuthentications);
     }
 
-    public static List<HttpGatewayRemoteServiceAuth> createServiceAuthentications(List<HttpGatewayServiceAuthConfig<? extends HttpGatewayAuthObject>> supportedAuthConfigs, Map<String, List<? extends HttpGatewayAuthObject>> authReadConfigs) {
-        Map<String, HttpGatewayUpstreamAuthenticatorCreator<? extends HttpGatewayAuthObject>> indexedAuthenticatorCreator = supportedAuthConfigs
+    public static @NotNull Map<String, HttpGatewayServiceAuthConfig<?>> indexAuthenticationConfigs(@NotNull List<HttpGatewayServiceAuthConfig<?>> supportedAuthConfigs) {
+        return supportedAuthConfigs
             .stream()
             .collect(Collectors.toMap(
                 authConfig -> authConfig.getAuthConfig().getAuthType(),
-                HttpGatewayServiceAuthConfig::getAuthenticatorCreator
+                Function.identity()
             ));
+    }
 
-        //noinspection unchecked
-        return authReadConfigs
-            .entrySet()
-            .stream()
-            .flatMap(serviceAuthByType -> serviceAuthByType.getValue().stream().map(serviceAuth -> new HttpGatewayRemoteServiceAuth(
-                serviceAuth.getObjectId(),
-                (
-                    (HttpGatewayUpstreamAuthenticatorCreator<HttpGatewayAuthObject>) indexedAuthenticatorCreator.get(serviceAuthByType.getKey())
-                )
-                    .createAuthenticator(serviceAuth)
-            )))
-            .toList();
+    public static @Nullable HttpGatewayUpstreamAuthenticator readRemoteServiceAuthentication(
+        @NotNull Config objectConfig,
+        @NotNull Map<String, HttpGatewayServiceAuthConfig<?>> indexedSupportedAuthentications
+    ) {
+        HttpGatewayConfigAuth.HttpGatewayAuth<?> authenticationConfig = HttpGatewayConfigAuth.readAuthentication(
+            objectConfig,
+            authKey -> indexedSupportedAuthentications.get(authKey).getAuthConfig().getAuthReader()
+        );
+        if (authenticationConfig != null) {
+            //noinspection unchecked
+            HttpGatewayUpstreamAuthenticatorCreator<Object> authenticatorCreator = (HttpGatewayUpstreamAuthenticatorCreator<Object>) indexedSupportedAuthentications
+                .get(authenticationConfig.getAuthType())
+                .authenticatorCreator;
+            return authenticatorCreator.createAuthenticator(authenticationConfig.getAuthObject());
+        }
+        return null;
     }
 
     /**
@@ -94,7 +110,7 @@ public class HttpGatewayConfigServicesAuth {
      * @param <T> The type of the object that represents the authentication. See <code>HttpGatewayAuthBasic</code> for an example
      */
     @Value(staticConstructor = "of")
-    public static class HttpGatewayServiceAuthConfig<T extends HttpGatewayAuthObject> {
+    public static class HttpGatewayServiceAuthConfig<T> {
         HttpGatewayConfigAuth.HttpGatewayAuthConfig<T> authConfig;
         HttpGatewayUpstreamAuthenticatorCreator<T> authenticatorCreator;
     }
@@ -104,7 +120,7 @@ public class HttpGatewayConfigServicesAuth {
      * @param <T> See {@link HttpGatewayServiceAuthConfig}
      */
     @FunctionalInterface
-    public interface HttpGatewayUpstreamAuthenticatorCreator<T extends HttpGatewayAuthObject> {
+    public interface HttpGatewayUpstreamAuthenticatorCreator<T> {
         HttpGatewayUpstreamAuthenticator createAuthenticator(T authObject);
     }
 }

@@ -38,8 +38,8 @@ public class HttpGatewayClientApiKeyAuthenticatorTest {
 
     private HttpGatewayClientApiKeyAuthenticator makeAuthenticator() {
         return new HttpGatewayClientApiKeyAuthenticator(List.of(
-            new HttpGatewayAuthApiKey("id-1", "test-key-1"),
-            new HttpGatewayAuthApiKey("id-2", "test-key-2")
+            new HttpGatewayClientAuth<>("id-1", new HttpGatewayAuthApiKey("test-key-1")),
+            new HttpGatewayClientAuth<>("id-2", new HttpGatewayAuthApiKey("test-key-2"))
         ));
     }
 }

@@ -16,11 +16,11 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 public class HttpGatewayClientBasicAuthenticator implements HttpGatewayClientAuthenticator {
-    private final Map<String, HttpGatewayAuthBasic> clientIndexedByBasicLogin;
+    private final Map<String, HttpGatewayClientAuth<HttpGatewayAuthBasic>> clientIndexedByBasicLogin;
 
-    public HttpGatewayClientBasicAuthenticator(List<HttpGatewayAuthBasic> clients) {
+    public HttpGatewayClientBasicAuthenticator(List<HttpGatewayClientAuth<HttpGatewayAuthBasic>> clients) {
         this.clientIndexedByBasicLogin = clients.stream().collect(Collectors.toMap(
-            HttpGatewayAuthBasic::getUserId,
+            clientAuth -> clientAuth.authObject().userId(),
             Function.identity()
         ));
     }
@@ -37,7 +37,7 @@ public class HttpGatewayClientBasicAuthenticator implements HttpGatewayClientAut
             return null;
         }
 
-        HttpGatewayAuthBasic clientAuth = clientIndexedByBasicLogin.get(suppliedBasicAuth.userId());
+        HttpGatewayClientAuth<HttpGatewayAuthBasic> clientAuth = clientIndexedByBasicLogin.get(suppliedBasicAuth.userId());
         if (clientAuth == null) {
             logger.warn(
                 "Authentication failed: not client is recognized for basic userId '{}' on IP {}, Authorization header value received is {}",
@@ -47,7 +47,7 @@ public class HttpGatewayClientBasicAuthenticator implements HttpGatewayClientAut
             );
             return null;
         }
-        if (!clientAuth.getPassword().equals(suppliedBasicAuth.password())) {
+        if (!clientAuth.authObject().password().equals(suppliedBasicAuth.password())) {
             logger.warn(
                 "Authentication failed: wrong password for Basic Auth for client '{}' on IP {}, Authorization header value received is {}",
                 suppliedBasicAuth.userId(),
@@ -56,7 +56,7 @@ public class HttpGatewayClientBasicAuthenticator implements HttpGatewayClientAut
             );
             return null;
         }
-        return clientAuth.getObjectId();
+        return clientAuth.clientId();
     }
 
     private static Credentials parseBasicHeader(String authorizationHeader) {

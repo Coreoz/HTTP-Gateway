@@ -9,7 +9,7 @@ public class HttpGatewayRemoteServiceKeyAuthenticator implements HttpGatewayUpst
     private final String authorizationHeaderValue;
 
     public HttpGatewayRemoteServiceKeyAuthenticator(HttpGatewayAuthApiKey authApiKeyObject) {
-        this.authorizationHeaderValue = HttpGatewayAuthApiKey.AUTHORIZATION_BEARER_PREFIX + authApiKeyObject.getAuthKey();
+        this.authorizationHeaderValue = HttpGatewayAuthApiKey.AUTHORIZATION_BEARER_PREFIX + authApiKeyObject.authKey();
     }
 
     @Override

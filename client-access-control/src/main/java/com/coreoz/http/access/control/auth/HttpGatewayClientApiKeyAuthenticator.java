@@ -12,10 +12,10 @@ import java.util.stream.Collectors;
 public class HttpGatewayClientApiKeyAuthenticator implements HttpGatewayClientAuthenticator {
     private final Map<String, String> clientIndexedByApiKey;
 
-    public HttpGatewayClientApiKeyAuthenticator(List<HttpGatewayAuthApiKey> clients) {
+    public HttpGatewayClientApiKeyAuthenticator(List<HttpGatewayClientAuth<HttpGatewayAuthApiKey>> clients) {
         this.clientIndexedByApiKey = clients.stream().collect(Collectors.toMap(
-            HttpGatewayAuthApiKey::getAuthKey,
-            HttpGatewayAuthApiKey::getObjectId
+            clientAuth -> clientAuth.authObject().authKey(),
+            HttpGatewayClientAuth::clientId
         ));
     }
 
