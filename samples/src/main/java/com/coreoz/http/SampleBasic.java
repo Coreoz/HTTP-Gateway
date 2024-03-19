@@ -58,28 +58,8 @@ public class SampleBasic {
         );
 
         // OpenApi configuration
-        // TODO update the configuration service to create the correct fetcher per service id
-        Map<String, HttpGatewayRemoteService> servicesIndexedById = servicesIndex
-            .getServices()
-            .stream()
-            .collect(Collectors.toMap(
-                HttpGatewayRemoteService::getServiceId,
-                Function.identity()
-            ));
         OpenApiRoute openApiRoute = new OpenApiRoute(new OpenApiRouteConfiguration(
-            HttpGatewayConfigOpenApiServices
-                .readConfig(configLoader)
-                .stream()
-                .map(serviceOpenApiConfig -> {
-                    // TODO to be created in the openapi configuration service
-                    return new OpenApiHttpFetcher(new OpenApiHttpFetcherConfiguration(
-                        serviceOpenApiConfig.serviceId(),
-                        servicesIndexedById.get(serviceOpenApiConfig.serviceId()).getBaseUrl() + serviceOpenApiConfig.openApiRemotePath(),
-                        upstreamBaseClient,
-                        serviceOpenApiConfig.upstreamAuthenticator()
-                    ));
-                })
-                .toList(),
+            HttpGatewayConfigOpenApiServices.readConfig(new HttpGatewayConfigOpenApiServicesParameters(configLoader)),
             servicesIndex
         ));
 

@@ -1,7 +1,10 @@
 package com.coreoz.http.config;
 
+import com.coreoz.http.exception.HttpGatewayValidationException;
 import com.coreoz.http.openapi.fetching.OpenApiFetcher;
-import com.coreoz.http.openapi.service.OpenApiUpstreamParameters;
+import com.coreoz.http.openapi.fetching.http.OpenApiHttpFetcher;
+import com.coreoz.http.openapi.fetching.http.OpenApiHttpFetcherConfiguration;
+import com.coreoz.http.upstream.HttpGatewayUpstreamClient;
 import com.google.common.base.Predicates;
 import com.typesafe.config.Config;
 
@@ -13,41 +16,45 @@ import java.util.stream.Collectors;
  * Read OpenAPI service configuration
  */
 public class HttpGatewayConfigOpenApiServices {
+    // type = "remote-path"
+    //        remote-url = "https://..."
+    //        remote-path = "/openapi"
+    //        resource-path = "/openapi.yaml"
+    public static final Map.Entry<String, OpenApiConfigFetcherReader> FETCHER_REMOTE_PATH = Map.entry("remote-path", HttpGatewayConfigOpenApiServices::readRemotePathConfig);
+
     public static final String CONFIG_OPEN_API_PREFIX = "open-api";
 
-    // TODO read fetcher
-
-    public static List<OpenApiUpstreamParameters> readConfig(HttpGatewayConfigLoader configLoader) {
-        return readConfig(configLoader.getHttpGatewayConfig());
-    }
-
-    public static List<OpenApiUpstreamParameters> readConfig(HttpGatewayConfigLoader configLoader, List<HttpGatewayConfigServicesAuth.HttpGatewayServiceAuthConfig<?>> supportedAuthConfigs) {
-        return readConfig(configLoader.getHttpGatewayConfig(), supportedAuthConfigs);
-    }
-
-    public static List<OpenApiUpstreamParameters> readConfig(Config gatewayConfig) {
-        return readConfig(gatewayConfig, HttpGatewayConfigServicesAuth.supportedAuthConfigs());
-    }
-
-    public static List<OpenApiUpstreamParameters> readConfig(Config gatewayConfig, List<HttpGatewayConfigServicesAuth.HttpGatewayServiceAuthConfig<?>> supportedAuthConfigs) {
-        Map<String, HttpGatewayConfigServicesAuth.HttpGatewayServiceAuthConfig<?>> indexedAuthConfigs = HttpGatewayConfigServicesAuth.indexAuthenticationConfigs(supportedAuthConfigs);
+    public static List<OpenApiFetcher> readConfig(HttpGatewayConfigOpenApiServicesParameters openApiConfigParameters) {
+        Map<String, HttpGatewayConfigServicesAuth.HttpGatewayServiceAuthConfig<?>> indexedAuthConfigs = HttpGatewayConfigServicesAuth.indexAuthenticationConfigs(openApiConfigParameters.supportedAuthConfigs());
         return HttpGatewayConfigServices
-            .readRemoteServicesConfig(gatewayConfig)
+            .readRemoteServicesConfig(openApiConfigParameters.gatewayConfig())
             .stream()
             .map(serviceConfig -> {
                 String serviceId = serviceConfig.getString(HttpGatewayConfigServices.CONFIG_SERVICE_ID);
+                if (serviceId == null) {
+                    throw new HttpGatewayValidationException("Wrong service config, missing  '" + HttpGatewayConfigServices.CONFIG_SERVICE_ID + "' field in " + serviceConfig);
+                }
                 if (!serviceConfig.hasPath(CONFIG_OPEN_API_PREFIX)) {
                     return null;
                 }
-                // TODO replace by fetcher creation
-                return new OpenApiUpstreamParameters(
-                    serviceId,
-                    HttpGatewayConfigServicesAuth.readRemoteServiceAuthentication(serviceConfig, indexedAuthConfigs),
-                    readConfigOptionalValue(serviceConfig, CONFIG_OPEN_API_PREFIX + ".remote-path")
-                );
+                String fetcherType = serviceConfig.getString(CONFIG_OPEN_API_PREFIX + ".type");
+                OpenApiConfigFetcherReader fetcherReader = openApiConfigParameters.supportedFetcherReaders().get(fetcherType);
+                if (fetcherReader == null) {
+                    throw new HttpGatewayValidationException("Unrecognized OpenAPI type  '" + fetcherType + "' for service " + serviceId + ", available types: " + openApiConfigParameters.supportedFetcherReaders().keySet());
+                }
+                return fetcherReader.readConfig(serviceId, serviceConfig, openApiConfigParameters.upstreamClient(), indexedAuthConfigs);
             })
             .filter(Predicates.notNull())
             .collect(Collectors.toList());
+    }
+
+    public static OpenApiFetcher readRemotePathConfig(String serviceId, Config serviceConfig, HttpGatewayUpstreamClient upstreamClient, Map<String, HttpGatewayConfigServicesAuth.HttpGatewayServiceAuthConfig<?>> indexedAuthConfigs) {
+        return new OpenApiHttpFetcher(new OpenApiHttpFetcherConfiguration(
+            serviceId,
+            serviceConfig.getString("base-url") + serviceConfig.getString(CONFIG_OPEN_API_PREFIX + ".remote-path"),
+            upstreamClient,
+            HttpGatewayConfigServicesAuth.readRemoteServiceAuthentication(serviceConfig.getConfig(CONFIG_OPEN_API_PREFIX), indexedAuthConfigs)
+        ));
     }
 
     private static String readConfigOptionalValue(Config config, String configKey) {
