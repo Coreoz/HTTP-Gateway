@@ -1,9 +1,9 @@
 package com.coreoz.http.openapi.fetching;
 
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.CompletableFuture;
 
 public interface OpenApiFetcher {
-    @NotNull CompletableFuture<OpenApiFetchingData> fetch();
+    @Nullable CompletableFuture<OpenApiFetchingData> fetch();
 }

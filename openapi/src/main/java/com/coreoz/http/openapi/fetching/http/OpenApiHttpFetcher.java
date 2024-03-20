@@ -9,7 +9,6 @@ import com.coreoz.http.upstream.HttpGatewayResponseStatus;
 import com.coreoz.http.upstream.HttpGatewayUpstreamRequest;
 import com.coreoz.http.upstream.HttpGatewayUpstreamResponse;
 import io.swagger.parser.OpenAPIParser;
-import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.parser.core.models.SwaggerParseResult;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -61,15 +60,15 @@ public class OpenApiHttpFetcher implements OpenApiFetcher {
                         response.response().getStatusCode(),
                         responseBodyString
                     );
-                    return new OpenApiFetchingData(configuration.serviceId(), new OpenAPI());
+                    return null;
                 }
 
                 SwaggerParseResult openApiParsingResult = new OpenAPIParser().readContents(responseBodyString, null, null);
                 return new OpenApiFetchingData(configuration.serviceId(), openApiParsingResult.getOpenAPI());
             })
             .exceptionally(error -> {
-                logger.info("Failed to fetch openAPI definitions for service {}", configuration.serviceId(), error);
-                return new OpenApiFetchingData(configuration.serviceId(), new OpenAPI());
+                logger.error("Failed to fetch openAPI definitions for service {}", configuration.serviceId(), error);
+                return null;
             });
     }
 

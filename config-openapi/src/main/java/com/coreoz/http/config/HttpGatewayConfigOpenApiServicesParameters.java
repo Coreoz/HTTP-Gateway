@@ -15,7 +15,11 @@ import java.util.Map;
 @Getter
 @Accessors(fluent = true)
 public class HttpGatewayConfigOpenApiServicesParameters {
-    public static final Map<String, OpenApiConfigFetcherReader> DEFAULT_SUPPORTED_FETCHER_READERS = Map.ofEntries(HttpGatewayConfigOpenApiServices.FETCHER_REMOTE_PATH);
+    public static final Map<String, OpenApiConfigFetcherReader> DEFAULT_SUPPORTED_FETCHER_READERS = Map.ofEntries(
+        HttpGatewayConfigOpenApiServices.FETCHER_REMOTE_PATH,
+        HttpGatewayConfigOpenApiServices.FETCHER_REMOTE_URL,
+        HttpGatewayConfigOpenApiServices.FETCHER_RESOURCE
+    );
 
     @NotNull private final Config gatewayConfig;
     @NotNull private HttpGatewayUpstreamClient upstreamClient = new HttpGatewayUpstreamClient();

@@ -5,7 +5,9 @@ import com.coreoz.http.openapi.fetching.OpenApiFetchingData;
 import com.coreoz.http.openapi.merge.OpenApiMerger;
 import com.coreoz.http.openapi.merge.OpenApiMergerConfiguration;
 import com.coreoz.http.services.HttpGatewayRemoteService;
+import com.google.common.base.Predicates;
 import io.swagger.v3.oas.models.OpenAPI;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
@@ -15,6 +17,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@Slf4j
 public class HttpGatewayOpenApiMerger {
     public static @NotNull CompletionStage<OpenAPI> fetchToUnifiedOpenApi(@NotNull OpenApiRouteConfiguration config) {
         Map<String, HttpGatewayRemoteService> indexedRemoteService = config
@@ -40,9 +43,11 @@ public class HttpGatewayOpenApiMerger {
                     try {
                         return futureOpenApi.get();
                     } catch (Exception e) {
-                        throw new RuntimeException(e);
+                        logger.error("Failed to load openApi definition", e);
+                        return null;
                     }
                 })
+                .filter(Predicates.notNull())
                 .reduce(
                     config.getBaseOpenApi(),
                     (OpenAPI consolidatedOpenApi, OpenApiFetchingData serviceOpenApi) -> OpenApiMerger.addDefinitions(
