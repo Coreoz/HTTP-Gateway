@@ -54,7 +54,9 @@ public class OpenApiHttpFetcher implements OpenApiFetcher {
                 );
                 if (response.response().getResponseStatus() != HttpGatewayResponseStatus.OK) {
                     logger.error(
-                        "Could not fetch remote OpenAPI definition: responseStatut={} - exception={} - status code={} - response body={}",
+                        "Could not fetch remote OpenAPI definition for service {} on URL {} : responseStatut={} - exception={} - status code={} - response body={}",
+                        configuration.serviceId(),
+                        configuration.remoteUrl(),
                         response.response().getResponseStatus(),
                         response.response().getGatewayError(),
                         response.response().getStatusCode(),
