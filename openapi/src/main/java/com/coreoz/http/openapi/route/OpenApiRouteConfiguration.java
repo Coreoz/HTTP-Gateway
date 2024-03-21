@@ -5,6 +5,7 @@ import com.coreoz.http.services.HttpGatewayRemoteServicesIndex;
 import io.swagger.v3.oas.models.OpenAPI;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -13,6 +14,7 @@ import java.util.function.Function;
 
 @Getter
 @Setter
+@Accessors(fluent = true)
 public class OpenApiRouteConfiguration {
     private @NotNull String routePath = "/openapi";
     private @NotNull OpenAPI baseOpenApi = new OpenAPI();

@@ -50,48 +50,6 @@ public class OpenApiMerger {
         return baseDefinitions;
     }
 
-    private static Set<OpenApiSchemaMapping> updateComponentReferences(
-        OpenAPI definitionsToBeAdded, String componentNamePrefix, Set<String> componentToAdd
-    ) {
-        return definitionsToBeAdded
-            .getComponents()
-            .getSchemas()
-            .entrySet()
-            .stream()
-            .filter(schema -> componentToAdd.contains(schema.getKey()))
-            .map(Map.Entry::getValue)
-            .flatMap(schema -> updateComponentReferences(schema, componentNamePrefix))
-            .collect(Collectors.toSet());
-    }
-
-    private static Stream<OpenApiSchemaMapping> updateComponentReferences(Schema<?> schemaToBeAdded, String componentNamePrefix) {
-        return Stream.concat(
-            Stream.concat(
-                updateSchemaName(
-                    componentNamePrefix,
-                    List.of(schemaToBeAdded),
-                    Schema::get$ref,
-                    Schema::set$ref
-                )
-                .stream(),
-                schemaToBeAdded.getItems() == null ?
-                    Stream.of()
-                    :
-                    updateSchemaName(
-                        componentNamePrefix,
-                        List.of(schemaToBeAdded.getItems()),
-                        Schema::get$ref,
-                        Schema::set$ref
-                    )
-                        .stream()
-            ),
-            MoreObjects.firstNonNull(schemaToBeAdded.getProperties(), Map.<String, Schema<?>> of())
-                .values()
-                .stream()
-                .flatMap(schema -> updateComponentReferences(schema, componentNamePrefix))
-        );
-    }
-
     private static void mergeSchemas(@NotNull OpenAPI baseDefinitions, @NotNull OpenAPI definitionsToBeAdded, @NotNull Set<OpenApiSchemaMapping> addedSchemas) {
         if (baseDefinitions.getComponents() == null && !addedSchemas.isEmpty()) {
             Components components = new Components();
@@ -181,28 +139,29 @@ public class OpenApiMerger {
             componentNamePrefix,
             operation.getRequestBody() == null ? List.of() : List.of(operation.getRequestBody()),
             RequestBody::get$ref,
-            RequestBody::set$ref)
-        );
+            RequestBody::set$ref
+        ));
         schemaMappings.addAll(updateSchemaName(
             componentNamePrefix,
             operation.getResponses().entrySet(),
             entry -> entry.getValue().get$ref(),
             (entry, newSchemaName) -> entry.getValue().set$ref(newSchemaName)
         ));
-        schemaMappings.addAll(updateSchemaName(
-            componentNamePrefix,
-            operation
-                .getResponses()
-                .entrySet()
-                .stream()
-                .flatMap(entry -> entry.getValue().getContent() == null ?
-                    Stream.of()
-                    : entry.getValue().getContent().entrySet().stream()
-                )
-                .toList(),
-            entry -> entry.getValue().getSchema().get$ref(),
-            (entry, newSchemaName) -> entry.getValue().getSchema().set$ref(newSchemaName)
-        ));
+        if (operation.getResponses() == null) {
+            return schemaMappings;
+        }
+        for (var apiResponse : operation.getResponses().values()) {
+            if (apiResponse.get$ref() != null) {
+                String newSchemaName = renameSchema(apiResponse.get$ref(), componentNamePrefix);
+                schemaMappings.add(createMapping(apiResponse.get$ref(), newSchemaName));
+                apiResponse.set$ref(newSchemaName);
+            }
+            if (apiResponse.getContent() != null) {
+                for (var contentValue : apiResponse.getContent().values()) {
+                    schemaMappings.addAll(updateComponentReferences(contentValue.getSchema(), componentNamePrefix).toList());
+                }
+            }
+        }
         return schemaMappings;
     }
 
@@ -215,13 +174,14 @@ public class OpenApiMerger {
             if (currentSchemaName != null) {
                 String newSchemaName = renameSchema(currentSchemaName, componentNamePrefix);
                 schemaNameUpdater.accept(element, newSchemaName);
-                schemaMappings.add(new OpenApiSchemaMapping(
-                    parseSchemaName(currentSchemaName),
-                    parseSchemaName(newSchemaName)
-                ));
+                schemaMappings.add(createMapping(currentSchemaName, newSchemaName));
             }
         }
         return schemaMappings;
+    }
+
+    private static OpenApiSchemaMapping createMapping(String currentSchemaName, String newSchemaName) {
+        return new OpenApiSchemaMapping(parseSchemaName(currentSchemaName), parseSchemaName(newSchemaName));
     }
 
     private static @NotNull String renameSchema(@NotNull String currentComponentName, @NotNull String componentNamePrefix) {
@@ -264,5 +224,50 @@ public class OpenApiMerger {
             }
         }
         return mapping;
+    }
+
+    private static Set<OpenApiSchemaMapping> updateComponentReferences(
+        OpenAPI definitionsToBeAdded, String componentNamePrefix, Set<String> componentToAdd
+    ) {
+        return definitionsToBeAdded
+            .getComponents()
+            .getSchemas()
+            .entrySet()
+            .stream()
+            .filter(schema -> componentToAdd.contains(schema.getKey()))
+            .map(Map.Entry::getValue)
+            .flatMap(schema -> updateComponentReferences(schema, componentNamePrefix))
+            .collect(Collectors.toSet());
+    }
+
+    private static Stream<OpenApiSchemaMapping> updateComponentReferences(Schema<?> schemaToBeAdded, String componentNamePrefix) {
+        if (schemaToBeAdded == null) {
+            return Stream.of();
+        }
+        return Stream.concat(
+            Stream.concat(
+                updateSchemaName(
+                    componentNamePrefix,
+                    List.of(schemaToBeAdded),
+                    Schema::get$ref,
+                    Schema::set$ref
+                )
+                    .stream(),
+                schemaToBeAdded.getItems() == null ?
+                    Stream.of()
+                    :
+                    updateSchemaName(
+                        componentNamePrefix,
+                        List.of(schemaToBeAdded.getItems()),
+                        Schema::get$ref,
+                        Schema::set$ref
+                    )
+                        .stream()
+            ),
+            MoreObjects.firstNonNull(schemaToBeAdded.getProperties(), Map.<String, Schema<?>> of())
+                .values()
+                .stream()
+                .flatMap(schema -> updateComponentReferences(schema, componentNamePrefix))
+        );
     }
 }

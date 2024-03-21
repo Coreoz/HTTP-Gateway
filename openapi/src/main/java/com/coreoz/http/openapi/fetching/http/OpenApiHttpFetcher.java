@@ -52,6 +52,9 @@ public class OpenApiHttpFetcher implements OpenApiFetcher {
                         response.response().getContentType()
                     )
                 );
+                if (responseBodyString == null) {
+                    logger.warn("Fetched empty OpenApi Definition for service {} on URL {}", configuration.serviceId(), configuration.remoteUrl());
+                }
                 if (response.response().getResponseStatus() != HttpGatewayResponseStatus.OK) {
                     logger.error(
                         "Could not fetch remote OpenAPI definition for service {} on URL {} : responseStatut={} - exception={} - status code={} - response body={}",
@@ -65,6 +68,7 @@ public class OpenApiHttpFetcher implements OpenApiFetcher {
                     return null;
                 }
 
+                // TODO what happens if the content if not OpenAPI ?
                 SwaggerParseResult openApiParsingResult = new OpenAPIParser().readContents(responseBodyString, null, null);
                 return new OpenApiFetchingData(configuration.serviceId(), openApiParsingResult.getOpenAPI());
             })

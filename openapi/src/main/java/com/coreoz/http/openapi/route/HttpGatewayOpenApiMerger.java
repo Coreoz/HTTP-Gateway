@@ -21,7 +21,7 @@ import java.util.stream.Stream;
 public class HttpGatewayOpenApiMerger {
     public static @NotNull CompletionStage<OpenAPI> fetchToUnifiedOpenApi(@NotNull OpenApiRouteConfiguration config) {
         Map<String, HttpGatewayRemoteService> indexedRemoteService = config
-            .getRemoteServicesIndex()
+            .remoteServicesIndex()
             .getServices()
             .stream()
             .collect(Collectors.toMap(
@@ -30,7 +30,7 @@ public class HttpGatewayOpenApiMerger {
             ));
         @SuppressWarnings("unchecked")
         CompletableFuture<OpenApiFetchingData>[] fetchingSpecifications = config
-            .getOpenApiFetchers()
+            .openApiFetchers()
             .stream()
             .map(OpenApiFetcher::fetch)
             .toArray(CompletableFuture[]::new);
@@ -49,7 +49,7 @@ public class HttpGatewayOpenApiMerger {
                 })
                 .filter(Predicates.notNull())
                 .reduce(
-                    config.getBaseOpenApi(),
+                    config.baseOpenApi(),
                     (OpenAPI consolidatedOpenApi, OpenApiFetchingData serviceOpenApi) -> OpenApiMerger.addDefinitions(
                         consolidatedOpenApi,
                         serviceOpenApi.openApiDefinition(),
@@ -59,11 +59,11 @@ public class HttpGatewayOpenApiMerger {
                                 .get(serviceOpenApi.serviceId())
                                 .getRoutes()
                                 .stream()
-                                .map(config.getRemoteServicesIndex()::serviceRouteToHttpEndpoint)
+                                .map(config.remoteServicesIndex()::serviceRouteToHttpEndpoint)
                                 .toList(),
-                            config.getComponentNamePrefixMaker().apply(serviceOpenApi.serviceId()),
-                            config.getOperationIdPrefixMaker().apply(serviceOpenApi.serviceId()),
-                            config.isCreateMissingEndpoints()
+                            config.componentNamePrefixMaker().apply(serviceOpenApi.serviceId()),
+                            config.operationIdPrefixMaker().apply(serviceOpenApi.serviceId()),
+                            config.createMissingEndpoints()
                         )
                     ),
                     (a, b) -> {

@@ -14,7 +14,7 @@ public class OpenApiRoute implements HttpGatewayRouterConfiguration {
     private OpenAPI openApiDefinition;
 
     public OpenApiRoute(OpenApiRouteConfiguration routeConfiguration) {
-        this.routePath = routeConfiguration.getRoutePath();
+        this.routePath = routeConfiguration.routePath();
         HttpGatewayOpenApiMerger
             .fetchToUnifiedOpenApi(routeConfiguration)
             .thenAccept(openApiDefinition -> {

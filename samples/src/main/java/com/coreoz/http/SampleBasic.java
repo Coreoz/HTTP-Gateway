@@ -3,14 +3,11 @@ package com.coreoz.http;
 import com.coreoz.http.conf.HttpGatewayConfiguration;
 import com.coreoz.http.conf.HttpGatewayRouterConfiguration;
 import com.coreoz.http.config.*;
-import com.coreoz.http.openapi.fetching.http.OpenApiHttpFetcher;
-import com.coreoz.http.openapi.fetching.http.OpenApiHttpFetcherConfiguration;
 import com.coreoz.http.openapi.route.OpenApiRoute;
 import com.coreoz.http.openapi.route.OpenApiRouteConfiguration;
 import com.coreoz.http.play.HttpGatewayDownstreamResponses;
 import com.coreoz.http.publisher.PeekerPublishersConsumer;
 import com.coreoz.http.router.HttpGatewayRouter;
-import com.coreoz.http.services.HttpGatewayRemoteService;
 import com.coreoz.http.services.HttpGatewayRemoteServicesIndex;
 import com.coreoz.http.services.auth.HttpGatewayRemoteServicesAuthenticator;
 import com.coreoz.http.upstream.*;
@@ -22,10 +19,7 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * This sample feature the standard basic Gateway with:
