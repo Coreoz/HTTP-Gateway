@@ -68,8 +68,17 @@ public class OpenApiHttpFetcher implements OpenApiFetcher {
                     return null;
                 }
 
-                // TODO what happens if the content if not OpenAPI ?
                 SwaggerParseResult openApiParsingResult = new OpenAPIParser().readContents(responseBodyString, null, null);
+                // when a parsing error occurs, no exception is thrown, just some loggers
+                if (openApiParsingResult.getOpenAPI() == null) {
+                    logger.error(
+                        "Failed to parse Open API result for service '{}', content to be parsed={}",
+                        configuration.serviceId(),
+                        responseBodyString
+                    );
+                    return null;
+                }
+
                 return new OpenApiFetchingData(configuration.serviceId(), openApiParsingResult.getOpenAPI());
             })
             .exceptionally(error -> {
