@@ -27,7 +27,10 @@ public class OpenApiMergerTest {
             baseDefinitions,
             petStoreDefinitions,
             new OpenApiMergerConfiguration(
-                List.of(new HttpEndpoint("route-test", "GET", "/pets-gateway/{id}", "/pets/{id}")),
+                List.of(
+                    new HttpEndpoint("route-test", "GET", "/pets-gateway/{id}", "/pets/{id}"),
+                    new HttpEndpoint("pets", "GET", "/pets", "/pets")
+                ),
                 "Test",
                 "test",
                 true
@@ -35,11 +38,6 @@ public class OpenApiMergerTest {
         );
         System.out.println(Yaml.mapper().writeValueAsString(result));
     }
-
-    // TODO merge single route
-    // TODO merge route to an existing route (GET and POST)
-    // TODO schema merge with other $ref
-
 
     @SneakyThrows
     private OpenAPI readResource(String resourcePath) {

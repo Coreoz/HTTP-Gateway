@@ -1,9 +1,9 @@
 package com.coreoz.http.openapi.merge;
 
-import com.coreoz.http.router.routes.HttpRoutes;
-import com.coreoz.http.router.routes.HttpRoutesValidator;
 import com.coreoz.http.router.data.HttpEndpoint;
 import com.coreoz.http.router.data.ParsedSegment;
+import com.coreoz.http.router.routes.HttpRoutes;
+import com.coreoz.http.router.routes.HttpRoutesValidator;
 import com.coreoz.http.router.routes.ParsedPath;
 import com.coreoz.http.router.routes.ParsedRoute;
 import com.google.common.base.MoreObjects;
@@ -12,6 +12,7 @@ import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
+import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 import org.jetbrains.annotations.NotNull;
@@ -21,6 +22,7 @@ import org.jetbrains.annotations.VisibleForTesting;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 // TODO put in a dedicated module
@@ -36,8 +38,58 @@ public class OpenApiMerger {
     public static @NotNull OpenAPI addDefinitions(@NotNull OpenAPI baseDefinitions, @NotNull OpenAPI definitionsToBeAdded, @NotNull OpenApiMergerConfiguration mergeConfiguration) {
         Set<OpenApiSchemaMapping> addedSchemas = mergePaths(baseDefinitions, definitionsToBeAdded, mergeConfiguration);
         // TODO add routes for missing endpoints
+        addedSchemas.addAll(updateComponentReferences(
+            definitionsToBeAdded,
+            mergeConfiguration.componentNamePrefix(),
+            addedSchemas
+                .stream()
+                .map(OpenApiSchemaMapping::initialName)
+                .collect(Collectors.toSet())
+        ));
         mergeSchemas(baseDefinitions, definitionsToBeAdded, addedSchemas);
         return baseDefinitions;
+    }
+
+    private static Set<OpenApiSchemaMapping> updateComponentReferences(
+        OpenAPI definitionsToBeAdded, String componentNamePrefix, Set<String> componentToAdd
+    ) {
+        return definitionsToBeAdded
+            .getComponents()
+            .getSchemas()
+            .entrySet()
+            .stream()
+            .filter(schema -> componentToAdd.contains(schema.getKey()))
+            .map(Map.Entry::getValue)
+            .flatMap(schema -> updateComponentReferences(schema, componentNamePrefix))
+            .collect(Collectors.toSet());
+    }
+
+    private static Stream<OpenApiSchemaMapping> updateComponentReferences(Schema<?> schemaToBeAdded, String componentNamePrefix) {
+        return Stream.concat(
+            Stream.concat(
+                updateSchemaName(
+                    componentNamePrefix,
+                    List.of(schemaToBeAdded),
+                    Schema::get$ref,
+                    Schema::set$ref
+                )
+                .stream(),
+                schemaToBeAdded.getItems() == null ?
+                    Stream.of()
+                    :
+                    updateSchemaName(
+                        componentNamePrefix,
+                        List.of(schemaToBeAdded.getItems()),
+                        Schema::get$ref,
+                        Schema::set$ref
+                    )
+                        .stream()
+            ),
+            MoreObjects.firstNonNull(schemaToBeAdded.getProperties(), Map.<String, Schema<?>> of())
+                .values()
+                .stream()
+                .flatMap(schema -> updateComponentReferences(schema, componentNamePrefix))
+        );
     }
 
     private static void mergeSchemas(@NotNull OpenAPI baseDefinitions, @NotNull OpenAPI definitionsToBeAdded, @NotNull Set<OpenApiSchemaMapping> addedSchemas) {
