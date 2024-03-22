@@ -60,7 +60,7 @@ public class SampleBasic {
         return HttpGateway.start(new HttpGatewayConfiguration(
             HTTP_GATEWAY_PORT,
             routerDsl -> routerDsl
-                // Additional routing must be set before the main HTTP Gateway routing part
+                // Additional routing must be set before the main HTTP Gateway routing part, else it will be overridden by the generic route created by main HTTP Gateway routing part.asyncRouting
                 .addRoutes(openApiRoute)
                 .addRoutes(HttpGatewayRouterConfiguration.asyncRouting(downstreamRequest -> {
                     // starts validation
