@@ -37,6 +37,7 @@ public class OpenApiMerger {
      */
     public static @NotNull OpenAPI addDefinitions(@NotNull OpenAPI baseDefinitions, @NotNull OpenAPI definitionsToBeAdded, @NotNull OpenApiMergerConfiguration mergeConfiguration) {
         Set<OpenApiSchemaMapping> addedSchemas = mergePaths(baseDefinitions, definitionsToBeAdded, mergeConfiguration);
+        // TODO merge tags information to have tag descriptions
         // TODO add routes for missing endpoints
         addedSchemas.addAll(updateComponentReferences(
             definitionsToBeAdded,
