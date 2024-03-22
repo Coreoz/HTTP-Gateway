@@ -53,8 +53,10 @@ public class OpenApiMerger {
     private static void mergeSchemas(@NotNull OpenAPI baseDefinitions, @NotNull OpenAPI definitionsToBeAdded, @NotNull Set<OpenApiSchemaMapping> addedSchemas) {
         if (baseDefinitions.getComponents() == null && !addedSchemas.isEmpty()) {
             Components components = new Components();
-            components.setSchemas(new HashMap<>());
             baseDefinitions.setComponents(components);
+        }
+        if (baseDefinitions.getComponents().getSchemas() == null) {
+            baseDefinitions.getComponents().setSchemas(new HashMap<>());
         }
         for (OpenApiSchemaMapping schemaToBeMerged : addedSchemas) {
             baseDefinitions.getComponents().getSchemas().put(
