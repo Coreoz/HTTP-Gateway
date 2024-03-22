@@ -11,3 +11,7 @@ auth = {type = "basic", userId = "test-auth", password = "auth-password"}
 ```hocon
 auth = {type = "key", value = "auth-key"}
 ```
+
+See usages in:
+- `HttpGatewayConfigClientAuth` in the [Config Clients module](../config-clients/)
+- `HttpGatewayConfigServicesAuth` in the [Config Services module](../config-services/)

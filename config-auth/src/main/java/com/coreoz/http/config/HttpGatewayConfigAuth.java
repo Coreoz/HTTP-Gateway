@@ -20,14 +20,20 @@ public class HttpGatewayConfigAuth {
 
     public static final String CONFIG_AUTH_NAME = "auth";
 
-    // TODO review docs
-
     /**
-     * Read authentication from a list of objects
-     * @param authReaderFetcher The list of supported authentication methods
-     * @return A {@code Map} containing auth object indexed by authentication method/type.
-     * So the {@code Map} key is the authentication method/type, and the authentication value is the {@code List}
-     * of read objects that matche this authentication. See {@link HttpGatewayAuthConfig} for how object are read.
+     * Read authentication an object from a config.<br>
+     * <br>
+     * A config that contains an authentication must look like that: <code>{auth={type="basic", userId="abcd", password="azerty"}}</code><br>
+     * In this example, there are:<br>
+     * - The <code>auth</code> object that will contain all configurations related to authentication<br>
+     * - The authentication <code>type</code> that specifies what authentication is configured: basic, key, etc.<br>
+     * - The authentication type arguments, here the <code>userId</code> and the <code>password</code> for the basic auth
+     * @param objectConfig The config that contains the <code>auth</code> config
+     * @param authReaderFetcher The function that enables to retrieve an authentication config reader from an authentication <code>type</code>.
+     *                          It is generally provided by a Map object. See HttpGatewayConfigClientAuth or HttpGatewayConfigServicesAuth
+     *                          for sample usages. This classes should generally be used to read client or services authentication.
+     * @return The auth object created by the {@link HttpGatewayAuthReader}. If the <code>auth</code> config is missing,
+     * then null will be returned.
      * @throws HttpGatewayValidationException if the authentication type is not present in {@code supportedAuthConfigs}
      */
     public static @Nullable HttpGatewayAuth<?> readAuthentication(
@@ -60,12 +66,20 @@ public class HttpGatewayConfigAuth {
         );
     }
 
+    /**
+     * An authentication reader configuration: the authentication type and the corresponding {@link HttpGatewayAuthReader}
+     * @param <T> The type of the object data read by the {@link HttpGatewayAuthReader}
+     */
     @Value(staticConstructor = "of")
     public static class HttpGatewayAuthConfig<T> {
         String authType;
         HttpGatewayAuthReader<T> authReader;
     }
 
+    /**
+     * An authentication type with the data that has been read by a {@link HttpGatewayAuthReader}
+     * @param <T> The type of the data object read
+     */
     @Value(staticConstructor = "of")
     public static class HttpGatewayAuth<T> {
         String authType;

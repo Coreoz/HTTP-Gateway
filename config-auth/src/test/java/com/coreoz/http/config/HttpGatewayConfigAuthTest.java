@@ -53,4 +53,13 @@ public class HttpGatewayConfigAuthTest {
             authIndex::get
         );
     }
+
+    @Test
+    public void readAuthentication__missing_auth_config_must_return_null() {
+        HttpGatewayConfigAuth.HttpGatewayAuth<?> readObject = HttpGatewayConfigAuth.readAuthentication(
+            config.getConfig("test-missing-auth"),
+            authIndex::get
+        );
+        Assertions.assertThat(readObject).isNull();
+    }
 }
