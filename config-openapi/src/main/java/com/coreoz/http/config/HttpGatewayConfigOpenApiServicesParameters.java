@@ -23,7 +23,7 @@ public class HttpGatewayConfigOpenApiServicesParameters {
 
     @NotNull private final Config gatewayConfig;
     @NotNull private HttpGatewayUpstreamClient upstreamClient = new HttpGatewayUpstreamClient();
-    @NotNull private List<HttpGatewayConfigServicesAuth.HttpGatewayServiceAuthConfig<?>> supportedAuthConfigs = HttpGatewayConfigServicesAuth.supportedAuthConfigs();
+    @NotNull private Map<String, HttpGatewayConfigServicesAuth.HttpGatewayServiceAuthConfig<?>> supportedAuthConfigs = HttpGatewayConfigServicesAuth.supportedAuthConfigs();
     @NotNull private Map<String, OpenApiConfigFetcherReader> supportedFetcherReaders = DEFAULT_SUPPORTED_FETCHER_READERS;
 
     public HttpGatewayConfigOpenApiServicesParameters(@NotNull Config gatewayConfig) {

@@ -24,7 +24,6 @@ public class HttpGatewayConfigOpenApiServices {
     public static final String CONFIG_OPEN_API_PREFIX = "open-api";
 
     public static List<OpenApiFetcher> readConfig(HttpGatewayConfigOpenApiServicesParameters openApiConfigParameters) {
-        Map<String, HttpGatewayConfigServicesAuth.HttpGatewayServiceAuthConfig<?>> indexedAuthConfigs = HttpGatewayConfigServicesAuth.indexAuthenticationConfigs(openApiConfigParameters.supportedAuthConfigs());
         return HttpGatewayConfigServices
             .readRemoteServicesConfig(openApiConfigParameters.gatewayConfig())
             .stream()
@@ -41,7 +40,12 @@ public class HttpGatewayConfigOpenApiServices {
                 if (fetcherReader == null) {
                     throw new HttpGatewayValidationException("Unrecognized OpenAPI type  '" + fetcherType + "' for service " + serviceId + ", available types: " + openApiConfigParameters.supportedFetcherReaders().keySet());
                 }
-                return fetcherReader.readConfig(serviceId, serviceConfig, openApiConfigParameters.upstreamClient(), indexedAuthConfigs);
+                return fetcherReader.readConfig(
+                    serviceId,
+                    serviceConfig,
+                    openApiConfigParameters.upstreamClient(),
+                    openApiConfigParameters.supportedAuthConfigs()
+                );
             })
             .filter(Predicates.notNull())
             .collect(Collectors.toList());

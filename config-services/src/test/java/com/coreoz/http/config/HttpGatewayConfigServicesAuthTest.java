@@ -11,14 +11,14 @@ import org.assertj.core.api.Assertions;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 
-import java.util.List;
+import java.util.Map;
 
 public class HttpGatewayConfigServicesAuthTest {
     @Test
     public void readRemoteServiceAuthentication__check_that_authentication_is_correctly_created() {
         @Nullable HttpGatewayUpstreamAuthenticator serviceAuthentication = HttpGatewayConfigServicesAuth.readRemoteServiceAuthentication(
             ConfigFactory.load("test-auth.conf").getConfigList("remote-services").get(0),
-            HttpGatewayConfigServicesAuth.indexAuthenticationConfigs(List.of(HttpGatewayConfigServicesAuth.BASIC_AUTH))
+            Map.ofEntries(HttpGatewayConfigServicesAuth.BASIC_AUTH)
         );
 
         Assertions.assertThat(serviceAuthentication).isNotNull();
