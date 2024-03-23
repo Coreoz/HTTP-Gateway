@@ -7,19 +7,29 @@ import lombok.Value;
 
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class HttpGatewayConfigClientAuth {
-    public static final HttpGatewayClientAuthConfig<HttpGatewayAuthApiKey> KEY_AUTH = HttpGatewayClientAuthConfig.of(HttpGatewayConfigAuth.KEY_AUTH, HttpGatewayClientApiKeyAuthenticator::new);
-    public static final HttpGatewayClientAuthConfig<HttpGatewayAuthBasic> BASIC_AUTH = HttpGatewayClientAuthConfig.of(HttpGatewayConfigAuth.BASIC_AUTH, HttpGatewayClientBasicAuthenticator::new);
+    public static final Map.Entry<String, HttpGatewayClientAuthConfig<HttpGatewayAuthApiKey>> KEY_AUTH = makeAuthMapEntry(
+        HttpGatewayClientAuthConfig.of(HttpGatewayConfigAuth.KEY_AUTH, HttpGatewayClientApiKeyAuthenticator::new)
+    );
+    public static final Map.Entry<String, HttpGatewayClientAuthConfig<HttpGatewayAuthBasic>> BASIC_AUTH = makeAuthMapEntry(
+        HttpGatewayClientAuthConfig.of(HttpGatewayConfigAuth.BASIC_AUTH, HttpGatewayClientBasicAuthenticator::new)
+    );
 
-    private static final List<HttpGatewayClientAuthConfig<?>> supportedAuthConfigs = List.of(
+    private static <T> Map.Entry<String, HttpGatewayClientAuthConfig<T>> makeAuthMapEntry(HttpGatewayClientAuthConfig<T> authConfig) {
+        return Map.entry(
+            authConfig.getAuthConfig().getAuthType(),
+            authConfig
+        );
+    }
+
+    private static final Map<String, HttpGatewayClientAuthConfig<?>> supportedAuthConfigs = Map.ofEntries(
         KEY_AUTH,
         BASIC_AUTH
     );
 
-    public static List<HttpGatewayClientAuthConfig<?>> supportedAuthConfigs() {
+    public static Map<String, HttpGatewayClientAuthConfig<?>> supportedAuthConfigs() {
         return supportedAuthConfigs;
     }
 
@@ -27,11 +37,9 @@ public class HttpGatewayConfigClientAuth {
         return readAuth(clientsConfig, supportedAuthConfigs());
     }
 
-    public static HttpGatewayClientAuthenticator readAuth(List<? extends Config> clientsConfig, List<HttpGatewayClientAuthConfig<?>> supportedAuthConfigs) {
+    public static HttpGatewayClientAuthenticator readAuth(List<? extends Config> clientsConfig, Map<String, HttpGatewayClientAuthConfig<?>> supportedAuthConfigs) {
         return HttpGatewayClientAuthenticator.merge(readAuthenticators(clientsConfig, supportedAuthConfigs));
     }
-
-    // TODO review docs
 
     /**
      * Read config authentication without performing merging/flattening authenticators.
@@ -41,14 +49,7 @@ public class HttpGatewayConfigClientAuth {
      * @return The authenticators for each authentication method
      */
     @VisibleForTesting
-    static List<HttpGatewayClientAuthenticator> readAuthenticators(List<? extends Config> clientsConfig, List<HttpGatewayClientAuthConfig<?>> supportedAuthConfigs) {
-        Map<String, HttpGatewayClientAuthConfig<?>> indexedAuthenticatorCreator = supportedAuthConfigs
-            .stream()
-            .collect(Collectors.toMap(
-                availableAuthConfig -> availableAuthConfig.authConfig.getAuthType(),
-                Function.identity()
-            ));
-
+    static List<HttpGatewayClientAuthenticator> readAuthenticators(List<? extends Config> clientsConfig, Map<String, HttpGatewayClientAuthConfig<?>> supportedAuthConfigs) {
         //noinspection unchecked
         return clientsConfig
             .stream()
@@ -58,7 +59,7 @@ public class HttpGatewayConfigClientAuth {
                     clientConfig.getString("client-id"),
                     HttpGatewayConfigAuth.readAuthentication(
                         clientConfig,
-                        authKey -> indexedAuthenticatorCreator.get(authKey).getAuthConfig().getAuthReader()
+                        authKey -> supportedAuthConfigs.get(authKey).getAuthConfig().getAuthReader()
                     )
                 );
                 if (clientIdWithAuthData.authData() == null) {
@@ -81,7 +82,7 @@ public class HttpGatewayConfigClientAuth {
             .stream()
             .map(clientAuthGroup -> (
                 // build the authenticator
-                (HttpGatewayClientAuthenticatorCreator<Object>) indexedAuthenticatorCreator
+                (HttpGatewayClientAuthenticatorCreator<Object>) supportedAuthConfigs
                     .get(clientAuthGroup.getKey())
                     .getAuthenticatorCreator()
                 )

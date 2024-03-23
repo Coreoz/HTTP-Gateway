@@ -8,6 +8,7 @@ import com.typesafe.config.Config;
 import play.mvc.Http;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Handle Gateway client authorization and access control verification
@@ -25,7 +26,7 @@ public class HttpGatewayConfigClientAccessControl implements HttpGatewayClientAc
      * Create a new {@link HttpGatewayConfigClientAccessControl} instance.
      * Note that all clients authentication methods will be supported. This is good for testing, but in production,
      * it is recommended to have one a just a few supported authentication methods to reduce attack risks:
-     * see {@link #readConfig(HttpGatewayConfigLoader, List)}
+     * see {@link #readConfig(HttpGatewayConfigLoader, Map)}
      * @param configLoader The instance of the config
      * @return The new instance of {@link HttpGatewayConfigClientAccessControl}
      */
@@ -39,7 +40,7 @@ public class HttpGatewayConfigClientAccessControl implements HttpGatewayClientAc
      * @param supportedAuthConfigs Available auth configuration are listed in {@link HttpGatewayConfigClientAuth}
      * @return The new instance of {@link HttpGatewayConfigClientAccessControl}
      */
-    public static HttpGatewayConfigClientAccessControl readConfig(HttpGatewayConfigLoader configLoader, List<HttpGatewayConfigClientAuth.HttpGatewayClientAuthConfig<?>> supportedAuthConfigs) {
+    public static HttpGatewayConfigClientAccessControl readConfig(HttpGatewayConfigLoader configLoader, Map<String, HttpGatewayConfigClientAuth.HttpGatewayClientAuthConfig<?>> supportedAuthConfigs) {
         return readConfig(configLoader.getHttpGatewayConfig(), supportedAuthConfigs);
     }
 
@@ -47,7 +48,7 @@ public class HttpGatewayConfigClientAccessControl implements HttpGatewayClientAc
      * Create a new {@link HttpGatewayConfigClientAccessControl} instance using a config object.
      * Note that all clients authentication methods will be supported. This is good for testing, but in production,
      * it is recommended to have one a just a few supported authentication methods to reduce attack risks:
-     * see {@link #readConfig(Config, List)}
+     * see {@link #readConfig(Config, Map)}
      * @param gatewayConfig The config object containing clients configuration
      * @return The new instance of {@link HttpGatewayConfigClientAccessControl}
      */
@@ -61,7 +62,7 @@ public class HttpGatewayConfigClientAccessControl implements HttpGatewayClientAc
      * @param supportedAuthConfigs Available auth configuration are listed in {@link HttpGatewayConfigClientAuth}
      * @return The new instance of {@link HttpGatewayConfigClientAccessControl}
      */
-    public static HttpGatewayConfigClientAccessControl readConfig(Config gatewayConfig, List<HttpGatewayConfigClientAuth.HttpGatewayClientAuthConfig<?>> supportedAuthConfigs) {
+    public static HttpGatewayConfigClientAccessControl readConfig(Config gatewayConfig, Map<String, HttpGatewayConfigClientAuth.HttpGatewayClientAuthConfig<?>> supportedAuthConfigs) {
         List<? extends Config> clientConfigs = gatewayConfig.getConfigList("clients");
         HttpGatewayClientAuthenticator authenticator = HttpGatewayConfigClientAuth.readAuth(clientConfigs, supportedAuthConfigs);
         HttpGatewayClientRouteAccessControl routeAccessControl = HttpGatewayConfigClientRoutes.readClientsRoutes(gatewayConfig, clientConfigs);

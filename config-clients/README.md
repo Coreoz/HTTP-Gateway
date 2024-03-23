@@ -13,7 +13,7 @@ HttpGatewayConfigClientAccessControl gatewayClients = HttpGatewayConfigClientAcc
     .readConfig(
         configLoader,
         // limit the supported authentications to reduce vulnerabilities
-        List.of(HttpGatewayConfigClientAuth.KEY_AUTH)
+        Map.ofEntries(HttpGatewayConfigClientAuth.KEY_AUTH)
     )
     .validateConfig(servicesIndex); // validate clients configuration with actual services available
 ```
@@ -54,9 +54,9 @@ Default supported authentication methods are `key` and `basic`, see [sample](#sa
 
 To add a new custom authenticator:
 1. Create the authenticator, see the [client access control module](../client-access-control) for details
-2. Create the `HttpGatewayAuthObject` object that will contain the auth data described in the configuration. See `HttpGatewayAuthBasic` for an example
-3. Create the `HttpGatewayAuthConfig` object that contains the auth config key and the function to read the auth config value to create the `HttpGatewayAuthObject` object. See `HttpGatewayConfigAuth` for samples
-4. Create the `HttpGatewayClientAuthConfig` that map the `HttpGatewayAuthObject` and `HttpGatewayAuthConfig` objects created previously. See `HttpGatewayConfigClientAuth` for samples
+2. Create a `record` or a `class` that will contain the auth data described in the configuration that will be used to create the authenticator. See `HttpGatewayAuthBasic` for an example
+3. Create the function that will read the config to create the `record`/`class` previously defined, and the `HttpGatewayAuthConfig` object that contains the auth config key and the read config function that has just been defined. See `HttpGatewayConfigAuth.KEY_AUTH` or `HttpGatewayConfigAuth.BASIC_AUTH` for samples.
+4. Create the `HttpGatewayClientAuthConfig` that map the `HttpGatewayConfigAuth` to the authenticator. See `HttpGatewayConfigClientAuth.KEY_AUTH` or `HttpGatewayConfigClientAuth.BASIC_AUTH` for samples.
 5. Use the newly authenticators:
 ```java
 HttpGatewayConfigClientAuth customAuthenticatorConfig = ... // created following the previous steps
@@ -64,6 +64,6 @@ HttpGatewayConfigClientAccessControl gatewayClients = HttpGatewayConfigClientAcc
     .readConfig(
         configLoader,
         // use the custom authenticator config
-        List.of(customAuthenticatorConfig)
+        Map.ofEntries(customAuthenticatorConfig)
     );
 ```

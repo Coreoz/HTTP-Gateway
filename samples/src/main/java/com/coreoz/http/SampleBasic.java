@@ -18,7 +18,7 @@ import com.coreoz.http.validation.HttpGatewayValidation;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -40,7 +40,7 @@ public class SampleBasic {
         HttpGatewayRemoteServicesIndex servicesIndex = HttpGatewayConfigServices.readConfig(configLoader);
         HttpGatewayRemoteServicesAuthenticator remoteServicesAuthenticator = HttpGatewayConfigServicesAuth.readConfig(configLoader);
         HttpGatewayConfigClientAccessControl gatewayClients = HttpGatewayConfigClientAccessControl
-            .readConfig(configLoader, List.of(HttpGatewayConfigClientAuth.KEY_AUTH))
+            .readConfig(configLoader, Map.ofEntries(HttpGatewayConfigClientAuth.KEY_AUTH))
             .validateConfig(servicesIndex);
         HttpGatewayClientValidator clientValidator = new HttpGatewayClientValidator(servicesIndex, gatewayClients);
         HttpGatewayRouter httpRouter = new HttpGatewayRouter(servicesIndex.computeValidatedIndexedRoutes());
