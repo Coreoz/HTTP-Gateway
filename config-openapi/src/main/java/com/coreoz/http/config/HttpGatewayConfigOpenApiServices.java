@@ -8,6 +8,7 @@ import com.coreoz.http.openapi.fetching.resources.OpenApiResourceFetcher;
 import com.coreoz.http.upstream.HttpGatewayUpstreamClient;
 import com.google.common.base.Predicates;
 import com.typesafe.config.Config;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Map;
@@ -23,7 +24,15 @@ public class HttpGatewayConfigOpenApiServices {
 
     public static final String CONFIG_OPEN_API_PREFIX = "open-api";
 
-    public static List<OpenApiFetcher> readConfig(HttpGatewayConfigOpenApiServicesParameters openApiConfigParameters) {
+    /**
+     * Create a list of {@link OpenApiFetcher} from an HTTP Gateway config and optional customization parameters:
+     * see {@link HttpGatewayConfigOpenApiServicesParameters} for details.<br>
+     * <br>
+     * For a service, if the OpenAPI object is missing, then no fetcher will be created for this service.
+     * @param openApiConfigParameters The HTTP Gateway config object containing services configuration and option parameters
+     * @return The corresponding list of {@link OpenApiFetcher}
+     */
+    public static @NotNull List<OpenApiFetcher> readConfig(@NotNull HttpGatewayConfigOpenApiServicesParameters openApiConfigParameters) {
         return HttpGatewayConfigServices
             .readRemoteServicesConfig(openApiConfigParameters.gatewayConfig())
             .stream()
@@ -51,7 +60,7 @@ public class HttpGatewayConfigOpenApiServices {
             .collect(Collectors.toList());
     }
 
-    public static OpenApiFetcher readRemotePathConfig(String serviceId, Config serviceConfig, HttpGatewayUpstreamClient upstreamClient, Map<String, HttpGatewayConfigServicesAuth.HttpGatewayServiceAuthConfig<?>> indexedAuthConfigs) {
+    private static @NotNull OpenApiFetcher readRemotePathConfig(@NotNull String serviceId, @NotNull Config serviceConfig, @NotNull HttpGatewayUpstreamClient upstreamClient, @NotNull Map<String, HttpGatewayConfigServicesAuth.HttpGatewayServiceAuthConfig<?>> indexedAuthConfigs) {
         return buildRemoteUrlFetcher(serviceId,
             serviceConfig,
             serviceConfig.getString("base-url") + serviceConfig.getString(CONFIG_OPEN_API_PREFIX + ".remote-path"),
@@ -60,7 +69,7 @@ public class HttpGatewayConfigOpenApiServices {
         );
     }
 
-    private static OpenApiFetcher readRemoteUrlConfig(String serviceId, Config serviceConfig, HttpGatewayUpstreamClient upstreamClient, Map<String, HttpGatewayConfigServicesAuth.HttpGatewayServiceAuthConfig<?>> indexedAuthConfigs) {
+    private static @NotNull OpenApiFetcher readRemoteUrlConfig(@NotNull String serviceId, @NotNull Config serviceConfig, @NotNull HttpGatewayUpstreamClient upstreamClient, @NotNull Map<String, HttpGatewayConfigServicesAuth.HttpGatewayServiceAuthConfig<?>> indexedAuthConfigs) {
         return buildRemoteUrlFetcher(serviceId,
             serviceConfig,
             serviceConfig.getString(CONFIG_OPEN_API_PREFIX + ".remote-url"),
@@ -69,7 +78,7 @@ public class HttpGatewayConfigOpenApiServices {
         );
     }
 
-    private static OpenApiFetcher buildRemoteUrlFetcher(String serviceId, Config serviceConfig, String remoteUrl, HttpGatewayUpstreamClient upstreamClient, Map<String, HttpGatewayConfigServicesAuth.HttpGatewayServiceAuthConfig<?>> indexedAuthConfigs) {
+    private static @NotNull OpenApiFetcher buildRemoteUrlFetcher(@NotNull String serviceId, @NotNull Config serviceConfig, @NotNull String remoteUrl, @NotNull HttpGatewayUpstreamClient upstreamClient, @NotNull Map<String, HttpGatewayConfigServicesAuth.HttpGatewayServiceAuthConfig<?>> indexedAuthConfigs) {
         return new OpenApiHttpFetcher(new OpenApiHttpFetcherConfiguration(
             serviceId,
             remoteUrl,
@@ -78,7 +87,7 @@ public class HttpGatewayConfigOpenApiServices {
         ));
     }
 
-    private static OpenApiFetcher readResourceConfig(String serviceId, Config serviceConfig, HttpGatewayUpstreamClient upstreamClient, Map<String, HttpGatewayConfigServicesAuth.HttpGatewayServiceAuthConfig<?>> indexedAuthConfigs) {
+    private static @NotNull OpenApiFetcher readResourceConfig(@NotNull String serviceId, @NotNull Config serviceConfig, @NotNull HttpGatewayUpstreamClient upstreamClient, @NotNull Map<String, HttpGatewayConfigServicesAuth.HttpGatewayServiceAuthConfig<?>> indexedAuthConfigs) {
         return new OpenApiResourceFetcher(serviceId, serviceConfig.getString(CONFIG_OPEN_API_PREFIX + ".resource-path"));
     }
 }

@@ -1,4 +1,4 @@
-_HTTP Gateway Config Clients
+HTTP Gateway Config Clients
 ===========================
 [Config module](../config/) to read clients configuration:
 - Authentication
