@@ -25,7 +25,7 @@ OpenApiRoute openApiRoute = new OpenApiRoute(new OpenApiRouteConfiguration(
 
 In this sample example, we see the usage of `HttpGatewayConfigOpenApiServices`. This is the main class provided by this module.
 
-A complete usage sample is available in the [the sample basic example](../samples#basic-http-gateway) .
+A complete usage sample is available in the [the sample basic example](../samples#basic-http-gateway).
 
 Configuration
 -------------

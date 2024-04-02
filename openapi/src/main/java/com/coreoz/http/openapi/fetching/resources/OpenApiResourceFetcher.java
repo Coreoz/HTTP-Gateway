@@ -12,12 +12,20 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CompletableFuture;
 
-// TODO docs
+/**
+ * An {@link OpenApiFetcher} that will fetch an OpenAPI file directly in the project resources folder.
+ */
 @Slf4j
 public class OpenApiResourceFetcher implements OpenApiFetcher {
     private final @NotNull String serviceId;
     private final @NotNull String resourcePath;
 
+    /**
+     * Creates a new {@link OpenApiResourceFetcher}
+     * @param serviceId The identifier of the service related to the OpenAPI file
+     * @param resourcePath The resource path of the OpenAPI file. For example <code>/openapi/service-abcd-spec.yml</code>
+     *                     for a file located in the <code>src/main/resources/openapi/service-abcd-spec.yml</code> location
+     */
     public OpenApiResourceFetcher(@NotNull String serviceId, @NotNull String resourcePath) {
         this.serviceId = serviceId;
         this.resourcePath = resourcePath;

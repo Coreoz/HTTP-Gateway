@@ -8,6 +8,10 @@ import lombok.extern.slf4j.Slf4j;
 import play.mvc.Results;
 import play.routing.RoutingDsl;
 
+/**
+ * The OpenAPI route that can be added to an HTTP Gateway project.<br>
+ * Although this route could in theory be added to any Play project.
+ */
 @Slf4j
 public class OpenApiRoute implements HttpGatewayRouterConfiguration {
     private final String routePath;
@@ -15,8 +19,8 @@ public class OpenApiRoute implements HttpGatewayRouterConfiguration {
 
     public OpenApiRoute(OpenApiRouteConfiguration routeConfiguration) {
         this.routePath = routeConfiguration.routePath();
-        HttpGatewayOpenApiMerger
-            .fetchToUnifiedOpenApi(routeConfiguration)
+        OpenApiOrchestrator
+            .computeUnifiedOpenApi(routeConfiguration)
             .thenAccept(openApiDefinition -> {
                 OpenApiRoute.this.openApiDefinition = openApiDefinition;
                 logger.info("Open API definitions loaded");
@@ -26,6 +30,10 @@ public class OpenApiRoute implements HttpGatewayRouterConfiguration {
             });
     }
 
+    /**
+     * Add the OpenAPI route to the Play routing DSL
+     * @param routingDsl Play router
+     */
     @Override
     public void configureRoutes(RoutingDsl routingDsl) {
         routingDsl.GET(routePath).routingTo(request -> {

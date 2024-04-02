@@ -16,7 +16,11 @@ import play.mvc.Http;
 
 import java.util.concurrent.CompletableFuture;
 
-// TODO docs
+// TODO to unit test
+/**
+ * An {@link OpenApiFetcher} that will fetch an OpenAPI file from a remote HTTP endpoint.
+ * This HTTP endpoint can optionally require an authentication.
+ */
 @Slf4j
 public class OpenApiHttpFetcher implements OpenApiFetcher {
     private final OpenApiHttpFetcherConfiguration configuration;
@@ -52,9 +56,6 @@ public class OpenApiHttpFetcher implements OpenApiFetcher {
                         response.response().getContentType()
                     )
                 );
-                if (responseBodyString == null) {
-                    logger.warn("Fetched empty OpenApi Definition for service {} on URL {}", configuration.serviceId(), configuration.remoteUrl());
-                }
                 if (response.response().getResponseStatus() != HttpGatewayResponseStatus.OK) {
                     logger.error(
                         "Could not fetch remote OpenAPI definition for service {} on URL {} : responseStatut={} - exception={} - status code={} - response body={}",
@@ -65,6 +66,10 @@ public class OpenApiHttpFetcher implements OpenApiFetcher {
                         response.response().getStatusCode(),
                         responseBodyString
                     );
+                    return null;
+                }
+                if (responseBodyString == null) {
+                    logger.warn("Fetched empty OpenApi Definition for service {} on URL {}", configuration.serviceId(), configuration.remoteUrl());
                     return null;
                 }
 
@@ -82,7 +87,12 @@ public class OpenApiHttpFetcher implements OpenApiFetcher {
                 return new OpenApiFetchingData(configuration.serviceId(), openApiParsingResult.getOpenAPI());
             })
             .exceptionally(error -> {
-                logger.error("Failed to fetch openAPI definitions for service {}", configuration.serviceId(), error);
+                logger.error(
+                    "Failed to fetch openAPI definitions for service {} and URL {}",
+                    configuration.serviceId(),
+                    configuration.remoteUrl(),
+                    error
+                );
                 return null;
             });
     }
