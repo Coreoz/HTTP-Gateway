@@ -12,7 +12,7 @@ This example shows a HTTP Gateway with:
   - List of services
   - List of groups of routes
 - Remote services with and without authentication
-- Remote services with OpenAPI configuration
+- Remote services with OpenAPI configuration and OpenAPI exposition
 - Rewrite path on the Gateway for a specific service endpoint
 - Downstream and upstream logging
 

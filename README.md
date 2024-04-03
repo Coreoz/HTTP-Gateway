@@ -41,6 +41,8 @@ Then the steps are:
 
 Available modules
 -----------------
+TODO add missing modules docs
+
 ### Core
 The [base module of HTTP Gateway](core/) which allows to proxy incoming downstream requests to upstream services.
 
@@ -101,8 +103,12 @@ Modules dependency graph
 ------------------------
 ![HTTP Gateway](docs/dependency-graph.png)
 
-The graph can be generated with the command: `mvn com.github.ferstl:depgraph-maven-plugin:aggregate -DcreateImage=true -DreduceEdges=false -Dscope=compile "-Dincludes=com.coreoz:*" "-Dexcludes=com.coreoz:http-gateway-samples"`
+The graph can be generated with the command: `mvn com.github.ferstl:depgraph-maven-plugin:aggregate -DcreateImage=true -DreduceEdges=false -DclasspathScope=compile "-Dincludes=com.coreoz:*" "-Dexcludes=com.coreoz:http-gateway-samples"`
 This will generate the `dependency-graph.png` file in the `target` directory.
+
+Notes:
+- [Graphviz](https://graphviz.org/download/) might be needed to generate the graph (if the `dot` command is missing)
+- 
 
 TODO
 ----

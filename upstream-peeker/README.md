@@ -1,8 +1,14 @@
 HTTP Gateway Upstream Peeker
 ============================
-Having access to request/response bodies is not easy because these bodies are supposed to be streams (using `org.reactivestreams.Publisher`) and to never be fully loaded in memory. This module provides a mechanism to peek part of these streams that are passing through the API Gateway.
+Having access to request/response bodies is not easy because these bodies are supposed:
+- to be streams (using `org.reactivestreams.Publisher`)
+- and to never be fully loaded in memory.
+ 
+This module provides a mechanism to peek part of these streams that are passing through the API Gateway.
 
-This module is used mostly for logging purposes. By default, the peeking will contain a maximum of `10 000` bytes to mitigate the risk of JVM heap space overflow.
+This module is generally used for logging purposes. By default, the peeking will contain a maximum of `10 000` bytes to mitigate the risk of JVM heap space overflow.
+
+Some more `org.reactivestreams.Publisher` manipulations can be found in [the publishers module](../publishers).
 
 Usage
 -----
