@@ -20,10 +20,6 @@
         </dependency>
         <dependency>
             <groupId>com.coreoz</groupId>
-            <artifactId>http-gateway-config-auth</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.coreoz</groupId>
             <artifactId>http-gateway-config-services</artifactId>
         </dependency>
 
