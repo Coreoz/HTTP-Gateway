@@ -103,12 +103,10 @@ Modules dependency graph
 ------------------------
 ![HTTP Gateway](docs/dependency-graph.png)
 
-The graph can be generated with the command: `mvn com.github.ferstl:depgraph-maven-plugin:aggregate -DcreateImage=true -DreduceEdges=false -DclasspathScope=compile "-Dincludes=com.coreoz:*" "-Dexcludes=com.coreoz:http-gateway-samples"`
+The graph can be generated with the command: `mvn com.github.ferstl:depgraph-maven-plugin:aggregate -DcreateImage=true -DclasspathScope=compile "-Dincludes=com.coreoz:*" "-Dexcludes=com.coreoz:http-gateway-samples"`
 This will generate the `dependency-graph.png` file in the `target` directory.
 
-Notes:
-- [Graphviz](https://graphviz.org/download/) might be needed to generate the graph (if the `dot` command is missing)
-- 
+Note that [Graphviz](https://graphviz.org/download/) might be needed to generate the graph (if the `dot` command is missing).
 
 TODO
 ----
