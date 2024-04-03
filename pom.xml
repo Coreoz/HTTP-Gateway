@@ -86,6 +86,8 @@
         <assertj.version>3.25.2</assertj.version>
         <logback.version>1.4.14</logback.version>
         <spark.version>2.9.4</spark.version>
+        <!-- Build plugin -->
+        <jacoco.version>0.8.11</jacoco.version>
 	</properties>
 
 	<modules>
@@ -168,7 +170,7 @@
                     <plugin>
                         <groupId>org.jacoco</groupId>
                         <artifactId>jacoco-maven-plugin</artifactId>
-                        <version>0.8.10</version>
+                        <version>${jacoco.version}</version>
                         <executions>
                             <execution>
                                 <id>prepare-agent</id>
