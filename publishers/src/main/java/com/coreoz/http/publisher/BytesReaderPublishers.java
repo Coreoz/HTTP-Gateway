@@ -21,7 +21,7 @@ public class BytesReaderPublishers {
      * Read all the bytes in the publisher.<br>
      * <br>
      * Important considerations:<br>
-     * - After this function has been executed, the publisher cannot be read anymore. TODO StaticBytesPublisher to create another Publisher from the bytes<br>
+     * - After this function has been executed, the publisher cannot be read anymore.<br>
      * - Reading a whole body of a downstream request or an upstream response will load all the data in memory. To avoid {@link OutOfMemoryError}, it is important to set a reasonable limit of data that will be read. The default is 100ko, use {@link #publisherToFutureBytes(Publisher, Function, long)} to change that.<br>
      * <br>
      * Sample usages:<br>

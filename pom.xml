@@ -338,7 +338,6 @@
                 <version>${play-version}</version>
             </dependency>
 
-            <!-- Pour avoir les mêmes versions de Jackson dans Play et Plume Framework -->
             <dependency>
                 <groupId>com.fasterxml.jackson.module</groupId>
                 <artifactId>jackson-module-scala_3</artifactId>
