@@ -41,8 +41,6 @@ Then the steps are:
 
 Available modules
 -----------------
-TODO add missing modules docs
-
 ### Core
 The [base module of HTTP Gateway](core/) which allows to proxy incoming downstream requests to upstream services.
 
@@ -71,18 +69,14 @@ This [upstream authentication module](upstream-auth/) provides connectors for up
 - Basic
 - Key
 
-### Upstream peeker
-This [upstream peeker module](upstream-peeker/) provides the ability to peek upstream requests and responses:
-- Headers
-- Body
-
-This is used by default in all [HTTP Gateway samples](samples/).
-
 ### Client access control
 This [client access control module](client-access-control/) provides client authorization and route access control: so a client can only access routes that has been granted. 
 
 ### Downstream validation
 This [downstream validation module](downstream-validation/) provides a validation system to unify the downstream validation process.
+
+### OpenAPI
+This [OpenAPI module](openapi/) enables to expose on the HTTP Gateway an endpoint that will serve a unified OpenAPI specification file for all the HTTP Gateway endpoints.
 
 ### Config
 These modules provide the HTTP Gateway setup capability where clients and services are configured in a file.
@@ -92,7 +86,18 @@ The modules available for configuration are:
 - [Config](config/) for configuration loading.
 - [Config Services](config-services/) for reading the [remote services](#remote-services) configuration.
 - [Config Clients](config-clients/) for reading the [clients access control](#client-access-control) configuration.
+- [Config OpenAPI](config-openapi/) for reading the [OpenAPI remote services](#openapi) configuration.
 - [Config Authentication](config-auth/) technical module for reading authentication parts for clients and services.
+
+### Upstream peeker
+This [upstream peeker module](upstream-peeker/) provides the ability to peek upstream requests and responses:
+- Headers
+- Body
+
+This is used by default in all [HTTP Gateway samples](samples/).
+
+### Publishers
+This [publishers module](publishers/) provides `org.reactivestreams.Publisher` utilities to manipulate upstream and downstream byte flows.
 
 ### Test
 The [test module](test) provides a testing mock server and some utilities to make it easier:
