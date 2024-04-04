@@ -31,6 +31,7 @@ public class HttpGatewayConfigOpenApiServices {
      * For a service, if the OpenAPI object is missing, then no fetcher will be created for this service.
      * @param openApiConfigParameters The HTTP Gateway config object containing services configuration and option parameters
      * @return The corresponding list of {@link OpenApiFetcher}
+     * @throws HttpGatewayValidationException if a service ID is missing, if an OpenAPI type is unrecognized, or if the authentication type is unknown (for remote fetcher)
      */
     public static @NotNull List<OpenApiFetcher> readConfig(@NotNull HttpGatewayConfigOpenApiServicesParameters openApiConfigParameters) {
         return HttpGatewayConfigServices
