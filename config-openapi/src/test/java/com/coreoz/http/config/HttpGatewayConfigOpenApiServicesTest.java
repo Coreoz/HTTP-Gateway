@@ -53,15 +53,18 @@ public class HttpGatewayConfigOpenApiServicesTest {
     }
 
     @Test
-    public void readConfig__verify_that_openapi_remote_url_config_can_be_read_successfully() {
+    public void readConfig__verify_that_openapi_remote_url_config_can_be_read_successfully_with_no_auth() {
         List<OpenApiFetcher> openApiFetchers = HttpGatewayConfigOpenApiServices.readConfig(
             new HttpGatewayConfigOpenApiServicesParameters(testConfig.getConfig("remote-url-fetcher"))
         );
-        Assertions.assertThat(openApiFetchers)
+        AbstractObjectAssert<?, ?> fetcherConfigurationAssert = Assertions.assertThat(openApiFetchers)
             .hasSize(1)
             .first()
             .isInstanceOf(OpenApiHttpFetcher.class)
-            .extracting("configuration")
+            .extracting("configuration");
+        fetcherConfigurationAssert
             .extracting("remoteUrl").isEqualTo("https://openapi.test/definition");
+        fetcherConfigurationAssert
+            .extracting("upstreamAuthenticator").isNull();
     }
 }
