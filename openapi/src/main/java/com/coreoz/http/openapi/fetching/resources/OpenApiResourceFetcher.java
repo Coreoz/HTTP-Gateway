@@ -1,10 +1,10 @@
 package com.coreoz.http.openapi.fetching.resources;
 
 import com.coreoz.http.openapi.fetching.OpenApiFetcher;
+import com.coreoz.http.openapi.fetching.OpenApiFetchers;
 import com.coreoz.http.openapi.fetching.OpenApiFetchingData;
 import com.google.common.io.Resources;
-import io.swagger.parser.OpenAPIParser;
-import io.swagger.v3.parser.core.models.SwaggerParseResult;
+import io.swagger.v3.oas.models.OpenAPI;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
@@ -40,11 +40,13 @@ public class OpenApiResourceFetcher implements OpenApiFetcher {
         }
         try {
             String resourceString = Resources.toString(fileResource, StandardCharsets.UTF_8);
-            SwaggerParseResult openApiParsingResult = new OpenAPIParser().readContents(resourceString, null, null);
-            return CompletableFuture.completedFuture(new OpenApiFetchingData(
-                serviceId,
-                openApiParsingResult.getOpenAPI()
-            ));
+            OpenAPI openApiContent = OpenApiFetchers.parseOpenApiContent(resourceString, serviceId);
+            return CompletableFuture.completedFuture(openApiContent == null ?
+                null
+                : new OpenApiFetchingData(
+                    serviceId,
+                    openApiContent
+                ));
         } catch (Exception e) {
             logger.error("Failed to load openAPI definitions for service {}", serviceId, e);
             return CompletableFuture.completedFuture(null);

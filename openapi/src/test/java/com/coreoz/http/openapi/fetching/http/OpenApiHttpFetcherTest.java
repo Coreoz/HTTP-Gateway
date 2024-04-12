@@ -1,6 +1,7 @@
 package com.coreoz.http.openapi.fetching.http;
 
 import com.coreoz.http.openapi.fetching.OpenApiFetchingData;
+import com.coreoz.http.openapi.fetching.OpenApiTestFetchers;
 import com.coreoz.http.publisher.StaticBytesPublisher;
 import com.coreoz.http.upstream.HttpGatewayResponseStatus;
 import com.coreoz.http.upstream.HttpGatewayUpstreamClient;
@@ -30,7 +31,7 @@ public class OpenApiHttpFetcherTest {
         Assertions.assertThat(mergedOpenApi).isNotNull();
         Assertions.assertThat(mergedOpenApi.serviceId()).isEqualTo("service-test");
         Assertions.assertThat(mergedOpenApi.openApiDefinition()).isNotNull();
-        assertOpenApiTitle(mergedOpenApi, "Swagger Petstore");
+        OpenApiTestFetchers.assertOpenApiTitle(mergedOpenApi, "Swagger Petstore");
     }
 
     @Test
@@ -39,7 +40,7 @@ public class OpenApiHttpFetcherTest {
             request -> makeStringPublisher(makeValidOpenApi("authorization="+request.getDownstreamRequest().header(HttpHeaders.AUTHORIZATION).orElse(null))),
             null
         );
-        assertOpenApiTitle(mergedOpenApi, "authorization=null");
+        OpenApiTestFetchers.assertOpenApiTitle(mergedOpenApi, "authorization=null");
     }
 
     @Test
@@ -48,7 +49,7 @@ public class OpenApiHttpFetcherTest {
             request -> makeStringPublisher(makeValidOpenApi("authorization="+request.getUpstreamRequest().build().getHeaders().get(HttpHeaders.AUTHORIZATION))),
             (downstreamRequest, upstreamRequest) -> upstreamRequest.setHeader(HttpHeaders.AUTHORIZATION, "custom-auth")
         );
-        assertOpenApiTitle(mergedOpenApi, "authorization=custom-auth");
+        OpenApiTestFetchers.assertOpenApiTitle(mergedOpenApi, "authorization=custom-auth");
     }
 
     @Test
@@ -60,7 +61,7 @@ public class OpenApiHttpFetcherTest {
     @Test
     public void verify_that_encoding_is_correctly_interpreted() {
         OpenApiFetchingData mergedOpenApi = executeHttpFetcher(makeStringPublisher(makeValidOpenApi("éùàç")));
-        assertOpenApiTitle(mergedOpenApi, "éùàç");
+        OpenApiTestFetchers.assertOpenApiTitle(mergedOpenApi, "éùàç");
     }
 
     @Test
@@ -95,10 +96,6 @@ public class OpenApiHttpFetcherTest {
     }
 
     // utils
-
-    private void assertOpenApiTitle(OpenApiFetchingData mergedOpenApi, String title) {
-        Assertions.assertThat(mergedOpenApi.openApiDefinition().getInfo().getTitle()).isEqualTo(title);
-    }
 
     private OpenApiFetchingData executeHttpFetcher(Publisher<HttpResponseBodyPart> responsePublisher) {
         return executeHttpFetcher(ignored -> responsePublisher, null);

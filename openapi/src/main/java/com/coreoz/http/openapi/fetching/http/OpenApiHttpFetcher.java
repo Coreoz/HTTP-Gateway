@@ -1,6 +1,7 @@
 package com.coreoz.http.openapi.fetching.http;
 
 import com.coreoz.http.openapi.fetching.OpenApiFetcher;
+import com.coreoz.http.openapi.fetching.OpenApiFetchers;
 import com.coreoz.http.openapi.fetching.OpenApiFetchingData;
 import com.coreoz.http.publisher.ByteReaders;
 import com.coreoz.http.publisher.BytesReaderPublishers;
@@ -9,9 +10,11 @@ import com.coreoz.http.upstream.HttpGatewayResponseStatus;
 import com.coreoz.http.upstream.HttpGatewayUpstreamRequest;
 import com.coreoz.http.upstream.HttpGatewayUpstreamResponse;
 import io.swagger.parser.OpenAPIParser;
+import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.parser.core.models.SwaggerParseResult;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import play.mvc.Http;
 
 import java.util.concurrent.CompletableFuture;
@@ -72,18 +75,13 @@ public class OpenApiHttpFetcher implements OpenApiFetcher {
                     return null;
                 }
 
-                SwaggerParseResult openApiParsingResult = new OpenAPIParser().readContents(responseBodyString, null, null);
-                // when a parsing error occurs, no exception is thrown, just some loggers
-                if (openApiParsingResult.getOpenAPI() == null) {
-                    logger.error(
-                        "Failed to parse Open API result for service '{}', content to be parsed={}",
+                OpenAPI openApiContent = OpenApiFetchers.parseOpenApiContent(responseBodyString, configuration.serviceId());
+                return openApiContent == null ?
+                    null
+                    : new OpenApiFetchingData(
                         configuration.serviceId(),
-                        responseBodyString
+                        openApiContent
                     );
-                    return null;
-                }
-
-                return new OpenApiFetchingData(configuration.serviceId(), openApiParsingResult.getOpenAPI());
             })
             .exceptionally(error -> {
                 logger.error(
