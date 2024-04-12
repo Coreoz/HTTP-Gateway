@@ -16,7 +16,6 @@ import play.mvc.Http;
 
 import java.util.concurrent.CompletableFuture;
 
-// TODO to unit test
 /**
  * An {@link OpenApiFetcher} that will fetch an OpenAPI file from a remote HTTP endpoint.
  * This HTTP endpoint can optionally require an authentication.
