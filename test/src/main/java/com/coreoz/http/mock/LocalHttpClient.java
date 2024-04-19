@@ -1,8 +1,8 @@
 package com.coreoz.http.mock;
 
 import com.google.common.net.HttpHeaders;
+import lombok.SneakyThrows;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -12,11 +12,12 @@ import java.util.function.Function;
 public class LocalHttpClient {
     private static final HttpClient httpClient = HttpClient.newHttpClient();
 
-    public static HttpResponse<String> makeHttpGetRequest(int localPort, String path) throws IOException, InterruptedException {
+    public static HttpResponse<String> makeHttpGetRequest(int localPort, String path) {
         return makeHttpRequest(localPort, path, HttpRequest.Builder::GET);
     }
 
-    public static HttpResponse<String> makeHttpRequest(int localPort, String path, Function<HttpRequest.Builder, HttpRequest.Builder> with) throws IOException, InterruptedException {
+    @SneakyThrows
+    public static HttpResponse<String> makeHttpRequest(int localPort, String path, Function<HttpRequest.Builder, HttpRequest.Builder> with) {
         return httpClient.send(
             with.apply(HttpRequest.newBuilder().uri(URI.create("http://localhost:" + localPort + path)))
                 .header(HttpHeaders.ACCEPT, "custom_accept")

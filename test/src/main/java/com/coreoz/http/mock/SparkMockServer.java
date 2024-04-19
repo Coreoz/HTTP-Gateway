@@ -55,6 +55,12 @@ public class SparkMockServer {
             + "accept-header=" + request.headers(HttpHeaders.ACCEPT)
             + "\n"
             + "authorization=" + request.headers(HttpHeaders.AUTHORIZATION));
+        Spark.post("/echo", (request, response) -> {
+            response.status(HttpStatus.OK_200);
+            response.raw().getOutputStream().write(request.bodyAsBytes());
+            response.raw().getOutputStream().close();
+            return "";
+        });
         Spark.get("/slow-api", (request, response) -> {
             Thread.sleep(300);
             return "slow response";

@@ -2,7 +2,7 @@ package com.coreoz.http.openapi.fetching.http;
 
 import com.coreoz.http.openapi.fetching.OpenApiFetchingData;
 import com.coreoz.http.openapi.fetching.OpenApiTestFetchers;
-import com.coreoz.http.publisher.StaticBytesPublisher;
+import com.coreoz.http.publisher.StaticBytesPublishers;
 import com.coreoz.http.upstream.HttpGatewayResponseStatus;
 import com.coreoz.http.upstream.HttpGatewayUpstreamClient;
 import com.coreoz.http.upstream.HttpGatewayUpstreamRequest;
@@ -137,20 +137,20 @@ public class OpenApiHttpFetcherTest {
     }
 
     private HttpGatewayUpstreamResponse makeBaseResponse() {
-        HttpGatewayUpstreamResponse response = new HttpGatewayUpstreamResponse();
+        HttpGatewayUpstreamResponse response = new HttpGatewayUpstreamResponse("");
         response.setContentType("charset=utf-8");
         response.setResponseStatus(HttpGatewayResponseStatus.OK);
         return response;
     }
 
     private Publisher<HttpResponseBodyPart> makePetstorePublisher() {
-        return StaticBytesPublisher.makeBodyPartPublisher(
+        return StaticBytesPublishers.makeBodyPartPublisher(
             readResources("/petstore.yaml")
         );
     }
 
     public Publisher<HttpResponseBodyPart> makeStringPublisher(String content) {
-        return StaticBytesPublisher.makeBodyPartPublisher(content.getBytes(StandardCharsets.UTF_8));
+        return StaticBytesPublishers.makeBodyPartPublisher(content.getBytes(StandardCharsets.UTF_8));
     }
 
     @SneakyThrows

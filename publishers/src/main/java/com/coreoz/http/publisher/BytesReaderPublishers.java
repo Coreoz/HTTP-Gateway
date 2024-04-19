@@ -12,7 +12,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
 /**
- * Provide a way to read a {@link Publisher} from the body of a downstream request or an upstream response.
+ * Provide a way to read a {@link Publisher} from the body of a downstream request or an upstream response.<br>
+ * <br>
+ * To create a new publisher from a byte array, see {@link StaticBytesPublishers}.
  */
 public class BytesReaderPublishers {
     private static final long MAX_BYTES_TO_READ_DEFAULT = 100_000L;
@@ -40,7 +42,7 @@ public class BytesReaderPublishers {
      * Read all the bytes in the publisher.<br>
      * <br>
      * Important considerations:<br>
-     * - After this function has been executed, the publisher cannot be read anymore. TODO StaticBytesPublisher to create another Publisher from the bytes<br>
+     * - After this function has been executed, the publisher cannot be read anymore. See {@link StaticBytesPublishers} to create a new publisher<br>
      * - Reading a whole body of a downstream request or an upstream response will load all the data in memory. To avoid {@link OutOfMemoryError}, it is important to set a reasonable limit of data that will be read in the maxBytesToRead parameter.<br>
      * <br>
      * Sample usages:<br>
@@ -58,7 +60,7 @@ public class BytesReaderPublishers {
         SubscriptionHolder subscription = new SubscriptionHolder();
         // TODO make some tests to see how many bytes is read each time to adjust the ratio
         long partsToRequest = maxBytesToRead / 8;
-        publisher.subscribe(new Subscriber<T>() {
+        publisher.subscribe(new Subscriber<>() {
             @Override
             public void onSubscribe(Subscription s) {
                 subscription.setSubscription(s);

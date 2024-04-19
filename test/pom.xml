@@ -24,6 +24,12 @@
             <artifactId>http-gateway-exception</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
 		<!-- unit testing -->
 		<dependency>
 			<groupId>junit</groupId>

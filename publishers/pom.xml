@@ -35,5 +35,10 @@
             <artifactId>http-gateway-test</artifactId>
             <scope>test</scope>
         </dependency>
-	</dependencies>
+        <dependency>
+            <groupId>com.coreoz</groupId>
+            <artifactId>http-gateway-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 </project>

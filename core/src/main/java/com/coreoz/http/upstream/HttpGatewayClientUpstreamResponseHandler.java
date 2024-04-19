@@ -7,7 +7,6 @@ import org.asynchttpclient.Param;
 import org.asynchttpclient.handler.StreamedAsyncHandler;
 import org.reactivestreams.Publisher;
 
-import java.util.ArrayList;
 import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeoutException;
@@ -22,9 +21,7 @@ public class HttpGatewayClientUpstreamResponseHandler implements StreamedAsyncHa
 
 	public HttpGatewayClientUpstreamResponseHandler(CompletableFuture<HttpGatewayUpstreamResponse> futureResponse, String requestUrl) {
 		this.futureResponse = futureResponse;
-		this.responseResult = new HttpGatewayUpstreamResponse();
-		this.responseResult.setRequestUrl(requestUrl);
-		responseResult.setResponseHeaders(new ArrayList<>());
+		this.responseResult = new HttpGatewayUpstreamResponse(requestUrl);
 	}
 
 	// traitement de la réponse
