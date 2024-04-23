@@ -10,7 +10,7 @@ import java.net.http.HttpResponse;
 import java.util.function.Function;
 
 public class LocalHttpClient {
-    private static final HttpClient httpClient = HttpClient.newHttpClient();
+    public static final HttpClient httpClient = HttpClient.newHttpClient();
 
     public static HttpResponse<String> makeHttpGetRequest(int localPort, String path) {
         return makeHttpRequest(localPort, path, HttpRequest.Builder::GET);

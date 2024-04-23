@@ -27,7 +27,7 @@ public class BytesReaderPublishers {
      * - Reading a whole body of a downstream request or an upstream response will load all the data in memory. To avoid {@link OutOfMemoryError}, it is important to set a reasonable limit of data that will be read. The default is 100ko, use {@link #publisherToFutureBytes(Publisher, Function, long)} to change that.<br>
      * <br>
      * Sample usages:<br>
-     * - Downstream request body: BytesReaderPublishers.publisherToFutureBytes(request.body().as(Publisher.class), ByteReaders::readBytesFromByteBuf).then(...)<br>
+     * - Downstream request body: BytesReaderPublishers.publisherToFutureBytes((Publisher< ByteBuf>) request.body().as(Publisher.class), ByteReaders::readBytesFromByteBuf).then(...)<br>
      * - Upstream response body: BytesReaderPublishers.publisherToFutureBytes(response.getPublisher(), ByteReaders::readBytesFromHttpResponseBodyPart).then(...)
      * @param publisher The {@link Publisher} to consume
      * @param bytesReader The function that will
@@ -58,7 +58,6 @@ public class BytesReaderPublishers {
         CompletableFuture<byte[]> future = new CompletableFuture<>();
         ByteArrayOutputStream bytesArray = new ByteArrayOutputStream();
         SubscriptionHolder subscription = new SubscriptionHolder();
-        // TODO make some tests to see how many bytes is read each time to adjust the ratio
         long partsToRequest = maxBytesToRead / 8;
         publisher.subscribe(new Subscriber<>() {
             @Override
@@ -75,7 +74,6 @@ public class BytesReaderPublishers {
                     bytesArray.writeBytes(bytesRead);
                     subscription.getSubscription().request(partsToRequest);
                 } else {
-                    // TODO unit test all this
                     subscription.getSubscription().cancel();
                     future.completeExceptionally(new RuntimeException(
                         "Tried to read at least " + totalBytesLength + " bytes of data whereas the limit was set as " + maxBytesToRead
