@@ -23,8 +23,12 @@ public class PeekerPublishersConsumer {
      * The number of body parts to read each time before verifying that
      * {@link PublisherPeeker#isPeekingFinished()}
      */
-    private static final int SIZE_OF_BODY_PARTS_TO_READ = 4;
+    private static final int SIZE_OF_BODY_PARTS_TO_READ = 100_000;
 
+    /**
+     * Consume a {@link Publisher} without reading it
+     * @param publisherToConsume The publisher to consume
+     */
     public static void consume(@NotNull Publisher<?> publisherToConsume) {
         if (!(publisherToConsume instanceof PublisherPeeker<?> peekerPublisherToConsume)) {
             // Cannot consume null publisher or publisher that is not an instance of PublisherPeeker
@@ -45,7 +49,7 @@ public class PeekerPublishersConsumer {
                     return;
                 }
                 if (peekerPublisherToConsume.isPeekingFinished()) {
-                    logger.trace("Finished reading error body");
+                    logger.trace("Finished reading body");
                     subscriptionHolder.getSubscription().cancel();
                     return;
                 }
