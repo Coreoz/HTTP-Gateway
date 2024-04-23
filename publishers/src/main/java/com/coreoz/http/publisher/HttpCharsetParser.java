@@ -10,7 +10,6 @@ import java.nio.charset.StandardCharsets;
 
 /**
  * Guess the Charset to use depending on the Content Type header of an HTTP request.
- * TODO unit test this
  */
 public class HttpCharsetParser {
     private static final Logger logger = LoggerFactory.getLogger(HttpCharsetParser.class);
@@ -35,7 +34,7 @@ public class HttpCharsetParser {
 
     private static String parseCharset(String contentType, int startCharsetIndex) {
         int charsetIndex = startCharsetIndex + CONTENT_TYPE_CHARSET.length();
-        int endCharsetIndex = contentType.indexOf(charsetIndex, ';');
+        int endCharsetIndex = contentType.indexOf(';', charsetIndex);
 
         if (endCharsetIndex < 0) {
             return contentType.substring(charsetIndex);
