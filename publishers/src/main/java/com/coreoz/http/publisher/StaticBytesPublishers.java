@@ -55,11 +55,11 @@ public class StaticBytesPublishers {
         });
     }
 
-    private static ByteBuf toByteBuf(byte[] data) {
+    static ByteBuf toByteBuf(byte[] data) {
         return new UnpooledHeapByteBuf(new PooledByteBufAllocator(), data, data.length) {};
     }
 
-    private static HttpResponseBodyPart toBodyPart(byte[] data) {
+    static HttpResponseBodyPart toBodyPart(byte[] data) {
         return new EagerResponseBodyPart(toByteBuf(data), true);
     }
 }

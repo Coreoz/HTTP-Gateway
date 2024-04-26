@@ -6,21 +6,16 @@ import com.coreoz.http.conf.HttpGatewayRouterConfiguration;
 import com.coreoz.http.mock.LocalHttpClient;
 import com.coreoz.http.mock.SparkMockServer;
 import com.coreoz.http.play.HttpGatewayDownstreamResponses;
-import com.coreoz.http.upstream.HttpGatewayUpstreamClient;
-import com.coreoz.http.upstream.HttpGatewayUpstreamRequest;
 import com.coreoz.http.upstream.HttpGatewayUpstreamResponse;
 import com.google.common.net.HttpHeaders;
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.http.HttpResponseStatus;
-import lombok.SneakyThrows;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.reactivestreams.Publisher;
-import play.mvc.Http;
 
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 public class BytesReaderPublishersTest {
@@ -66,7 +61,8 @@ public class BytesReaderPublishersTest {
     @Test
     public void verify_bytes_reader_publisher_is_correctly_interpreted_with_ahc_response() throws ExecutionException, InterruptedException {
         String sampleBody = "Hello world, this is another sample request body";
-        byte[] responseBytes = executeEchoRequest(sampleBody.getBytes())
+        byte[] responseBytes = UpstreamRequests
+            .executeEchoRequest(sampleBody.getBytes())
             .thenCompose(response -> BytesReaderPublishers.publisherToFutureBytes(response.getPublisher(), ByteReaders::readBytesFromHttpResponseBodyPart))
             .get();
         Assertions.assertThat(responseBytes).asString().isEqualTo(sampleBody);
@@ -76,7 +72,8 @@ public class BytesReaderPublishersTest {
     public void verify_bytes_reader_publisher_is_correctly_interpreted_with_ahc_response_and_limit_size() throws ExecutionException, InterruptedException {
         long bodySize = 100L;
         byte[] sampleBody = PublisherBytes.makeBytes((int) bodySize);
-        byte[] responseBytes = executeEchoRequest(sampleBody)
+        byte[] responseBytes = UpstreamRequests
+            .executeEchoRequest(sampleBody)
             .thenCompose(response -> BytesReaderPublishers.publisherToFutureBytes(response.getPublisher(), ByteReaders::readBytesFromHttpResponseBodyPart, bodySize))
             .get();
         Assertions.assertThat(responseBytes).isEqualTo(sampleBody);
@@ -87,7 +84,8 @@ public class BytesReaderPublishersTest {
         try {
             long bodySize = 100L;
             byte[] sampleBody = PublisherBytes.makeBytes((int) bodySize);
-            executeEchoRequest(sampleBody)
+            UpstreamRequests
+                .executeEchoRequest(sampleBody)
                 .thenCompose(response -> BytesReaderPublishers.publisherToFutureBytes(response.getPublisher(), ByteReaders::readBytesFromHttpResponseBodyPart, bodySize - 1))
                 .get();
             Assertions.fail("Excepted exception because the limite has been raised");
@@ -99,19 +97,5 @@ public class BytesReaderPublishersTest {
             }
         }
 
-    }
-
-    @SneakyThrows
-    private CompletableFuture<HttpGatewayUpstreamResponse> executeEchoRequest(byte[] data) {
-        HttpGatewayUpstreamClient upstreamClient = new HttpGatewayUpstreamClient();
-        HttpGatewayUpstreamRequest request = upstreamClient
-            .prepareRequest(new Http.RequestBuilder().build())
-            .withUrl("http://localhost:" + SparkMockServer.SPARK_HTTP_PORT + "/echo")
-            .with(((downstreamRequest, upstreamRequest) -> {
-                upstreamRequest.setBody(StaticBytesPublishers.makeByteBufPublisher(data));
-                upstreamRequest.setMethod("POST");
-            }));
-        return upstreamClient
-            .executeUpstreamRequest(request);
     }
 }
