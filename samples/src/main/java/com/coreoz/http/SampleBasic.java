@@ -6,7 +6,7 @@ import com.coreoz.http.config.*;
 import com.coreoz.http.openapi.route.OpenApiRoute;
 import com.coreoz.http.openapi.route.OpenApiRouteConfiguration;
 import com.coreoz.http.play.HttpGatewayDownstreamResponses;
-import com.coreoz.http.publisher.PeekerPublishersConsumer;
+import com.coreoz.http.publisher.PublisherPeekers;
 import com.coreoz.http.router.HttpGatewayRouter;
 import com.coreoz.http.services.HttpGatewayRemoteServicesIndex;
 import com.coreoz.http.services.auth.HttpGatewayRemoteServicesAuthenticator;
@@ -93,7 +93,7 @@ public class SampleBasic {
                         if (upstreamResponse.getStatusCode() >= HttpResponseStatus.INTERNAL_SERVER_ERROR.code()) {
                             // Do not forward the response body if the upstream server returns an internal error
                             // => this enables to avoid forwarding sensitive information
-                            PeekerPublishersConsumer.consume(upstreamResponse.getPublisher());
+                            PublisherPeekers.consume(upstreamResponse.getPublisher());
                             // Set an empty body response
                             upstreamResponse.setPublisher(null);
                         }

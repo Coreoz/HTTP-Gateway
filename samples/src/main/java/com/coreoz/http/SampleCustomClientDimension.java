@@ -14,7 +14,7 @@ import com.coreoz.http.upstream.HttpGatewayPeekingUpstreamRequest;
 import com.coreoz.http.upstream.HttpGatewayUpstreamKeepingResponse;
 import com.coreoz.http.upstream.HttpGatewayUpstreamResponse;
 import com.coreoz.http.upstream.HttpGatewayUpstreamStringPeekerClient;
-import com.coreoz.http.publisher.PeekerPublishersConsumer;
+import com.coreoz.http.publisher.PublisherPeekers;
 import com.coreoz.http.validation.HttpGatewayClientValidator;
 import com.coreoz.http.validation.HttpGatewayDestinationService;
 import com.coreoz.http.validation.HttpGatewayRouteValidator;
@@ -92,7 +92,7 @@ public class SampleCustomClientDimension {
                     if (upstreamResponse.getStatusCode() >= HttpResponseStatus.INTERNAL_SERVER_ERROR.code()) {
                         // Do not forward the response body if the upstream server returns an internal error
                         // => this enables to avoid forwarding sensitive information
-                        PeekerPublishersConsumer.consume(upstreamResponse.getPublisher());
+                        PublisherPeekers.consume(upstreamResponse.getPublisher());
                         upstreamResponse.setPublisher(null);
                     }
 

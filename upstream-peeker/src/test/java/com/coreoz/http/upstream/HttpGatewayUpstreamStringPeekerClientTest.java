@@ -6,7 +6,7 @@ import com.coreoz.http.conf.HttpGatewayRouterConfiguration;
 import com.coreoz.http.mock.LocalHttpClient;
 import com.coreoz.http.mock.SparkMockServer;
 import com.coreoz.http.play.HttpGatewayDownstreamResponses;
-import com.coreoz.http.publisher.PeekerPublishersConsumer;
+import com.coreoz.http.publisher.PublisherPeekers;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import org.assertj.core.api.Assertions;
 import org.junit.AfterClass;
@@ -52,7 +52,7 @@ public class HttpGatewayUpstreamStringPeekerClientTest {
                     if (upstreamResponse.getStatusCode() >= HttpResponseStatus.INTERNAL_SERVER_ERROR.code()) {
                         // Do not forward the response body if the upstream server returns an internal error
                         // => this enables to avoid forwarding sensitive information
-                        PeekerPublishersConsumer.consume(upstreamResponse.getPublisher());
+                        PublisherPeekers.consume(upstreamResponse.getPublisher());
                         upstreamResponse.setPublisher(null);
                     }
 

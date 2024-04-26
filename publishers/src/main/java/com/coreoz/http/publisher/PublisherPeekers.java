@@ -9,16 +9,10 @@ import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
 /**
- * Consume peeker publisher to be able to make the peeking publisher see the content
- * when the publisher is not forwarded.<br>
- * This is especially useful in case of a remote Server Error that we don't want to forward.<br>
- * <br>
- * The HTTP response body will be read by {@link PublisherPeeker}.
- * This class will only consume the publisher in order for the {@link PublisherPeeker}
- * to intercept the response body.
+ * Utility function for {@link PublisherPeeker}.
  */
 @Slf4j
-public class PeekerPublishersConsumer {
+public class PublisherPeekers {
     /**
      * The number of body parts to read each time before verifying that
      * {@link PublisherPeeker#isPeekingFinished()}
@@ -26,7 +20,12 @@ public class PeekerPublishersConsumer {
     private static final int SIZE_OF_BODY_PARTS_TO_READ = 100_000;
 
     /**
-     * Consume a {@link Publisher} without reading it
+     * Consume a {@link PublisherPeeker} to be able to make the peeking publisher see the content
+     * when the publisher is not forwarded.<br>
+     * This is especially useful in case of a remote Server Error that we don't want to forward.<br>
+     * <br>
+     * The peeking process will stop as soon as the base publisher is finished or if the peeking publisher has peeked
+     * enough bytes.
      * @param publisherToConsume The publisher to consume
      */
     public static void consume(@NotNull Publisher<?> publisherToConsume) {
