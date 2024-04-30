@@ -51,6 +51,7 @@ public class StaticBytesPublishers {
 
             @Override
             public void cancel() {
+                // nothing to cancel because the request() function will consume directly all the bytes
             }
         });
     }

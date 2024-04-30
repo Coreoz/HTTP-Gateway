@@ -28,6 +28,8 @@ HttpGateway httpGateway = HttpGateway.start(new HttpGatewayConfiguration(
 ```
 Some more samples are available in the test file `HttpGatewayTest`.
 
+See the [publishers module](../publishers) to view/manipulate the request/response payload.
+
 TODO provide configuration information about:
 - upstream timeouts
 - downstream max request body
