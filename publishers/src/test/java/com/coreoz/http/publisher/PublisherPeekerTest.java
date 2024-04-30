@@ -145,7 +145,7 @@ public class PublisherPeekerTest {
             .isEqualTo(sampleBody);
     }
 
-    private PublisherPeeker<HttpResponseBodyPart> makePeeker(Publisher<HttpResponseBodyPart> publisher, MutableObject<byte[]> peekedBytes, int maxSize) {
+    static PublisherPeeker<HttpResponseBodyPart> makePeeker(Publisher<HttpResponseBodyPart> publisher, MutableObject<byte[]> peekedBytes, int maxSize) {
         return new PublisherPeeker<>(
             publisher,
             peekedBytes::setValue,

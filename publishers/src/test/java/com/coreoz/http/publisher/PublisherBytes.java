@@ -25,4 +25,10 @@ public class PublisherBytes {
             endBytes
         );
     }
+
+    public static byte[] subBytes(byte[] bytes, int start, int lengthToCopy) {
+        byte[] subBytes = new byte[lengthToCopy];
+        System.arraycopy(bytes, start, subBytes, 0, lengthToCopy);
+        return subBytes;
+    }
 }

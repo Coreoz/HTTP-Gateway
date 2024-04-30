@@ -20,18 +20,19 @@ public class PublisherPeekers {
     private static final int SIZE_OF_BODY_PARTS_TO_READ = 100_000;
 
     /**
-     * Consume a {@link PublisherPeeker} to be able to make the peeking publisher see the content
+     * Consume asynchronously a {@link PublisherPeeker} to be able to make the peeking publisher see the content
      * when the publisher is not forwarded.<br>
      * This is especially useful in case of a remote Server Error that we don't want to forward.<br>
      * <br>
      * The peeking process will stop as soon as the base publisher is finished or if the peeking publisher has peeked
      * enough bytes.
-     * @param publisherToConsume The publisher to consume
+     * @param publisherToConsume The {@link PublisherPeeker} publisher to consume
+     * @throws IllegalArgumentException if the publisherToConsume is not an instance of {@link PublisherPeeker}
      */
     public static void consume(@NotNull Publisher<?> publisherToConsume) {
         if (!(publisherToConsume instanceof PublisherPeeker<?> peekerPublisherToConsume)) {
-            // Cannot consume null publisher or publisher that is not an instance of PublisherPeeker
-            return;
+            // Cannot consume publisher that is not an instance of PublisherPeeker
+            throw new IllegalArgumentException("publisherToConsume must be an instance of PublisherPeeker");
         }
         SubscriptionHolder subscriptionHolder = new SubscriptionHolder();
         peekerPublisherToConsume.subscribe(new Subscriber<Object>() {
