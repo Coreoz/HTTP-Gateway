@@ -39,10 +39,28 @@ Then the steps are:
 5. Use and configure available [HTTP Gateway modules](#available-modules)
 6. Add the configuration file, it is usually easier to copy/paste a [sample gateway config](samples/src/main/resources)
 
+Hardware requirements
+---------------------
+The minimal configuration to run the HTTP Gateway is:
+- RAM: `Xmx` = `Xms` = `128m`
+- CPU: 1 Ghz
+With this configuration, you can expect to handle up to 200 requests per second.
+
+The important hardware factors to scale up are:
+- CPU
+- Network card: poor network card quality can limit the performance of the HTTP Gateway proxy (Raspberry PI model 3 network card limits the proxying capacity to around 70 requests/seconds)
+
+The RAM is not an important factor, even with an `Xmx` set to `128m`, the HTTP Gateway will be able to handle `Go`s of data in a single HTTP request/response. But with logging or some custom memory consuming processing, it is often best to set the available `Xmx`/`Xms` to `512m` or `1Go` on production. It is generally useless to set a higher value.
+
+It is excepted to run about 2000 requests per second with a 4 core CPU.
+TODO make a test on the prod server to adjust this value
+
 Available modules
 -----------------
 ### Core
 The [base module of HTTP Gateway](core/) which allows to proxy incoming downstream requests to upstream services.
+
+**Production configuration settings are also described in this module**: it is recommended to view this documentation before deploying HTTP Gateway to production.
 
 ### Router
 This [router module](router/) provides routing capabilities by:

@@ -8,6 +8,7 @@ import com.coreoz.http.play.HttpGatewayDownstreamResponses;
 import com.coreoz.http.upstream.HttpGatewayUpstreamClient;
 import com.coreoz.http.upstream.HttpGatewayUpstreamRequest;
 import com.coreoz.http.upstream.HttpGatewayUpstreamResponse;
+import com.google.common.net.HttpHeaders;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
@@ -81,6 +82,24 @@ public class HttpGatewayTest {
 
         Assertions.assertThat(httpResponse.statusCode()).isEqualTo(HttpResponseStatus.OK.code());
         Assertions.assertThat(httpResponse.body()).isEqualTo("This is a loooooooooooooooooong body");
+
+        httpGateway.stop();
+    }
+
+    @Test
+    public void integration_test__verify_that_custom_netty_configuration_is_interpreted() throws IOException, InterruptedException {
+        System.setProperty("config.resource", "custom.conf");
+
+        HttpGateway httpGateway = HttpGateway.start(new HttpGatewayConfiguration(
+            HTTP_GATEWAY_PORT,
+            routerDsl -> routerDsl.addRoutes(HttpGatewayRouterConfiguration.asyncRouting(request -> CompletableFuture.completedFuture(Results.ok("Hello world !"))))
+        ));
+
+        HttpResponse<String> httpResponse = makeHttpRequest("/endpoint-not-used-here");
+
+        Assertions.assertThat(httpResponse.statusCode()).isEqualTo(HttpResponseStatus.OK.code());
+        Assertions.assertThat(httpResponse.body()).isEqualTo("Hello world !");
+        Assertions.assertThat(httpResponse.headers().firstValue(HttpHeaders.SERVER)).hasValue("My custom host server");
 
         httpGateway.stop();
     }

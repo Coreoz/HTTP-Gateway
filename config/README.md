@@ -1,6 +1,9 @@
 HTTP Gateway Config
 ===================
-Base module for HTTP Gateway through configuration using the [Config library](https://github.com/lightbend/config).
+Base module for HTTP Gateway through configuration using the [Config library](https://github.com/lightbend/config):
+- [Complete presentation of Config](https://github.com/typesafehub/config)
+- [How the configurations are loaded and how to externalize the configuration](https://github.com/typesafehub/config#standard-behavior)
+- [Exhaustive syntax definition](https://github.com/typesafehub/config/blob/master/HOCON.md)
 
 Main config modules are:
 - [Config Services](../config-services/) for reading the [remote services](../#remote-services) configuration.
