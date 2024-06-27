@@ -11,12 +11,14 @@ import com.coreoz.http.upstream.HttpGatewayUpstreamResponse;
 import com.google.common.net.HttpHeaders;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import org.assertj.core.api.Assertions;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 import play.mvc.Results;
 
 import java.io.IOException;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class HttpGatewayTest {
@@ -58,30 +60,26 @@ public class HttpGatewayTest {
 
     @Test
     public void integration_test__verify_that_upstream_request_is_correctly_proxied() throws IOException, InterruptedException {
-        HttpGatewayUpstreamClient httpGatewayUpstreamClient = new HttpGatewayUpstreamClient();
-        HttpGateway httpGateway = HttpGateway.start(new HttpGatewayConfiguration(
-            HTTP_GATEWAY_PORT,
-            routerDsl -> routerDsl.addRoutes(HttpGatewayRouterConfiguration.asyncRouting(request -> {
-                HttpGatewayUpstreamRequest upstreamRequest = httpGatewayUpstreamClient
-                    .prepareRequest(request)
-                    .withUrl("http://localhost:" + SparkMockServer.SPARK_HTTP_PORT + request.path());
-                CompletableFuture<HttpGatewayUpstreamResponse> upstreamFutureResponse = httpGatewayUpstreamClient.executeUpstreamRequest(upstreamRequest);
-                return upstreamFutureResponse.thenApply(upstreamResponse -> {
-                    if (upstreamResponse.getStatusCode() > HttpResponseStatus.INTERNAL_SERVER_ERROR.code()) {
-                        // Do not forward the response body if the upstream server returns an internal error
-                        // => this enables to avoid forwarding sensitive information
-                        upstreamResponse.setPublisher(null);
-                    }
-
-                    return HttpGatewayDownstreamResponses.buildResult(upstreamResponse);
-                });
-            }))
-        ));
+        HttpGateway httpGateway = createHttpGatewayWithRemoteTestServer();
 
         HttpResponse<String> httpResponse = makeHttpRequest("/long-body");
 
         Assertions.assertThat(httpResponse.statusCode()).isEqualTo(HttpResponseStatus.OK.code());
         Assertions.assertThat(httpResponse.body()).isEqualTo("This is a loooooooooooooooooong body");
+
+        httpGateway.stop();
+    }
+
+    @Test
+    public void check_that_headers_are_not_duplicated() throws IOException, InterruptedException {
+        HttpGateway httpGateway = createHttpGatewayWithRemoteTestServer();
+
+        HttpResponse<String> httpResponse = makeHttpRequest("/long-body");
+
+        Assertions.assertThat(httpResponse.statusCode()).isEqualTo(HttpResponseStatus.OK.code());
+        Assertions.assertThat(httpResponse.headers().allValues(HttpHeaders.CONTENT_TYPE)).isEqualTo(List.of("text/html;charset=utf-8"));
+        Assertions.assertThat(httpResponse.headers().allValues(HttpHeaders.CONTENT_LENGTH)).isEqualTo(List.of());
+        Assertions.assertThat(httpResponse.headers().allValues(HttpHeaders.TRANSFER_ENCODING)).isEqualTo(List.of("chunked"));
 
         httpGateway.stop();
     }
@@ -106,5 +104,27 @@ public class HttpGatewayTest {
 
     private static HttpResponse<String> makeHttpRequest(String path) throws IOException, InterruptedException {
         return LocalHttpClient.makeHttpRequest(HTTP_GATEWAY_PORT, path, request -> request.POST(HttpRequest.BodyPublishers.ofString("body post content")));
+    }
+
+    private static @NotNull HttpGateway createHttpGatewayWithRemoteTestServer() {
+        HttpGatewayUpstreamClient httpGatewayUpstreamClient = new HttpGatewayUpstreamClient();
+        return HttpGateway.start(new HttpGatewayConfiguration(
+            HTTP_GATEWAY_PORT,
+            routerDsl -> routerDsl.addRoutes(HttpGatewayRouterConfiguration.asyncRouting(request -> {
+                HttpGatewayUpstreamRequest upstreamRequest = httpGatewayUpstreamClient
+                    .prepareRequest(request)
+                    .withUrl("http://localhost:" + SparkMockServer.SPARK_HTTP_PORT + request.path());
+                CompletableFuture<HttpGatewayUpstreamResponse> upstreamFutureResponse = httpGatewayUpstreamClient.executeUpstreamRequest(upstreamRequest);
+                return upstreamFutureResponse.thenApply(upstreamResponse -> {
+                    if (upstreamResponse.getStatusCode() > HttpResponseStatus.INTERNAL_SERVER_ERROR.code()) {
+                        // Do not forward the response body if the upstream server returns an internal error
+                        // => this enables to avoid forwarding sensitive information
+                        upstreamResponse.setPublisher(null);
+                    }
+
+                    return HttpGatewayDownstreamResponses.buildResult(upstreamResponse);
+                });
+            }))
+        ));
     }
 }

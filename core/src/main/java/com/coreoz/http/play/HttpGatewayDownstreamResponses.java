@@ -66,11 +66,12 @@ public class HttpGatewayDownstreamResponses {
     private static String[] flattenHeaders(List<Param> responseHeaders) {
         return responseHeaders
             .stream()
-            // content type and content length headers are added automatically by Play
+            // content type, content length headers and chunked transfer encoding are added automatically by Play
             // => so these headers need to be removed
             .filter(header ->
                 !HttpHeaders.CONTENT_LENGTH.equals(header.getName())
                     && !HttpHeaders.CONTENT_TYPE.equals(header.getName())
+                    && !(HttpHeaders.TRANSFER_ENCODING.equals(header.getName()) && "chunked".equals(header.getValue()))
             )
             .flatMap(header -> Stream.of(header.getName(), header.getValue()))
             .toArray(String[]::new);
