@@ -2,7 +2,7 @@ package com.coreoz.http.openapi.route;
 
 import com.coreoz.http.openapi.fetching.OpenApiFetcher;
 import com.coreoz.http.openapi.fetching.OpenApiFetchingData;
-import com.coreoz.http.openapi.merge.OpenApiMerger;
+import com.coreoz.http.openapi.merge.HttpGatewayOpenApiMerger;
 import com.coreoz.http.openapi.merge.OpenApiMergerConfiguration;
 import com.coreoz.http.services.HttpGatewayRemoteService;
 import com.coreoz.http.services.HttpGatewayRemoteServicesIndex;
@@ -71,23 +71,23 @@ public class OpenApiOrchestrator {
             .getServices()
             .stream()
             .collect(Collectors.toMap(
-                HttpGatewayRemoteService::getServiceId,
+                HttpGatewayRemoteService::serviceId,
                 Function.identity()
             ));
     }
 
     @NotNull
     private static OpenAPI mergeOpenApiSpecs(@NotNull OpenApiRouteConfiguration config, OpenAPI consolidatedOpenApi, OpenApiFetchingData serviceOpenApi, Map<String, HttpGatewayRemoteService> indexedRemoteService) {
-        return OpenApiMerger.addDefinitions(
+        return HttpGatewayOpenApiMerger.merge(
             consolidatedOpenApi,
             serviceOpenApi.openApiDefinition(),
             new OpenApiMergerConfiguration(
                 indexedRemoteService
                     // TODO handle error if service is not found in indexedRemoteService
                     .get(serviceOpenApi.serviceId())
-                    .getRoutes()
+                    .routes()
                     .stream()
-                    .map(config.remoteServicesIndex()::serviceRouteToHttpEndpoint)
+                    .map(config.remoteServicesIndex()::serviceRouteToHttpRoute)
                     .toList(),
                 config.componentNamePrefixMaker().apply(serviceOpenApi.serviceId()),
                 config.operationIdPrefixMaker().apply(serviceOpenApi.serviceId()),

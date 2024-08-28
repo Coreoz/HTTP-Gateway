@@ -1,10 +1,7 @@
 package com.coreoz.http.services;
 
-import lombok.Value;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-@Value
-public class HttpGatewayRemoteServiceRoute {
-    String routeId;
-    String method;
-    String path;
+public record HttpGatewayRemoteServiceRoute(@NotNull String routeId, @NotNull String method, @Nullable String path) {
 }

@@ -74,10 +74,10 @@ public class HttpGatewayConfigServicesAuth {
                     serviceConfig.getString(HttpGatewayConfigServices.CONFIG_SERVICE_ID),
                     readRemoteServiceAuthentication(serviceConfig, supportedAuthConfigs)
                 ))
-                .filter(serviceAuth -> serviceAuth.getAuthenticator() != null)
+                .filter(serviceAuth -> serviceAuth.authenticator() != null)
                 .collect(Collectors.toMap(
-                    HttpGatewayRemoteServiceAuth::getServiceId,
-                    HttpGatewayRemoteServiceAuth::getAuthenticator
+                    HttpGatewayRemoteServiceAuth::serviceId,
+                    HttpGatewayRemoteServiceAuth::authenticator
                 )),
             Map.of()
         );

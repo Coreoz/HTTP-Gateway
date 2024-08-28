@@ -73,7 +73,7 @@ public class HttpGatewayClientRouteAccessControl implements HttpGatewayClientRou
         Set<String> remoteServiceIds = remoteServicesIndex
             .getServices()
             .stream()
-            .map(HttpGatewayRemoteService::getServiceId)
+            .map(HttpGatewayRemoteService::serviceId)
             .collect(Collectors.toSet());
         for (Map.Entry<String, Set<String>> serviceByClient : allowedServicesByClient.entrySet()) {
             for (String serviceId : serviceByClient.getValue()) {

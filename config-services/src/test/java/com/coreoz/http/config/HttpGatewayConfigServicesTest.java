@@ -1,6 +1,7 @@
 package com.coreoz.http.config;
 
-import com.coreoz.http.router.data.HttpEndpoint;
+import com.coreoz.http.router.HttpGatewayRoute;
+import com.coreoz.http.routes.HttpRoutes;
 import com.coreoz.http.services.HttpGatewayRemoteService;
 import com.coreoz.http.services.HttpGatewayRemoteServiceRoute;
 import com.coreoz.http.services.HttpGatewayRemoteServicesIndex;
@@ -25,9 +26,9 @@ public class HttpGatewayConfigServicesTest {
             .isNotEmpty()
             .hasSize(1);
         HttpGatewayRemoteService serviceTest = remoteServices.get(0);
-        Assertions.assertThat(serviceTest.getServiceId()).isEqualTo("test-service");
-        Assertions.assertThat(serviceTest.getBaseUrl()).isEqualTo("http://localhost:45678");
-        Assertions.assertThat(serviceTest.getRoutes()).containsExactly(
+        Assertions.assertThat(serviceTest.serviceId()).isEqualTo("test-service");
+        Assertions.assertThat(serviceTest.baseUrl()).isEqualTo("http://localhost:45678");
+        Assertions.assertThat(serviceTest.routes()).containsExactly(
             new HttpGatewayRemoteServiceRoute("fetch-pets", "GET", "/pets"),
             new HttpGatewayRemoteServiceRoute("fetch-pet", "GET", "/pets/{id}")
         );
@@ -57,10 +58,10 @@ public class HttpGatewayConfigServicesTest {
     @Test
     public void readConfig__verify_that_config_is_correctly_read() {
         HttpGatewayRemoteServicesIndex remoteServiceIndex = HttpGatewayConfigServices.readConfig(config.getConfig("remote-services-ok"));
-        List<HttpEndpoint> routes = StreamSupport.stream(remoteServiceIndex.computeRoutes().spliterator(), false).toList();
+        List<HttpGatewayRoute> routes = StreamSupport.stream(remoteServiceIndex.computeRoutes().spliterator(), false).toList();
         Assertions.assertThat(remoteServiceIndex.getServices()).hasSize(1);
         Assertions.assertThat(routes)
             .hasSize(2)
-            .contains(new HttpEndpoint("fetch-pet", "GET", "/custom-fetch-pet/{id}", "/pets/{id}"));
+            .contains(new HttpGatewayRoute("fetch-pet", "GET", "/custom-fetch-pet/{id}", HttpRoutes.parsePathAsSegments("/pets/{id}")));
     }
 }

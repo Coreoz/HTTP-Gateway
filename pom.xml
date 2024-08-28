@@ -79,8 +79,9 @@
         <slf4j.version>2.0.11</slf4j.version>
         <lombok.version>1.18.30</lombok.version>
         <javax-annotation.version>1.3.2</javax-annotation.version>
-        <swagger-parser.version>2.1.20</swagger-parser.version>
         <jetbrains-annotations.version>24.1.0</jetbrains-annotations.version>
+        <http-routes-index.version>1.0.0-SNAPSHOT</http-routes-index.version>
+        <openapi-merger.version>1.0.0-SNAPSHOT</openapi-merger.version>
         <!-- Unit testing -->
         <junit.version>4.13.2</junit.version>
         <assertj.version>3.25.2</assertj.version>
@@ -315,6 +316,18 @@
                 <version>${project.version}</version>
             </dependency>
 
+            <!-- External Coreoz dependencies -->
+            <dependency>
+                <groupId>com.coreoz</groupId>
+                <artifactId>http-routes-index</artifactId>
+                <version>${http-routes-index.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.coreoz</groupId>
+                <artifactId>openapi-merger</artifactId>
+                <version>${openapi-merger.version}</version>
+            </dependency>
+
             <!-- External dependencies -->
             <dependency>
                 <groupId>com.typesafe</groupId>
@@ -395,11 +408,6 @@
                 <groupId>org.jetbrains</groupId>
                 <artifactId>annotations</artifactId>
                 <version>${jetbrains-annotations.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.swagger.parser.v3</groupId>
-                <artifactId>swagger-parser</artifactId>
-                <version>${swagger-parser.version}</version>
             </dependency>
 
             <!-- unit testing -->

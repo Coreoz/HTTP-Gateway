@@ -35,7 +35,7 @@ public class SampleCustomRoutingTest {
         Map<String, SampleCustomRouting.RoutingPerCustomer> servicesIndexByCustomer = SampleCustomRouting.indexServicesByCustomer(config);
         Assertions.assertThat(servicesIndexByCustomer).containsKey("customer-a");
         Assertions
-            .assertThat(servicesIndexByCustomer.get("customer-a").getServicesIndex().getServices().stream().map(HttpGatewayRemoteService::getServiceId))
+            .assertThat(servicesIndexByCustomer.get("customer-a").getServicesIndex().getServices().stream().map(HttpGatewayRemoteService::serviceId))
             .contains("custom-routes-for-customer-a");
     }
 

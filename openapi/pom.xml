@@ -24,8 +24,8 @@
         </dependency>
 
         <dependency>
-            <groupId>io.swagger.parser.v3</groupId>
-            <artifactId>swagger-parser</artifactId>
+            <groupId>com.coreoz</groupId>
+            <artifactId>openapi-merger</artifactId>
         </dependency>
 
 		<dependency>

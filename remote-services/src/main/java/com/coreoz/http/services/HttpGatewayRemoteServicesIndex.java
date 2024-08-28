@@ -1,9 +1,15 @@
 package com.coreoz.http.services;
 
-import com.coreoz.http.router.SearchRouteIndexer;
-import com.coreoz.http.router.data.*;
 import com.coreoz.http.exception.HttpGatewayValidationException;
-import com.coreoz.http.router.routes.HttpRoutes;
+import com.coreoz.http.router.HttpGatewayRoute;
+import com.coreoz.http.routes.HttpRoutes;
+import com.coreoz.http.routes.parsing.ParsedSegment;
+import com.coreoz.http.routes.router.HttpRoute;
+import com.coreoz.http.routes.router.index.IndexRouteLeaf;
+import com.coreoz.http.routes.router.index.IndexedRoutes;
+import com.coreoz.http.routes.router.index.SearchRouteIndexer;
+import com.coreoz.http.routes.router.search.MatchingRoute;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.List;
@@ -32,7 +38,7 @@ public class HttpGatewayRemoteServicesIndex {
         this.services = services;
         this.servicesByRouteId = services
             .stream()
-            .flatMap(service -> service.getRoutes().stream().map(route -> Map.entry(route.getRouteId(), service)))
+            .flatMap(service -> service.routes().stream().map(route -> Map.entry(route.routeId(), service)))
             .collect(Collector.of(
                 HashMap::new,
                 (map, routeEntry) -> {
@@ -46,8 +52,8 @@ public class HttpGatewayRemoteServicesIndex {
         this.gatewayRewriteRoutes = rewriteRoutes
             .stream()
             .collect(Collectors.toMap(
-                HttpGatewayRewriteRoute::getRouteId,
-                HttpGatewayRewriteRoute::getDownstreamPath
+                HttpGatewayRewriteRoute::routeId,
+                HttpGatewayRewriteRoute::downstreamPath
             ));
     }
 
@@ -58,31 +64,41 @@ public class HttpGatewayRemoteServicesIndex {
         return services;
     }
 
-    private Stream<HttpEndpoint> routesStream() {
+    private Stream<HttpGatewayRoute> routesStream() {
         return services
             .stream()
-            .flatMap(service -> service.getRoutes().stream().map(this::serviceRouteToHttpEndpoint));
+            .flatMap(service -> service.routes().stream().map(this::serviceRouteToHttpRoute));
     }
 
     /**
-     * Generate the HTTP Gateway {@link HttpEndpoint} for a remote service route.
+     * Generate the HTTP Gateway {@link HttpRoute} for a remote service route.
      * This method takes into consideration route rewriting.
      * @param route The remote service route
      */
-    public HttpEndpoint serviceRouteToHttpEndpoint(HttpGatewayRemoteServiceRoute route) {
-        return new HttpEndpoint(
-            route.getRouteId(),
-            route.getMethod(),
-            gatewayRewriteRoutes.getOrDefault(route.getRouteId(), route.getPath()),
-            route.getPath()
+    public @NotNull HttpGatewayRoute serviceRouteToHttpRoute(@NotNull HttpGatewayRemoteServiceRoute route) {
+        return new HttpGatewayRoute(
+            route.routeId(),
+            route.method(),
+            gatewayRewriteRoutes.getOrDefault(route.routeId(), route.path()),
+            parseUpstreamPath(route)
         );
+    }
+
+    private static @NotNull List<ParsedSegment> parseUpstreamPath(HttpGatewayRemoteServiceRoute route) {
+        if (route.path() == null) {
+            throw new HttpGatewayValidationException(
+                "Upstream path cannot be null for route '" + route.routeId() + "'"
+            );
+        }
+
+        return HttpRoutes.parsePathAsSegments(route.path());
     }
 
     /**
      * Computes the route as a <code>Iterable<HttpEndpoint></code> object that can be used
      * in the router <code>HttpGatewayRouter</code> class
      */
-    public Iterable<HttpEndpoint> computeRoutes() {
+    public Iterable<HttpGatewayRoute> computeRoutes() {
         return routesStream()::iterator;
     }
 
@@ -90,33 +106,29 @@ public class HttpGatewayRemoteServicesIndex {
      * Does the same as {@link #computeRoutes()} but validate the routes consistency at the same time.
      * @throws HttpGatewayValidationException If there is an inconsistency detected
      */
-    public Map<String, IndexedEndpoints> computeValidatedIndexedRoutes() {
+    public Map<String, IndexedRoutes<HttpGatewayRoute>> computeValidatedIndexedRoutes() {
         validateRewriteRoutes();
 
-        Map<String, IndexedEndpoints> indexedEndpoints = new HashMap<>();
-        routesStream().forEach(endpoint -> {
-            if (endpoint.getDownstreamPath() == null) {
+        Map<String, IndexedRoutes<HttpGatewayRoute>> indexedEndpoints = new HashMap<>();
+        routesStream().forEach(route -> {
+            if (route.downstreamPath() == null) {
                 throw new HttpGatewayValidationException(
-                    "Downstream path cannot be null for route '" + endpoint.getRouteId() + "'"
-                );
-            }
-            if (!endpoint.getDownstreamPath().startsWith("/")) {
-                throw new HttpGatewayValidationException(
-                    "Downstream path '" + endpoint.getDownstreamPath() + "' must start with a / for route '" + endpoint.getRouteId() + "'"
+                    "Downstream path cannot be null for route '" + route.routeId() + "'"
                 );
             }
 
-            if (endpoint.getUpstreamPath() == null) {
-                throw new HttpGatewayValidationException("Upstream path must not be null for route '" + endpoint.getRouteId());
+            if (!route.downstreamPath().startsWith("/")) {
+                throw new HttpGatewayValidationException(
+                    "Downstream path '" + route.downstreamPath() + "' must start with a / for route '" + route.routeId() + "'"
+                );
             }
-
-            EndpointParsedData addedEndpoint = SearchRouteIndexer.addEndpointToIndex(indexedEndpoints, endpoint);
-            if (addedEndpoint.getHttpEndpoint() != endpoint) {
+            @NotNull IndexRouteLeaf<HttpGatewayRoute> addedRoute = SearchRouteIndexer.addRouteToIndex(indexedEndpoints, route);
+            if (addedRoute.httpRoute() != route) {
                 throw new HttpGatewayValidationException(
                     "Duplicate downstream path for routes '"
-                    + addedEndpoint.getHttpEndpoint().getRouteId()
-                    + "' and 'route-b': the endpoint "
-                    + endpoint + " overlaps the path of the endpoint " + addedEndpoint.getHttpEndpoint()
+                    + addedRoute.httpRoute().routeId()
+                    + "' and '"+route.routeId()+"': the endpoint "
+                    + route + " overlaps the path of the route " + addedRoute.httpRoute()
                 );
             }
         });
@@ -126,9 +138,9 @@ public class HttpGatewayRemoteServicesIndex {
     private void validateRewriteRoutes() {
         Map<String, HttpGatewayRemoteServiceRoute> indexedRoutesById = services
             .stream()
-            .flatMap(service -> service.getRoutes().stream())
+            .flatMap(service -> service.routes().stream())
             .collect(Collectors.toMap(
-                HttpGatewayRemoteServiceRoute::getRouteId,
+                HttpGatewayRemoteServiceRoute::routeId,
                 Function.identity()
             ));
         for (Map.Entry<String, String> rewriteRouteEntry : gatewayRewriteRoutes.entrySet()) {
@@ -138,10 +150,10 @@ public class HttpGatewayRemoteServicesIndex {
             }
 
             String rewriteRoutePath = gatewayRewriteRoutes.get(rewriteRouteEntry.getKey());
-            if (!areRouteCompatible(initialRoute.getPath(), rewriteRoutePath)) {
+            if (!areRouteCompatible(initialRoute.path(), rewriteRoutePath)) {
                 throw new HttpGatewayValidationException("Incorrect rewrite route for routeId='" + rewriteRouteEntry.getKey() +
                     "', rewrite route path does not match initial route path, the paths pattern (e.g. {pattern}) names must be identical. Received: "
-                    + initialRoute.getPath() + " (initial) != " + rewriteRoutePath + " (rewrite)");
+                    + initialRoute.path() + " (initial) != " + rewriteRoutePath + " (rewrite)");
             }
         }
     }
@@ -155,7 +167,7 @@ public class HttpGatewayRemoteServicesIndex {
         return routeSegments
             .stream()
             .filter(ParsedSegment::isPattern)
-            .map(ParsedSegment::getName)
+            .map(ParsedSegment::name)
             .collect(Collectors.toSet());
     }
 
@@ -178,10 +190,10 @@ public class HttpGatewayRemoteServicesIndex {
      * Find the corresponding service of a <code>MatchingRoute</code> object that is returned
      * by the router service: <code>HttpGatewayRouter</code>
      */
-    public String findServiceBaseUrl(MatchingRoute matchingRoute) {
-        HttpGatewayRemoteService remoteService = findService(matchingRoute.getMatchingEndpoint().getHttpEndpoint().getRouteId());
+    public String findServiceBaseUrl(MatchingRoute<HttpGatewayRoute> matchingRoute) {
+        HttpGatewayRemoteService remoteService = findService(matchingRoute.httpRoute().routeId());
         if (remoteService != null) {
-            return remoteService.getBaseUrl();
+            return remoteService.baseUrl();
         }
         return null;
     }

@@ -1,8 +1,7 @@
 package com.coreoz.http.validation;
 
-import com.coreoz.http.services.HttpGatewayRemoteServicesIndex;
 import com.coreoz.http.router.HttpGatewayRouter;
-import com.coreoz.http.router.data.DestinationRoute;
+import com.coreoz.http.routes.parsing.DestinationRoute;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import play.mvc.Http;
 
@@ -11,11 +10,9 @@ import play.mvc.Http;
  */
 public class HttpGatewayRouteValidator {
     private final HttpGatewayRouter httpRouter;
-    private final HttpGatewayRemoteServicesIndex servicesIndex;
 
-    public HttpGatewayRouteValidator(HttpGatewayRouter httpRouter, HttpGatewayRemoteServicesIndex servicesIndex) {
+    public HttpGatewayRouteValidator(HttpGatewayRouter httpRouter) {
         this.httpRouter = httpRouter;
-        this.servicesIndex = servicesIndex;
     }
 
     /**
@@ -25,7 +22,7 @@ public class HttpGatewayRouteValidator {
     public HttpGatewayValidation<DestinationRoute> validate(Http.Request downstreamRequest) {
         return httpRouter
             .searchRoute(downstreamRequest.method(), downstreamRequest.path())
-            .map(matchingRoute -> httpRouter.computeDestinationRoute(matchingRoute, servicesIndex.findServiceBaseUrl(matchingRoute)))
+            .map(httpRouter::computeDestinationRoute)
             .map(HttpGatewayValidation::ofValue)
             .orElseGet(() -> HttpGatewayValidation.ofError(
                 HttpResponseStatus.NOT_FOUND,

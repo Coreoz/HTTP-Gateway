@@ -12,7 +12,7 @@ import com.coreoz.http.services.HttpGatewayRemoteServicesIndex;
 import com.coreoz.http.services.auth.HttpGatewayRemoteServicesAuthenticator;
 import com.coreoz.http.upstream.*;
 import com.coreoz.http.validation.HttpGatewayClientValidator;
-import com.coreoz.http.validation.HttpGatewayDestinationService;
+import com.coreoz.http.validation.HttpGatewayDestination;
 import com.coreoz.http.validation.HttpGatewayRouteValidator;
 import com.coreoz.http.validation.HttpGatewayValidation;
 import io.netty.handler.codec.http.HttpResponseStatus;
@@ -44,7 +44,7 @@ public class SampleBasic {
             .validateConfig(servicesIndex);
         HttpGatewayClientValidator clientValidator = new HttpGatewayClientValidator(servicesIndex, gatewayClients);
         HttpGatewayRouter httpRouter = new HttpGatewayRouter(servicesIndex.computeValidatedIndexedRoutes());
-        HttpGatewayRouteValidator routeValidator = new HttpGatewayRouteValidator(httpRouter, servicesIndex);
+        HttpGatewayRouteValidator routeValidator = new HttpGatewayRouteValidator(httpRouter);
 
         HttpGatewayUpstreamClient upstreamBaseClient = new HttpGatewayUpstreamClient();
         HttpGatewayUpstreamStringPeekerClient httpGatewayUpstreamClient = new HttpGatewayUpstreamStringPeekerClient(
@@ -67,7 +67,7 @@ public class SampleBasic {
                     HttpGatewayValidation<String> clientValidation = clientValidator.validateClientIdentification(downstreamRequest);
 
                     // validation
-                    HttpGatewayValidation<HttpGatewayDestinationService> validation = clientValidation
+                    HttpGatewayValidation<HttpGatewayDestination> validation = clientValidation
                         .then(clientId -> routeValidator
                             .validate(downstreamRequest)
                             .then(destinationRoute -> clientValidator.validateClientAccess(downstreamRequest, destinationRoute, clientId))
@@ -77,13 +77,13 @@ public class SampleBasic {
                         logger.warn(validation.error().getMessage());
                         return HttpGatewayDownstreamResponses.buildError(validation.error());
                     }
-                    HttpGatewayDestinationService destinationService = validation.value();
+                    HttpGatewayDestination destinationRoute = validation.value();
 
                     HttpGatewayPeekingUpstreamRequest<String, String> remoteRequest = httpGatewayUpstreamClient
                         .prepareRequest(downstreamRequest)
-                        .withUrl(destinationService.getDestinationRoute().getDestinationUrl())
+                        .withUrl(destinationRoute.remoteService().baseUrl() + destinationRoute.destinationRoute().destinationPath())
                         .with(remoteServicesAuthenticator.forRoute(
-                            destinationService.getServiceId(), destinationService.getDestinationRoute().getRouteId()
+                            destinationRoute.remoteService().serviceId(), destinationRoute.destinationRoute().routeId()
                         ))
                         .copyBasicHeaders()
                         .copyQueryParams();

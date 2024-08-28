@@ -3,7 +3,7 @@ package com.coreoz.http.publisher;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
@@ -29,7 +29,10 @@ public class PublisherPeekers {
      * @param publisherToConsume The {@link PublisherPeeker} publisher to consume
      * @throws IllegalArgumentException if the publisherToConsume is not an instance of {@link PublisherPeeker}
      */
-    public static void consume(@NotNull Publisher<?> publisherToConsume) {
+    public static void consume(@Nullable Publisher<?> publisherToConsume) {
+        if (publisherToConsume == null) {
+            return;
+        }
         if (!(publisherToConsume instanceof PublisherPeeker<?> peekerPublisherToConsume)) {
             // Cannot consume publisher that is not an instance of PublisherPeeker
             throw new IllegalArgumentException("publisherToConsume must be an instance of PublisherPeeker");

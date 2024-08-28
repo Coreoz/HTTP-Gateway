@@ -1,18 +1,19 @@
 package com.coreoz.http.services;
 
-import com.coreoz.http.router.data.IndexedEndpoints;
+import com.coreoz.http.router.HttpGatewayRoute;
+import com.coreoz.http.routes.router.index.IndexedRoutes;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
-
-import static com.coreoz.http.mock.ConfigExceptionValidation.validateConfigException;
 
 import java.util.List;
 import java.util.Map;
 
+import static com.coreoz.http.mock.ConfigExceptionValidation.validateConfigException;
+
 public class HttpGatewayRemoteServicesIndexTest {
     @Test
     public void computeValidatedIndexedRoutes__verify_that_correct_configuration_without_rewrite_routes_is_validated_correctly() {
-        Map<String, IndexedEndpoints> routesIndex = makeIndex(baseRoutesSet(), List.of()).computeValidatedIndexedRoutes();
+        Map<String, IndexedRoutes<HttpGatewayRoute>> routesIndex = makeIndex(baseRoutesSet(), List.of()).computeValidatedIndexedRoutes();
         Assertions.assertThat(routesIndex).hasSize(2);
         Assertions.assertThat(routesIndex.get("GET").getSegments()).hasSize(2);
         Assertions.assertThat(routesIndex.get("GET").getSegments().get("test")).isNotNull();
@@ -20,10 +21,10 @@ public class HttpGatewayRemoteServicesIndexTest {
 
     @Test
     public void computeValidatedIndexedRoutes__verify_that_correct_configuration_with_rewrite_routes_is_validated_correctly() {
-        Map<String, IndexedEndpoints> routesIndex = makeIndex(
-                baseRoutesSet(),
-                List.of(new HttpGatewayRewriteRoute("route-c", "/new-route/{id}"))
-            )
+        Map<String, IndexedRoutes<HttpGatewayRoute>> routesIndex = makeIndex(
+            baseRoutesSet(),
+            List.of(new HttpGatewayRewriteRoute("route-c", "/new-route/{id}"))
+        )
             .computeValidatedIndexedRoutes();
         Assertions.assertThat(routesIndex).hasSize(2);
         Assertions.assertThat(routesIndex.get("GET").getSegments()).hasSize(3);
@@ -98,7 +99,7 @@ public class HttpGatewayRemoteServicesIndexTest {
                     List.of()
                 )
                 .computeValidatedIndexedRoutes(),
-            "Downstream path cannot be null for route 'route-a'"
+            "Upstream path cannot be null for route 'route-a'"
         );
     }
 

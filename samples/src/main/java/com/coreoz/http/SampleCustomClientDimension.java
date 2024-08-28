@@ -16,7 +16,7 @@ import com.coreoz.http.upstream.HttpGatewayUpstreamResponse;
 import com.coreoz.http.upstream.HttpGatewayUpstreamStringPeekerClient;
 import com.coreoz.http.publisher.PublisherPeekers;
 import com.coreoz.http.validation.HttpGatewayClientValidator;
-import com.coreoz.http.validation.HttpGatewayDestinationService;
+import com.coreoz.http.validation.HttpGatewayDestination;
 import com.coreoz.http.validation.HttpGatewayRouteValidator;
 import com.coreoz.http.validation.HttpGatewayValidation;
 import com.typesafe.config.ConfigFactory;
@@ -46,7 +46,7 @@ public class SampleCustomClientDimension {
         HttpGatewayConfigClientAccessControl gatewayClients = HttpGatewayConfigClientAccessControl.readConfig(configLoader).validateConfig(servicesIndex);
         HttpGatewayClientValidator clientValidator = new HttpGatewayClientValidator(servicesIndex, gatewayClients);
         HttpGatewayRouter httpRouter = new HttpGatewayRouter(servicesIndex.computeValidatedIndexedRoutes());
-        HttpGatewayRouteValidator routeValidator = new HttpGatewayRouteValidator(httpRouter, servicesIndex);
+        HttpGatewayRouteValidator routeValidator = new HttpGatewayRouteValidator(httpRouter);
         // custom validation
         Map<String, CustomClientAttributes> clientsCustomAttributes = readClientsCustomAttributes(configLoader);
 
@@ -72,13 +72,13 @@ public class SampleCustomClientDimension {
                     logger.warn(validation.error().getMessage());
                     return HttpGatewayDownstreamResponses.buildError(validation.error());
                 }
-                HttpGatewayDestinationService destinationService = validation.value().getDestinationService();
+                HttpGatewayDestination destinationRoute = validation.value().getDestinationRoute();
 
                 HttpGatewayPeekingUpstreamRequest<String, String> remoteRequest = httpGatewayUpstreamClient
                     .prepareRequest(downstreamRequest)
-                    .withUrl(destinationService.getDestinationRoute().getDestinationUrl())
+                    .withUrl(destinationRoute.remoteService().baseUrl() + destinationRoute.destinationRoute().destinationPath())
                     .with(remoteServicesAuthenticator.forRoute(
-                        destinationService.getServiceId(), destinationService.getDestinationRoute().getRouteId()
+                        destinationRoute.remoteService().serviceId(), destinationRoute.destinationRoute().routeId()
                     ))
                     // forward custom header value
                     .with((unused, upstreamRequest) -> {
@@ -117,7 +117,7 @@ public class SampleCustomClientDimension {
 
     @Value
     static class CustomClientValidation {
-        HttpGatewayDestinationService destinationService;
+        HttpGatewayDestination destinationRoute;
         CustomClientAttributes customClientAttributes;
     }
 
@@ -137,7 +137,7 @@ public class SampleCustomClientDimension {
     private static HttpGatewayValidation<CustomClientValidation> validateCustomClientAuthorization(
         Http.Request downstreamRequest,
         CustomClientAttributes clientCustomAttributes,
-        HttpGatewayDestinationService destinationService
+        HttpGatewayDestination destinationService
         ) {
         // Fetch custom downstream header values
         String[] requestedTenants = downstreamRequest.header(HTTP_HEADER_TENANTS).map(tenants -> tenants.split(",")).orElse(null);

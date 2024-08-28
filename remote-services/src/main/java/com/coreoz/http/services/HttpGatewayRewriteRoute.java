@@ -1,9 +1,6 @@
 package com.coreoz.http.services;
 
-import lombok.Value;
+import org.jetbrains.annotations.NotNull;
 
-@Value
-public class HttpGatewayRewriteRoute {
-    String routeId;
-    String downstreamPath;
+public record HttpGatewayRewriteRoute(@NotNull String routeId, @NotNull String downstreamPath) {
 }

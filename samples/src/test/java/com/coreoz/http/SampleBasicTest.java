@@ -87,10 +87,11 @@ public class SampleBasicTest {
         Assertions.assertThat(httpResponse.body()).startsWith("openapi");
         OpenAPI mergedOpenApi = new OpenAPIParser().readContents(httpResponse.body(), null, null).getOpenAPI();
         Assertions.assertThat(mergedOpenApi.getComponents().getSchemas()).hasSize(3);
-        PathItem customRewriteRoute = mergedOpenApi.getPaths().get("/custom-pets/{petId}/custom-route");
-        Assertions.assertThat(customRewriteRoute).isNotNull();
+
         // for debugging:
         // System.out.println(httpResponse.body());
+        PathItem customRewriteRoute = mergedOpenApi.getPaths().get("/custom-pets/{petId}/custom-route");
+        Assertions.assertThat(customRewriteRoute).isNotNull();
     }
 
     @SneakyThrows

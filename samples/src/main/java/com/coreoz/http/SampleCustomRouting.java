@@ -7,8 +7,9 @@ import com.coreoz.http.config.HttpGatewayConfigClientAuth;
 import com.coreoz.http.config.HttpGatewayConfigServices;
 import com.coreoz.http.config.HttpGatewayConfigServicesAuth;
 import com.coreoz.http.play.HttpGatewayDownstreamResponses;
+import com.coreoz.http.publisher.PublisherPeekers;
 import com.coreoz.http.router.HttpGatewayRouter;
-import com.coreoz.http.router.data.DestinationRoute;
+import com.coreoz.http.routes.parsing.DestinationRoute;
 import com.coreoz.http.services.HttpGatewayRemoteService;
 import com.coreoz.http.services.HttpGatewayRemoteServicesIndex;
 import com.coreoz.http.services.auth.HttpGatewayRemoteServicesAuthenticator;
@@ -16,7 +17,6 @@ import com.coreoz.http.upstream.HttpGatewayPeekingUpstreamRequest;
 import com.coreoz.http.upstream.HttpGatewayUpstreamKeepingResponse;
 import com.coreoz.http.upstream.HttpGatewayUpstreamResponse;
 import com.coreoz.http.upstream.HttpGatewayUpstreamStringPeekerClient;
-import com.coreoz.http.publisher.PublisherPeekers;
 import com.coreoz.http.validation.HttpGatewayClientValidators;
 import com.coreoz.http.validation.HttpGatewayRouteValidator;
 import com.coreoz.http.validation.HttpGatewayValidation;
@@ -71,13 +71,13 @@ public class SampleCustomRouting {
                     return HttpGatewayDownstreamResponses.buildError(validation.error());
                 }
                 DestinationRoute destinationRoute = validation.value().destinationRoute;
-                HttpGatewayRemoteService destinationService = validation.value().getServicesIndex().findService(destinationRoute.getRouteId());
+                HttpGatewayRemoteService destinationService = validation.value().getServicesIndex().findService(destinationRoute.routeId());
 
                 HttpGatewayPeekingUpstreamRequest<String, String> remoteRequest = httpGatewayUpstreamClient
                     .prepareRequest(downstreamRequest)
-                    .withUrl(destinationRoute.getDestinationUrl())
+                    .withUrl(destinationService.baseUrl() + destinationRoute.destinationPath())
                     .with(validation.value().getRemoteServicesAuthenticator().forRoute(
-                        destinationService.getServiceId(), destinationRoute.getRouteId()
+                        destinationService.serviceId(), destinationRoute.routeId()
                     ))
                     .copyBasicHeaders()
                     .copyQueryParams();
@@ -141,7 +141,7 @@ public class SampleCustomRouting {
                     return new RoutingPerCustomer(
                         servicesIndex,
                         httpRouter,
-                        new HttpGatewayRouteValidator(httpRouter, servicesIndex),
+                        new HttpGatewayRouteValidator(httpRouter),
                         remoteServicesAuthenticator
                     );
                 }
