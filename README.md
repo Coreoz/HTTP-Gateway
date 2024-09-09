@@ -133,7 +133,6 @@ Note that [Graphviz](https://graphviz.org/download/) might be needed to generate
 
 TODO
 ----
-- [ ] Open API : make a dedicated library for the merge module
 - [ ] Regenerate modules graph and document new modules
 - [ ] Add a cli to generate a service config from an OpenAPI spec
 - [ ] Migrate integration tests to javalin (https://github.com/javalin/javalin) to avoid tests raising security threads alerts (even though it's safe since it's only for tests)
