@@ -230,6 +230,14 @@
 
 	<dependencyManagement>
 		<dependencies>
+            <!-- Jackson family governed by the upstream BOM (imported first: among imported BOMs, the first declared wins) -->
+            <dependency>
+                <groupId>com.fasterxml.jackson</groupId>
+                <artifactId>jackson-bom</artifactId>
+                <version>${jackson.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <!-- Projet modules -->
 			<dependency>
 				<groupId>com.coreoz</groupId>
@@ -351,17 +359,6 @@
                 <groupId>org.playframework</groupId>
                 <artifactId>play-java_3</artifactId>
                 <version>${play-version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.fasterxml.jackson.module</groupId>
-                <artifactId>jackson-module-scala_3</artifactId>
-                <version>${jackson.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.fasterxml.jackson.module</groupId>
-                <artifactId>jackson-module-parameter-names</artifactId>
-                <version>${jackson.version}</version>
             </dependency>
 
             <dependency>
