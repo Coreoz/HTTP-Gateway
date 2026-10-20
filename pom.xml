@@ -69,13 +69,13 @@
         <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/samples/target/site/ jacoco-aggregate/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
 
         <!-- dependencies -->
-        <config-version>1.4.9</config-version>
-        <play-version>3.0.12</play-version>
-        <netty-version>4.1.139.Final</netty-version>
+        <config.version>1.4.9</config.version>
+        <play.version>3.0.12</play.version>
+        <netty.version>4.1.139.Final</netty.version>
         <!-- TODO migration async-http-client v3 : l'API streaming (StreamedAsyncHandler.onStream) a disparu en v3
              (modèle onBodyPartReceived + ResponseBodyControl). La couche streaming (Reactive Streams / Pekko) doit être
              réécrite avant de monter en v3, pour corriger https://github.com/AsyncHttpClient/async-http-client/issues/1660 -->
-        <async-http-client-version>2.12.3</async-http-client-version>
+        <async-http-client.version>2.12.3</async-http-client.version>
         <jackson.version>2.22.3</jackson.version>
         <guava.version>33.7.2-jre</guava.version>
         <slf4j.version>2.0.20</slf4j.version>
@@ -238,6 +238,21 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <!-- Play and Netty families governed by their upstream BOM (Pekko stays governed by Play) -->
+            <dependency>
+                <groupId>org.playframework</groupId>
+                <artifactId>play-bom_3</artifactId>
+                <version>${play.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-bom</artifactId>
+                <version>${netty.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <!-- Projet modules -->
 			<dependency>
 				<groupId>com.coreoz</groupId>
@@ -342,45 +357,13 @@
             <dependency>
                 <groupId>com.typesafe</groupId>
                 <artifactId>config</artifactId>
-                <version>${config-version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.playframework</groupId>
-                <artifactId>play-server_3</artifactId>
-                <version>${play-version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.playframework</groupId>
-                <artifactId>play-netty-server_3</artifactId>
-                <version>${play-version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.playframework</groupId>
-                <artifactId>play-java_3</artifactId>
-                <version>${play-version}</version>
+                <version>${config.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>org.asynchttpclient</groupId>
                 <artifactId>async-http-client</artifactId>
-                <version>${async-http-client-version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-resolver-dns</artifactId>
-                <version>${netty-version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-transport-native-epoll</artifactId>
-                <version>${netty-version}</version>
-                <classifier>linux-x86_64</classifier>
-            </dependency>
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-codec-http</artifactId>
-                <version>${netty-version}</version>
+                <version>${async-http-client.version}</version>
             </dependency>
 
             <dependency>
